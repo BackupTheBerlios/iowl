@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.18 $"
+__version__ = "$Revision: 1.19 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.19  2002/01/24 09:41:52  Saruman
+adapted to new directory-structure
+
 Revision 1.18  2002/01/18 11:07:48  aharth
 Minor bugfixes
 
@@ -140,7 +143,7 @@ class pClickstreamInterface:
     def __init__(self):
         """Constructor."""
         # clickstream is stored in clickstream2001-93-435.xml
-        self.sClickstreamPathName = 'data/sessions/'
+        self.sClickstreamPathName = 'data/clickstream/'
         self.iWatchdogID = 0
         self.iRestart = 1200
         self.lSessions = []

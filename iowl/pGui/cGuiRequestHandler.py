@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.10 $"
+__version__ = "$Revision: 1.11 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.11  2002/01/24 09:41:53  Saruman
+adapted to new directory-structure
+
 Revision 1.10  2001/08/10 18:32:15  i10614
 added debuglevel to all messages.
 
@@ -99,11 +102,11 @@ class cGuiRequestHandler:
         self.cCommandValidator = cCommandValidator.cCommandValidator()
 
         # set default filenames
-        self.cHelpDataGrabber.SetHelpFileName('data/gui/help.ht')
-        self.cAboutDataGrabber.SetAboutFileName('data/gui/about.ht')
-        self.sActiveFilename = 'data/gui/interfaceact.ht'
-        self.sInactiveFilename = 'data/gui/interfaceinact.ht'
-        self.sEndFilename = 'data/gui/interfacefooter.ht'
+        self.cHelpDataGrabber.SetHelpFileName('data/ui/help.ht')
+        self.cAboutDataGrabber.SetAboutFileName('data/ui/about.ht')
+        self.sActiveFilename = 'data/ui/interfaceact.ht'
+        self.sInactiveFilename = 'data/ui/interfaceinact.ht'
+        self.sEndFilename = 'data/ui/interfacefooter.ht'
 
 
     def SetParam(self, sOption, sValue):

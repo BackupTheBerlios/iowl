@@ -1,29 +1,29 @@
 <div align="center">
-  <table width="760" border="0" cellspacing="0" cellpadding="0" background="data/pix/back_nav.gif">
-    <tr> 
-      <td><img src="data/pix/iowlnet.gif" width="190" height="110" alt="iOwl.net"></td>
+  <table width="760" border="0" cellspacing="0" cellpadding="0" background="data/images/back_nav.gif">
+    <tr>
+      <td><img src="data/images/iowlnet.gif" width="190" height="110" alt="iOwl.net"></td>
       <td>
         <table width="570" height="110" border="0" cellspacing="0" cellpadding="8">
-          <tr> 
+          <tr>
             <td width="370">&nbsp;</td>
             <td width="200">
-              <div align="center"><img src="data/pix/active.gif" width="76" height="16" alt="active"><br>
-                <img src="data/pix/back_nav.gif" width="8" height="8" alt=""><br>
-                <a href="http://my.iowl.net/command?action=deactivate"><img src="data/pix/deactivate.gif" width="98" height="16" border="0" alt="deactivate"></a></div>
+              <div align="center"><img src="data/images/active.gif" width="76" height="16" alt="active"><br>
+                <img src="data/images/back_nav.gif" width="8" height="8" alt=""><br>
+                <a href="http://my.iowl.net/command?action=deactivate"><img src="data/images/deactivate.gif" width="98" height="16" border="0" alt="deactivate"></a></div>
             </td>
           </tr>
-          <tr> 
-            <td colspan="2" valign="bottom"><a href="http://my.iowl.net/command?action=showhistory"><img src="data/pix/his.gif" width="129" height="22" border="0" alt="show history"></a><img src="data/pix/back_nav.gif" width="8" height="8" alt=""><a href="http://my.iowl.net/command?action=sessionrecommendation"><img src="data/pix/rec.gif" width="129" height="22" border="0" alt="get session recommendation"></a><img src="data/pix/back_nav.gif" width="8" height="8" alt=""><a href="http://my.iowl.net/command?action=showhelp"><img src="data/pix/hel.gif" width="129" height="22" border="0" alt="show help"></a></td>
+          <tr>
+            <td colspan="2" valign="bottom"><a href="http://my.iowl.net/command?action=showhistory"><img src="data/images/his.gif" width="129" height="22" border="0" alt="show history"></a><img src="data/images/back_nav.gif" width="8" height="8" alt=""><a href="http://my.iowl.net/command?action=sessionrecommendation"><img src="data/images/rec.gif" width="129" height="22" border="0" alt="get session recommendation"></a><img src="data/images/back_nav.gif" width="8" height="8" alt=""><a href="http://my.iowl.net/command?action=showhelp"><img src="data/images/hel.gif" width="129" height="22" border="0" alt="show help"></a></td>
           </tr>
         </table>
       </td>
     </tr>
-    <tr> 
+    <tr>
       <td colspan="2">
-        <table width="760" border="0" cellspacing="0" cellpadding="0" background="data/pix/back_nav.gif">
+        <table width="760" border="0" cellspacing="0" cellpadding="0" background="data/images/back_nav.gif">
           <tr>
-            <td width="8"><img src="data/pix/back_nav.gif" width="8" height="8" alt=""></td>
+            <td width="8"><img src="data/images/back_nav.gif" width="8" height="8" alt=""></td>
             <td width="744">
               <table width="744" border="0" cellspacing="0" cellpadding="8">
                 <tr>
-                  <td background="data/pix/back.gif">
+                  <td background="data/images/back.gif">

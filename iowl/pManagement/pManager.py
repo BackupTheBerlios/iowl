@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.18 $"
+__version__ = "$Revision: 1.19 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.19  2002/01/24 09:41:53  Saruman
+adapted to new directory-structure
+
 Revision 1.18  2002/01/17 10:36:53  Saruman
 changed default options for logfile and logging
 
@@ -183,7 +186,7 @@ class cManager:
         self.sDebugMode = 'logfile'
 
         # default debug level
-        self.iDebugLevel = 1    # 0 -> only system critical messages
+        self.iDebugLevel = 2    # 0 -> only system critical messages
                                 # 5 -> all messages
 
         # get basedir

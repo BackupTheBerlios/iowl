@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: pStatisticsInterface.py,v $
+Revision 1.3  2002/01/24 09:41:53  Saruman
+adapted to new directory-structure
+
 Revision 1.2  2001/04/15 20:14:07  i10614
 minor changes
 
@@ -61,8 +64,8 @@ class pStatisticsInterface:
 
     def __init__(self):
         """Constructor."""
-        self.sItemsetsFileName = 'itemsets.xml'
-        self.sRulesFileName = 'assorules.xml'
+        self.sItemsetsFileName = 'data/itemsets.xml'
+        self.sRulesFileName = 'data/assorules.xml'
         # store only candidate one itemsets in a file
         self.Itemsets = cItemsets.cItemsets(1)
         self.Rules = cRules.cRules()
