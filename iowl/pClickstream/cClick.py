@@ -1,10 +1,13 @@
   
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cClick.py,v $
-Revision 1.1  2001/03/24 19:22:34  i10614
-Initial revision
+Revision 1.2  2001/03/24 19:27:41  i10614
+cvs does not like empty dirs while importing. Trying to add manually.
+
+Revision 1.1.1.1  2001/03/24 19:22:34  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.6  2001/02/22 21:53:17  a
 bug fixes for supporting history list
