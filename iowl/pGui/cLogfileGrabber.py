@@ -1,7 +1,11 @@
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cLogfileGrabber.py,v $
+Revision 1.3  2002/02/27 11:04:45  Saruman
+Now correctly masking html entities when viewing logfile
+through ui.
+
 Revision 1.2  2002/02/19 18:53:57  aharth
 tried to unify UI
 
@@ -13,6 +17,7 @@ initial commit
 """
 
 import pManager
+import cgi
 
 class cLogfileGrabber:
     """Responsible for displaying logfile
@@ -73,16 +78,22 @@ class cLogfileGrabber:
         # get number of lines
         NumLines = len(lLines)
 
+        # init string for log
+        sLog = ''
+
         if NumLines < iNumLines:
             # display all lines
-            sContent = sContent + str(lLines)
+            sLog = str(lLines)
         else:
             # only get last lines
             for linecounter in range((NumLines - iNumLines), NumLines):
-                sContent = sContent + lLines[linecounter]
+                sLog = sLog + lLines[linecounter]
+
+        # mask html and quotes
+        sLog = cgi.escape(sLog, 1)
 
         # end html
-        sContent = sContent + "</pre></p>"
+        sContent = sContent + sLog + "</pre></p>"
 
         # get end part
         sPart2 = self.cGui.GetEndPage()
