@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.12 $"
+__version__ = "$Revision: 1.13 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.13  2001/05/25 19:16:53  i10614
+removed debug output. CHanged Chunksize to 512byte.
+
 Revision 1.12  2001/05/25 18:47:31  i10614
 bugfix for downloading in chunks
 
@@ -344,10 +347,10 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             # transfer actual document by chunks of iBufferSize
             while 1:
                 iCount+=1
-                pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Getting Chunk '+str(iCount))
+                # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Getting Chunk '+str(iCount))
                 data = server.read(iBufferSize)
                 if bChecked==0:
-                    pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Extracting Title!')
+                    # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Extracting Title!')
                     # need to look inside first buffer to determine if there is a <title></title> tag.
                     self.ClickTitle = self.ExtractTitle(str(data[:]))
                     bChecked = 1
