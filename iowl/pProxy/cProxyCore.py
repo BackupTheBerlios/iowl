@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.9 $"
+__version__ = "$Revision: 1.10 $"
 
 """
 $Log: cProxyCore.py,v $
+Revision 1.10  2002/02/19 18:55:11  aharth
+added self to handle_error parameter list
+
 Revision 1.9  2002/02/19 13:47:58  Saruman
 fixed typo handler_error to handle_error.
 
@@ -69,9 +72,7 @@ class MyThreadingTCPServer(SocketServer.ThreadingTCPServer):
             pass
         else:
             # call superclass' handle_error
-            SocketServer.ThreadingTCPServer.handle_error(request, client_adress)
-
-
+            SocketServer.ThreadingTCPServer.handle_error(self, request, client_address)
 
 
 class cProxyCore:
