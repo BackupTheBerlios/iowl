@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.33 $"
+__version__ = "$Revision: 1.34 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.34  2002/03/23 19:20:56  aharth
+connect to network faster when using a dial-up connection
+
 Revision 1.33  2002/03/10 10:12:55  Saruman
 changed some debug output
 
@@ -192,7 +195,7 @@ class cNetManager:
         self.iTTL = 5
 
         # interval in secs to wait for PONGS
-        self.iInterval = 1200
+        self.iInterval = 300
 
 
     def SetParam(self, sOption, sValue):
