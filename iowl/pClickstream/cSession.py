@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cSession.py,v $
+Revision 1.3  2001/03/26 17:48:01  i10614
+activated filtering of invalid urls
+
 Revision 1.2  2001/03/24 19:27:41  i10614
 cvs does not like empty dirs while importing. Trying to add manually.
 
@@ -80,6 +83,7 @@ class cSession(cData.cData):
 
     def AddClick(self, click):
         """Add click to list."""
+
         self.lData.append(click)
 
 

@@ -1,8 +1,11 @@
-  
-__version__ = "$Revision: 1.2 $"
+
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cClick.py,v $
+Revision 1.3  2001/03/26 17:48:01  i10614
+activated filtering of invalid urls
+
 Revision 1.2  2001/03/24 19:27:41  i10614
 cvs does not like empty dirs while importing. Trying to add manually.
 
@@ -113,6 +116,21 @@ class cClick:
         return self.tUrl
 
 
+    def GetRefererUrl(self):
+        """Return url of referrer of this click
+
+        return -- tUrl
+
+        """
+        return self.tReferer
+
+
+    def DeleteReferer(self):
+        """Delete the referrer url"""
+
+        self.tReferer = None
+
+
     def GetElement(self):
         """Return Element for storing in a DOM.
 
@@ -120,13 +138,17 @@ class cClick:
 
         """
         foo = cDOM.cDOM()
-        
+
         dAttrs = {}
         dAttrs['content_type'] = self.sContentType
         dAttrs['status'] = str(self.iStatus)
         dAttrs['timestamp'] = str(self.iTimestamp)
         dAttrs['title'] = self.sTitle
-        dAttrs['referer'] = urlparse.urlunparse(self.tReferer)
+        if self.tReferer != None:
+            # referrer might be empty!
+            dAttrs['referer'] = urlparse.urlunparse(self.tReferer)
+        else:
+            dAttrs['referer'] = ""
 
         sUrl = urlparse.urlunparse(self.tUrl)
         el = foo.CreateElement('click', dAttrs, sUrl)

@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.4  2001/03/26 17:48:01  i10614
+activated filtering of invalid urls
+
 Revision 1.3  2001/03/24 23:26:50  i10614
 fixed bug when creating lots of empty sessions.
 
@@ -135,13 +138,15 @@ class pClickstreamInterface:
     def Shutdown(self):
         """Kind of destructor."""
 
+        pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Shutting down.')
+
         # Mike
-        try:
-            self.Session.CloseFile()
-        except:
+        # try:
+        self.Session.CloseFile()
+        # except:
             # could not close file, probably because Session is not yet created
             # Happens when start of iOwl fails (mostly common "adress in use" - Error)
-            pass
+            # pass
 
 
     def RemoveUrl(self, sUrl):
@@ -230,34 +235,98 @@ class pClickstreamInterface:
         # check if there is an old session active
         if self.Session != None:
             pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Closing old session.')
+
+            # append old session to list of all available sessions
+            if self.Session.GetClicksCount() > 0:
+                self.lSessions.append(self.Session)
+            else:
+                pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Old session is empty.')
+
             # close old session
             try:
                 self.Session.CloseFile()
             except:
                 pass
 
-            if self.Session.GetClicksCount() > 0:
-                # append old session to list of all available sessions
-                self.lSessions.append(self.Session)
-            else:
-                pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Old session is empty.')
-
 
         pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Starting new session.')
 
         # Build new session
-        self.SetFileName()
-        sFileName = os.path.join(self.sClickstreamPathName, \
-                                 self.sClickstreamFileName)
-
         self.Session = cSession.cSession()
+        self.SetFileName()
+        sFileName = os.path.join(self.sClickstreamPathName, self.sClickstreamFileName)
+        self.Session.OpenFile(sFileName)
 
 
     def AddClick(self, click):
         """Add click to internal list."""
-        self.Session.AddClick(click)
+
+        if self.ClickIsValid(click) > 0:
+            # Okay, click is valid. Append to session.
+            self.Session.AddClick(click)
+            self.WasAdded = 1
+        else:
+            # click should not be recorded!
+            pManager.manager.DebugStr('cClickstream '+ __version__ +': Did not add click to session.')
+
+        # reset watchdog anyways
         pManager.manager.ResetWatchdog(self.iWatchdogID)
-        self.WasAdded = 1
+
+
+    def ClickIsValid(self, click):
+        """Verify given click
+
+        examines the click to prevent logging database-driven
+        sites, passwords, cgi-bins etc.
+
+        throw away:
+            - wrong type of file (there are lots of .jpgs passed
+              as text/html...)
+            - username:password in uri
+            - cgi-bins in uri
+
+        If referrer contains a invalid uri, referrer gets deleted.
+
+
+        XXX - modify invalid clicks (remove "user:password@", strip cgi-bins down
+              to plain host/path/...) or just throw them away?
+
+        return true if click should be recorded, false otherwise.
+
+        """
+
+        # tuple of strings that are not allowed in clicks:
+        # ? -> cgi-bins
+        # @ -> user/password
+        tKillUrls = '?', '@'
+
+        # tuple of endings that are not allowed:
+        tKillTypes = '.jpg', '.gif'
+
+        # get click data - lowercase
+        sUrl = string.lower(urlparse.urlunparse(click.GetUrl()))
+        sReferer = string.lower(urlparse.urlunparse(click.GetRefererUrl()))
+
+        # check filetype
+        for sType in tKillTypes:
+            if sUrl.endswith(sType):
+                # ignore click
+                return 0
+
+        # check url
+        for sKiller in tKillUrls:
+            if sKiller in sUrl:
+                # ignore click
+                return 0
+
+        # url is okay. Now check referrer
+        for sKiller in tKillUrls:
+            if sKiller in sReferer:
+                # just delete the referrer
+                click.DeleteReferer()
+
+        # this click is okay
+        return 1
 
 
     def HasItemset(self, itemset):
