@@ -8,13 +8,11 @@ network architecture of iOwl.net guarantees personalized search results, ease of
 maximum of privacy</a>.
 </p>
 <p>
-Some hints for installing iOwl.net on Linux (in German) can be found on our<a href="http://www.iowl.net/wiki/">Wiki</a>.</p>
+Some hints for installing iOwl.net on Linux (in German) can be found on our <a href="http://www.iowl.net/wiki/">Wiki</a>.</p>
 
-<p>
 <a href="http://developer.berlios.de">
-<img src="http://developer.berlios.de/sflogo.php?group_id=0&type=1" width="59" h
-eight="26" border="0" alt="BerliOS Logo" /></a>
-</p>
+<img src="http://developer.berlios.de/sflogo.php?group_id=250&type=1" width="124" height="32" border="0" alt="BerliOS Logo"></a>
+
 <?php
 include '/home/groups/iowl/htdocs/footer.html';
 ?>
