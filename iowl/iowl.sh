@@ -2,41 +2,28 @@
 # iOwl.net - iowl.sh: start|stop|restart|status|kill
 
 ##vars: $PYTHON -> should python2.2 but works also with python
-## 	$ARGUMENTS -> path to iowl.py in $IOWL_DIR
 ##	$PIDOF -> path to pidof normally /bin or /sbin (autodetected)
 ##
-##	 the path to pidof normally autodetected; if it doesn't run   
-##	 check out the path for yourself and uncomment the first PIDOF
-##	 with a # and use your own
+##	 the path to python and pidof normally autodetected; if it doesn't run   
+##	 check out the path for yourself and set below.
 ##
 ##	$IOWL_DIR -> maybe $HOME/iowl/ or something
+## 	$ARGUMENTS -> path to iowl.py in $IOWL_DIR
 ##	$PYTHONPATH -> path to the modules of iOwl.net + original $PYTHONPATH
 ###############################################################################
 
-typeset -x PYTHON
-# PYTHON="python"
-PYTHON="python2.2"
-
-export PYTHON 
-
-ARGUMENTS="pManagement/iowl.py"
+# PYTHON=your_path_to_python # absolute path to python2.2 or python
 
 # PIDOF=path_to_your_pidof # set if not autodetect
 
 IOWL_DIR=`pwd`
 
-# a little test if $IOWL_DIR is true
-
-if [ ! -f $IOWL_DIR/$ARGUMENTS ]; then 
-echo ./$ARGUMENTS "does not exist!"
-echo "Your are not in the right directory to start iOwl.net"
-exit 1;
-fi
+ARGUMENTS="pManagement/iowl.py"
 
 PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
 
 ###############################################################################
-# autodetect pidof
+# autodetect PIDOF, PYTHON
 ###############################################################################
 
 if [ -z $PIDOF ]; then
@@ -56,11 +43,49 @@ if [ -z $PIDOF ]; then
 	if [ -x /usr/sbin/pidof ]; then
 	PIDOF=/usr/sbin/pidof;
 	fi
-
+	
 	if [ -z $PIDOF ]; then
-	echo "There is no pidof executable found on default path. Edit iowl.sh and change PIDOF variable at line 24."
-	exit 1
+		echo "There is no pidof executable found on default path. Edit iowl.sh and change PIDOF variable at line 21."
+		exit 1
 	fi
+fi
+
+if [ -z $PYTHON ]; then
+
+	if [ -x /usr/bin/python ]; then
+	PYTHON=/usr/bin/python;
+	fi
+
+	if [ -x /usr/bin/python2.2 ]; then 
+	PYTHON=/usr/bin/python2.2;
+	fi
+
+	if [ -x /usr/local/bin/python ]; then 
+	PYTHON=/usr/local/bin/python;
+	fi
+
+	if [ -x /usr/local/bin/python2.2 ]; then
+	PYTHON=/usr/local/bin/python2.2;
+	fi
+
+	if [ -z $PYTHON ]; then
+		echo "There is no python2.2 or python executable found on default path. Edit iowl.sh and change PYTHON variable at line 17."
+		exit 1
+	else
+		export PYTHON
+	fi
+fi
+
+###############################################################################
+# some tests
+###############################################################################
+
+# a little test if $IOWL_DIR is true
+
+if [ ! -f $IOWL_DIR/$ARGUMENTS ]; then 
+echo ./$ARGUMENTS "does not exist!"
+echo "Your are not in the right directory to start iOwl.net"
+exit 1;
 fi
 
 ###############################################################################
@@ -71,11 +96,12 @@ network () {
 	proxy=`netstat -n | grep -e 3228 | tail -1 | cut -b -10`
 	iowl=`netstat -n | grep -e 2828 | tail -1 | cut -b -10`
 	# are there open ports?
-	if [ $proxy $iowl ]; then
+	if [ "$proxy" "$iowl" ]; then
 			echo "There are open ports! Wait a short time and to start again."
 			exit 1;
 	fi
 }
+
 ###############################################################################
 # how start|stop|status|kill does work
 ###############################################################################
