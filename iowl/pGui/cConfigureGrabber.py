@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cConfigureGrabber.py,v $
+Revision 1.2  2001/08/10 18:31:48  i10614
+minor cleanups
+
 Revision 1.1  2001/07/15 10:14:15  i10614
 initial commit
 
@@ -65,14 +68,10 @@ class cConfigureGrabber:
 
         """
 
-        # create confighandler
-        # Config = ConfigParser.ConfigParser()
-
         # get configfile from manager
         Config = pManager.manager.GetConfHandle()
-        # read configfile
-        # Config.read('../pManagement/iowl.cfg')
 
+        # generate script
         script ="""
         <script language="JavaScript">
         <!-- Hide from older browsers
@@ -85,13 +84,12 @@ class cConfigureGrabber:
             }
         // -->
         </script>
-"""
+        """
 
         sContent = script
 
         for sect in Config.sections():
-            # pManager.manager.DebugStr('confgrabber '+ __version__ +': reading section "'+sect+'".')
-            #print 'confgrabber '+ __version__ +': reading section "'+sect+'".'
+            pManager.manager.DebugStr('confgrabber '+ __version__ +': reading section "'+sect+'".', 3)
             # start table
             sContent = sContent + '\n<p>\n    <table border>\n'
             # header
@@ -99,8 +97,7 @@ class cConfigureGrabber:
             # iterate over available options for this section
             for opt in Config.options(sect):
                 value = Config.get(sect,opt)
-                # pManager.manager.DebugStr('confgrabber  '+ __version__ +': Option "'+opt+'", value "'+ value)
-
+                pManager.manager.DebugStr('confgrabber  '+ __version__ +': Option "'+opt+'", value "'+ value, 3)
                 # start formular
                 sFormName = sect+opt
                 sForm = """
@@ -115,9 +112,9 @@ class cConfigureGrabber:
                 sContent = sContent + sForm
 
             # end table
-            # sContent = sContent + '\n</table>\n</p>'
             sContent = sContent + '\n    </table>\n</p>'
 
+        # done all sections
         return sContent
 
 
