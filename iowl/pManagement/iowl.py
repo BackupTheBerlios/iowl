@@ -1,9 +1,12 @@
 #!/usr/local/bin/python
 
-__version__ = "$Revision: 1.16 $"
+__version__ = "$Revision: 1.17 $"
 
 """
 $Log: iowl.py,v $
+Revision 1.17  2002/03/02 13:42:47  Saruman
+Fixed bug for win32 (bIsRunning undefined)
+
 Revision 1.16  2002/02/27 14:10:52  Saruman
 Dump message to stderr for "adress already in use" - error.
 
@@ -174,7 +177,7 @@ if sys.platform[:3] == 'win':
 
             elif lparam==win32con.WM_RBUTTONUP:
                 menu = CreatePopupMenu()
-                if (pManager.manager.bIsRunning == 0):
+                if (pManager.manager.IsRunning() == 0):
                     # we are not yet running. Display all options.
                     AppendMenu( menu, win32con.MF_STRING, 1023, "Activate")
                     AppendMenu( menu, win32con.MF_STRING, 1024, "De-Activate")
