@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.15 $"
+__version__ = "$Revision: 1.16 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.16  2001/05/26 11:41:28  i10614
+less debug output
+
 Revision 1.15  2001/05/26 10:03:12  i10614
 added try-except for entry.pl
 
@@ -654,10 +657,10 @@ class cNetManager:
 
         try:
             # get list from url
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': Getting WebOwls.')
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Not enough owls in cache. Getting some more owls from website.')
             sList = urllib.urlopen(self.sOwlUrl).read()
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': WebOwls: '+str(sList))
             lOwls = sList.split(",")
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Got '+str(len(lOwls))+' owls from website.')
             # create socket
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             for owl in lOwls:
@@ -668,7 +671,7 @@ class cNetManager:
                     #pManager.manager.DebugStr('cNetManager '+ __version__ +': Discarding IP %s' %(owl, ))
                     continue
 
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': Added owl.')
+                # pManager.manager.DebugStr('cNetManager '+ __version__ +': Added owl.')
                 self.cOwlManager.AddOwl((owl, self.cNetServer.GetListenPort()))
 
         except:
