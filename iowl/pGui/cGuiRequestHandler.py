@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.7 $"
+__version__ = "$Revision: 1.8 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.8  2001/07/15 10:15:26  i10614
+added commands "showconfig" and "showlog"
+
 Revision 1.7  2001/05/26 16:27:43  i10614
 changed default path
 
@@ -58,6 +61,8 @@ import cSingleRecommendationDataGrabber
 import cGetRecommendationsDataGrabber
 import cBinaryDataGrabber
 import cCommandValidator
+import cLogfileGrabber
+import cConfigureGrabber
 
 
 class cGuiRequestHandler:
@@ -81,6 +86,9 @@ class cGuiRequestHandler:
         self.cSingleRecommendationDataGrabber = cSingleRecommendationDataGrabber.cSingleRecommendationDataGrabber(self)
         self.cGetRecommendationsDataGrabber = cGetRecommendationsDataGrabber.cGetRecommendationsDataGrabber(self)
         self.cBinaryDataGrabber = cBinaryDataGrabber.cBinaryDataGrabber(self)
+        self.cLogfileGrabber = cLogfileGrabber.cLogfileGrabber(self)
+        self.cConfigureGrabber = cConfigureGrabber.cConfigureGrabber(self)
+
         # create cCommandValidator
         self.cCommandValidator = cCommandValidator.cCommandValidator()
 
@@ -166,6 +174,12 @@ class cGuiRequestHandler:
             # return history page
             # --> return default page
             return self.cDefaultDataGrabber.GetHtml(dParams)
+        elif sCommand == 'showlog':
+            # return logfile page
+            return self.cLogfileGrabber.GetHtml(dParams)
+        elif sCommand == 'showconfig':
+            # return configuration page
+            return self.cConfigureGrabber.GetHtml(dParams)
         elif sCommand == 'singlerecommendation':
             # return single recommendation for url stored in dParams
             return self.cSingleRecommendationDataGrabber.GetHtml(dParams)

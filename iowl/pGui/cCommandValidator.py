@@ -1,9 +1,12 @@
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cCommandValidator.py,v $
-Revision 1.1  2001/03/24 19:22:54  i10614
-Initial revision
+Revision 1.2  2001/07/15 10:15:26  i10614
+added commands "showconfig" and "showlog"
+
+Revision 1.1.1.1  2001/03/24 19:22:54  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.5  2001/02/22 20:41:49  mbauer
 revamped gui :-)
@@ -69,6 +72,19 @@ class cCommandValidator:
                 dParams['message'] = 'command showabout does not accept any parameter!'
                 return 'error', dParams
             return 'showabout', dParams
+
+        if dQuery['action'][0] == 'showconfig':
+            if len(dQuery.keys()) != 1:
+                dParams['message'] = 'command showconfig does not accept any parameter!'
+                return 'error', dParams
+            return 'showconfig', dParams
+
+        if dQuery['action'][0] == 'showlog':
+            if not ((len(dQuery.keys()) == 2) and ('inumlines' in dQuery.keys())):
+                dParams['message'] = 'command showlog needs one parameter (inumlines)!'
+                return 'error', dParams
+            dParams['inumlines'] = dQuery['inumlines'][0]
+            return 'showlog', dParams
 
         if dQuery['action'][0] == 'singlerecommendation':
             if not (len(dQuery.keys()) == 2) and ('sUrl' in dQuery.keys()):
