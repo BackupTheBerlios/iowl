@@ -1,10 +1,13 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cFile.py,v $
-Revision 1.1  2001/03/24 19:23:04  i10614
-Initial revision
+Revision 1.2  2001/03/27 18:26:34  i10614
+added GetFileName()
+
+Revision 1.1.1.1  2001/03/24 19:23:04  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.20  2001/03/17 15:19:36  mbauer
 removed lots of debug output
@@ -66,18 +69,19 @@ import sys
 import string
 import xml.dom.minidom
 import cDOM
+import time
 #XXXimport pManager
 
 
 class cFile(cDOM.cDOM):
 
     """Kind of database in this class.
-    
+
     This class contains the functions for handling xml files on disk
     and in memory. It manages the document object model (dom). You can
     load/save the dom from/to disk, append and delete elements and
     search through the dom.
-    
+
     """
 
     def __init__(self, sRootElementName, sVersion):
@@ -93,6 +97,11 @@ class cFile(cDOM.cDOM):
 
         self.sFileName = ''
         #self.pm = pm
+
+
+    def GetFileName(self):
+        """return string containing filename"""
+        return self.sFileName
 
 
     def Open(self, sFileName):
@@ -131,10 +140,6 @@ class cFile(cDOM.cDOM):
         file.write(self.ToXML())
         file.close()
 
-        # Mike - removed debug output
-        #
-        #self.Print()
-        
 
     def Print(self):
         """Output elements of dom in xml."""
@@ -145,8 +150,7 @@ class cFile(cDOM.cDOM):
     def CleanElements(self):
         """Remove all elements despite root element."""
         # create root element
-        el = self.CreateElement(self.sRootElementName, \
-                                {'version' : self.sVersion}, '')
+        el = self.CreateElement(self.sRootElementName, {'version' : self.sVersion}, '')
 
         if (self.Document.documentElement):
             self.Document.removeChild(self.Document.documentElement)
@@ -162,6 +166,7 @@ class cFile(cDOM.cDOM):
 def test():
     """Built-in test method for this class."""
 
+    import time
     # build small xml file, save to disk, read from disk...
     file = cFile('demo', '0.1')
 
@@ -175,6 +180,8 @@ def test():
     #elcont = file.CreateElementContainer('fasel', {}, ellist)
 
     file.AddElement(el) #(elcont)
+
+    file.Print()
 
     file.Save()
 
