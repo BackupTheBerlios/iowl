@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.10 $"
+__version__ = "$Revision: 1.11 $"
 
 """
 $Log: pRecommendationInterface.py,v $
+Revision 1.11  2002/03/04 21:59:57  aharth
+added recommendations count
+
 Revision 1.10  2002/02/18 13:39:42  Saruman
 Made waittime for recommendations configurable.
 Setting default waittime to 15 seconds instead of 5.
@@ -103,6 +106,10 @@ class pRecommendationInterface:
         self.dRules = {}
         # time in seconds to wait for incoming recommendations
         self.iWaitTime = 10
+        # number of answered recommendations
+        self.iNumAnsweredRecommendations = 0
+        # number of received recommendations
+        self.iNumReceivedRecommendations = 0
 
 
     def Start(self):
@@ -210,6 +217,7 @@ class pRecommendationInterface:
             # Look if i received answers from other owls
             if len(self.dRules[sId]) > 0:
                 lClicks = self.RecBuilder.BuildRecommendation(self.dRules[sId])
+                self.iNumReceivedRecommendations = self.iNumReceivedRecommendations + 1
             else:
                 # request is there but got no answers
                 pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Dont have any answers for request id: '+str(sId), 4)
@@ -252,9 +260,19 @@ class pRecommendationInterface:
             pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Now sending answer to network. Id: '+str(sId), 4)
             pNetIntf.SendAnswer(answerEl, sId)
             pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Finished sending answer to network. Id: '+str(sId), 4)
+            self.iNumAnsweredRecommendations = self.iNumAnsweredRecommendations + 1
         else:
             pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Dont have answers for request. Id: '+str(sId), 4)
 
+
+    def GetNumAnsweredRecommendations(self):
+        """ Return number of recommendations. """
+        return self.iNumAnsweredRecommendations
+
+
+    def GetNumReceivedRecommendations(self):
+        """ Return number of recommendations. """
+        return self.iNumReceivedRecommendations
 
 
     def SetAnswer(self, answerEl, sId):

@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: cStatsDataGrabber.py,v $
+Revision 1.6  2002/03/04 21:58:36  aharth
+added recommendations count
+
 Revision 1.5  2002/03/02 14:31:59  Saruman
 minor mods for network statistics
 
@@ -55,6 +58,10 @@ class cStatsDataGrabber:
             # get active page
             sPart1 = self.cGui.GetActivePage()
 
+        rni = pManager.manager.GetRecommendationInterface()
+        iReceivedRecommendations = rni.GetNumReceivedRecommendations()
+        iAnsweredRecommendations = rni.GetNumAnsweredRecommendations()
+
         # get NetworkInterface
         pni = pManager.manager.GetNetworkInterface()
 
@@ -66,9 +73,6 @@ class cStatsDataGrabber:
 
         # get number of pongs received
         iNumPongs = pni.GetNumPongsReceived()
-
-        # get number of Answers received
-        iNumAnswers = pni.GetNumAnswersReceived()
 
         # get dictionary with current routing table
         dRoutingTable = pni.GetRoutingTable()
@@ -85,8 +89,7 @@ class cStatsDataGrabber:
         sContent = sContent + "  Currently active routing entries: "+str(iNumActiveRoutings)+"\n</p>\n"
         sContent = sContent + "<p>\n"
         sContent = sContent + "  Total number of pongs received for myself: "+str(iNumPongs)+"\n</p>\n"
-        sContent = sContent + "<p>\n"
-        sContent = sContent + "  Total number of recommendations received for myself: "+str(iNumAnswers)+"\n</p>\n"
+
         sContent = sContent + "\n<h3>Routing Table</h3>\n"
 
         # build table containing routing info
@@ -114,7 +117,8 @@ class cStatsDataGrabber:
 
         sContent = sContent + '<h2>Recommendation Statistics</h2>\n'
         sContent = sContent + "<p>\n"
-        sContent = sContent + "Still todo\n</p>"
+        sContent = sContent + "Number of answered recommendations: " + str(iAnsweredRecommendations) + "\n</p>"
+        sContent = sContent + "Number of received recommendations: " + str(iReceivedRecommendations) + "\n</p>"
 
         # get end part
         sPart2 = self.cGui.GetEndPage()
