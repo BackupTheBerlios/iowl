@@ -1,8 +1,12 @@
 
-__version__ = "$Revision: 1.30 $"
+__version__ = "$Revision: 1.31 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.31  2002/02/14 08:30:35  Saruman
+Removed smart ip detection code.
+Some cleanups
+
 Revision 1.30  2002/02/13 10:46:22  Saruman
 introduced counters and functions for gathering network stats.
 
@@ -171,9 +175,6 @@ class cNetManager:
         # use webowls
         self.bGetWebOwls = 0
 
-        # use smart IP detection
-        self.bSmartIP = 1
-
         # minimun number of owls
         self.iMinOwls = 15
 
@@ -202,8 +203,6 @@ class cNetManager:
                             after which a PING is generated
         maxowlstokeep   -- maximum number of owls to keep in list
         maxanswers      -- maximum number of answers allowed for request
-        smartipdetection-- 1 -> try to connect socket to get own ip
-                           0 -> just use gethostbyname()
 
         """
 
@@ -234,8 +233,6 @@ class cNetManager:
             self.cOwlManager.SetRequestLifeTime(int(sValue))
         elif sOption == 'getwebowls':
             self.bGetWebOwls = int(sValue)
-        elif sOption == 'smartipdetection':
-            self.bSmart = int(sValue)
         else:
             pManager.manager.DebugStr('cNetManager '+ __version__ +': Warning: unknown option %s' %(sOption, ), 0)
 
@@ -302,9 +299,6 @@ class cNetManager:
         # do i need to look up more owls at website?
         if ((self.cOwlManager.GetNumKnownOwls() < self.iMinOwls) and (self.bGetWebOwls == 1)):
             thread.start_new_thread(self.GetWebOwls, ())
-
-        # determine own IP adress
-        # pManager.manager.SetOwnIP(self.GetOwnIP())
 
         # start server
         self.cNetServer.StartListen()
@@ -614,6 +608,11 @@ class cNetManager:
         # log tick
         pManager.manager.DebugStr('cNetManager '+ __version__ +': No PONG received for '+str(self.iInterval)+' seconds. Generating PING.', 2)
 
+        # if i know no owl, try to add entryowl
+        if (self.cOwlManager.GetNumKnownOwls() == 0):
+            if self.EntryIP != '':
+                self.cOwlManager.AddOwl((self.EntryIP, self.iEntryPort))
+
         # Generate Ping
         ping = self.GeneratePing()
         self.cOwlManager.Distribute(ping)
@@ -627,8 +626,6 @@ class cNetManager:
         # set unique id
         cPing.SetID(pManager.manager.GetUniqueNumber())
         # set originator
-        # CHANGE mb
-        # cPing.SetOriginator(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
         cPing.SetOriginatorPort(self.cNetServer.GetListenPort())
         # set iOwl-Version
         cPing.SetOwlVersion(pManager.manager.GetVersion())
@@ -648,16 +645,12 @@ class cNetManager:
         # set id from ping
         cPong.SetID(cPing.GetID())
         # set originator
-        # CHANGE mb
-        # cPong.SetOriginator(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
         cPong.SetOriginatorPort(self.cNetServer.GetListenPort())
         # set iOwl-Version
         cPong.SetOwlVersion(pManager.manager.GetVersion())
         # set network protocol version
         cPong.SetProtocolVersion(self.sProtocol)
         # set answerer
-        # CHANGE mb
-        # cPong.SetAnswerer(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
         cPong.SetAnswererPort(self.cNetServer.GetListenPort())
 
         return cPong
@@ -677,8 +670,6 @@ class cNetManager:
         # set unique id
         cRequest.SetID(pManager.manager.GetUniqueNumber())
         # set originator
-        # CHANGE mb
-        # cRequest.SetOriginator(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
         cRequest.SetOriginatorPort(self.cNetServer.GetListenPort())
         # set iOwl-Version
         cRequest.SetOwlVersion(pManager.manager.GetVersion())
@@ -708,8 +699,6 @@ class cNetManager:
         # set id
         cAnswer.SetID(id)
         # set originator
-        # CHANGE mb
-        # cAnswer.SetOriginator(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
         cAnswer.SetOriginatorPort(self.cNetServer.GetListenPort())
         # set iOwl-Version
         cAnswer.SetOwlVersion(pManager.manager.GetVersion())
@@ -730,50 +719,6 @@ class cNetManager:
         self.cOwlManager.AddOwl(cPong.GetAnswerer())
 
 
-    def GetOwnIP(self):
-        """Determine own IP
-
-        Try to connect a socket to www.iowl.net and call socket.getsockname() to
-        get ip for the correct interface. Important if i have more than one network interfaces.
-
-        If socket-connect fails, try fallback with 'gethostbyname(gethostname())'
-
-        return  -- string containing own IP
-
-        """
-
-        # Own ip adress
-        sOwnIP = ''
-
-        if self.bSmartIP == 1:
-            # create socket
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            try:
-                # connect to entryOwl
-                s.connect(('www.iowl.net', 80))
-                # get hostname and port
-                sOwnIP, iPort = s.getsockname()
-                # close socket
-                s.close()
-            except:
-                # socket-connect failed :-(
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not connect socket to determine own IP. Reverting to "gethostbyname()"...', 1)
-                try:
-                    sOwnIP = socket.gethostbyname(socket.gethostname())
-                except:
-                    pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not determine own IP!', 0)
-                    raise socket.error
-        else:
-            # dont use smart IP detection
-            try:
-                sOwnIP = socket.gethostbyname(socket.gethostname())
-            except:
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not determine own IP!', 0)
-                raise socket.error
-
-        return sOwnIP
-
-
 
     def GetWebOwls(self):
         """Connect to url and get a csv of owls
@@ -790,10 +735,10 @@ class cNetManager:
             sList = urllib.urlopen(self.sOwlUrl).read()
             lOwls = sList.split(",")
             pManager.manager.DebugStr('cNetManager '+ __version__ +': Got '+str(len(lOwls))+' IPs from website. Now validating...', 1)
-            # create socket
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             for owl in lOwls:
                 try:
+                    # create socket
+                    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     # if connection to iOwl-port fails, owl is invalid
                     s.connect((owl, int(self.cNetServer.GetListenPort())))
                     s.close()
