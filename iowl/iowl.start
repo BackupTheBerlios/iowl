@@ -8,6 +8,8 @@ PYTHON="python2.2"
 # arguments:
 ARGUMENTS="pManagement/iowl.py"
 
+IOWL_DIR=`pwd`
+
 # set Pythonpath so python can find all our modules and keep original $PYTHONPATH.
 PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
 
