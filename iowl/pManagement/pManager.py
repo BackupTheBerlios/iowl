@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.15 $"
+__version__ = "$Revision: 1.16 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.16  2001/08/07 18:49:45  i10614
+implemented real debuglevels
+
 Revision 1.15  2001/07/19 19:45:15  i10614
 implemented framework for real debuglevels
 
@@ -179,7 +182,7 @@ class cManager:
 
         # get basedir
         self.sBaseDir=os.getcwd()
-        self.DebugStr('pManager '+ __version__ +': Basedir is "'+self.sBaseDir+'".')
+        self.DebugStr('pManager '+ __version__ +': Basedir is "'+self.sBaseDir+'".', 2)
 
 
     def DebugStr(self, sDebugInfo, iLevel=0):
@@ -244,7 +247,7 @@ class cManager:
         self.SetConfig()
 
         # Log start of iOwl
-        self.DebugStr('pManager '+ __version__ +': Starting iOwl...')
+        self.DebugStr('pManager '+ __version__ +': Starting iOwl...', 0)
 
         # Start all Packages
         self.StartPackages()
@@ -287,7 +290,7 @@ class cManager:
 
         """
 
-        self.DebugStr('pManager '+ __version__ +': Info -- parsing config file.')
+        self.DebugStr('pManager '+ __version__ +': Info -- parsing config file.', 0)
 
         # check for existance of configfile
         if not os.access(self.sConfigFileName,os.F_OK):
@@ -307,17 +310,18 @@ class cManager:
         for sect in self.Config.sections():
             # Look if this section is valid
             if sect in self.dPackages.keys():
-                # self.DebugStr('pManager '+ __version__ +': Setting Options for package "'+sect+'".')
+                self.DebugStr('pManager '+ __version__ +': Setting Options for package "'+sect+'".', 2)
                 # iterate over available options for this section
                 for opt in self.Config.options(sect):
                     # call SetParam() for each option.
-                    # self.DebugStr('pManager '+ __version__ +': Setting Option "'+opt+'" with value "'+ self.Config.get(sect,opt)+'".')
-                    self.dPackages[sect].SetParam(opt, self.Config.get(sect,opt))
+                    value = self.Config.get(sect,opt)
+                    self.DebugStr('pManager '+ __version__ +': Setting Option "'+opt+'" with value "'+ value +'".', 2)
+                    self.dPackages[sect].SetParam(opt, value)
             else:
                 # This is an unknown section!
-                self.DebugStr('pManager '+ __version__ +': Warning: Skipping unknown section "'+sect+'" in configfile "'+self.sConfigFileName+'"')
+                self.DebugStr('pManager '+ __version__ +': Warning: Skipping unknown section "'+sect+'" in configfile "'+self.sConfigFileName+'"', 0)
 
-        self.DebugStr('pManager '+ __version__ +': Info -- finished parsing config file.')
+        self.DebugStr('pManager '+ __version__ +': Info -- finished parsing config file.', 0)
 
 
     def GetConfHandle(self):
@@ -331,7 +335,8 @@ class cManager:
         Available parameters:
 
         logfilename -- complete path to logfile
-        debuglevel -- Debug Level ("none", "console", "logfile", "both")
+        debugmode -- "none", "console", "logfile", "both"
+        debuglevel -- 0 to 5
 
         """
 
@@ -354,9 +359,12 @@ class cManager:
         elif sOption == 'debugmode':
             self.sDebugMode = sValue
 
+        elif sOption == 'debuglevel':
+            self.iDebugLevel = int(sValue)
+
         else:
             # unknown option!
-            self.DebugStr('pManager '+ __version__ +': Warning: Trying to set unknown parameter "'+sOption+'".')
+            self.DebugStr('pManager '+ __version__ +': Warning: Trying to set unknown parameter "'+sOption+'".', 0)
 
 
     def UpdateConfig(self, sSection, sOption, sValue):
@@ -374,7 +382,7 @@ class cManager:
 
         # is section valid?
         if sSection in self.dPackages.keys():
-            # self.DebugStr('pManager '+ __version__ +': Setting Options for package "'+sSection+'".')
+            self.DebugStr('pManager '+ __version__ +': Setting Options for package "'+sSection+'".', 2)
             # set new parameter
             try:
                 self.dPackages[sSection].SetParam(sOption, sValue)
@@ -383,6 +391,7 @@ class cManager:
                 return 0
 
             # now save to configfile to make changes permanent
+            self.DebugStr('pManager '+ __version__ +': Setting %s, %s, %s.' %(sSection, sOption, sValue), 1)
             self.SaveParam(sSection, sOption, sValue)
             # okay, return
             return 1
@@ -401,7 +410,7 @@ class cManager:
 
         """
 
-        self.DebugStr('pManager '+ __version__ +': Updating Configfile ['+sSection+','+sOption+','+sValue+'].')
+        self.DebugStr('pManager '+ __version__ +': Updating Configfile ['+sSection+','+sOption+','+sValue+'].', 2)
 
         # update ConfigParser
         self.Config.set(sSection, sOption, sValue)
@@ -441,7 +450,7 @@ class cManager:
         self.m_bIsRunning = 0
 
         # Focus returned. iOwl is shut down.
-        self.DebugStr('pManager '+ __version__ +': iOwl shut down. Now exiting.')
+        self.DebugStr('pManager '+ __version__ +': iOwl shut down. Now exiting.', 0)
 
 
     # Interface provider functions:
@@ -590,7 +599,7 @@ class cManager:
 
     def SetOwnIP(self, ownIP):
         """Set Own IP"""
-        self.DebugStr('pManager '+ __version__ +': Setting own IP to ' + str(ownIP)+ '.')
+        self.DebugStr('pManager '+ __version__ +': Setting own IP to ' + str(ownIP)+ '.', 1)
         self.sOwnIP = ownIP
 
 
