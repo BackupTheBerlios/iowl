@@ -163,7 +163,7 @@ case "$1" in
 	;;
    restart)
 	iowl_stop	
-	sleep 5
+	sleep 2
 	iowl_start	
 	;;
    kill)
