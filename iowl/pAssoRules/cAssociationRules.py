@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.8 $"
+__version__ = "$Revision: 1.9 $"
 
 """
 $Log: cAssociationRules.py,v $
+Revision 1.9  2002/09/11 10:39:13  aharth
+removed old code
+
 Revision 1.8  2002/03/04 22:05:18  aharth
 added recommendations count
 
@@ -241,14 +244,6 @@ class cAssociationRules:
 
 
         #print 'Generate Rules'
-
-        #urltuple = urlparse.urlparse('http://www.iowl.net/')
-        #urltuple2 = urlparse.urlparse('http://slashdot.org')
-
-
-        #rule.SetAntecedents([urltuple,])
-        #rule.SetConfidence(10)
-        #rule.SetSupport(10)
 
 
     def Join(self, itemsets):
