@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.14 $"
+__version__ = "$Revision: 1.15 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.15  2001/05/26 10:03:12  i10614
+added try-except for entry.pl
+
 Revision 1.14  2001/05/25 18:47:09  i10614
 bugfix for downloading in chunks
 
@@ -649,27 +652,27 @@ class cNetManager:
 
         """
 
-        # try:
-        # get list from url
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': Getting WebOwls.')
-        sList = urllib.urlopen(self.sOwlUrl).read()
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': WebOwls: '+str(sList))
-        lOwls = sList.split(",")
-        # create socket
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        for owl in lOwls:
-            try:
-                s.connect((owl, int(self.cNetServer.GetListenPort())))
-                s.close()
-            except:
-                #pManager.manager.DebugStr('cNetManager '+ __version__ +': Discarding IP %s' %(owl, ))
-                continue
+        try:
+            # get list from url
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Getting WebOwls.')
+            sList = urllib.urlopen(self.sOwlUrl).read()
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': WebOwls: '+str(sList))
+            lOwls = sList.split(",")
+            # create socket
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            for owl in lOwls:
+                try:
+                    s.connect((owl, int(self.cNetServer.GetListenPort())))
+                    s.close()
+                except:
+                    #pManager.manager.DebugStr('cNetManager '+ __version__ +': Discarding IP %s' %(owl, ))
+                    continue
 
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': Added owl.')
-            self.cOwlManager.AddOwl((owl, self.cNetServer.GetListenPort()))
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Added owl.')
+                self.cOwlManager.AddOwl((owl, self.cNetServer.GetListenPort()))
 
-        #except:
-        #    pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not connect to website.')
+        except:
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not connect to website.')
 
 
 
