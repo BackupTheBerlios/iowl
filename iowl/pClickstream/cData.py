@@ -1,8 +1,13 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cData.py,v $
+Revision 1.3  2001/03/27 18:22:12  i10614
+Changed Session handling. A new session is created inside AddClick(). Whith
+each new Session a new watchdog is registered.
+The Watchdog now calls CloseSession() and gets discarded.
+
 Revision 1.2  2001/03/24 19:27:41  i10614
 cvs does not like empty dirs while importing. Trying to add manually.
 
@@ -53,6 +58,9 @@ class cData:
         self.sFileName = ''
         self.file = cFile.cFile(sRootElementName, sVersion)
 
+
+    def GetFileName(self):
+        return self.file.GetFileName()
 
     def OpenFile(self, sFileName):
         """Open file.

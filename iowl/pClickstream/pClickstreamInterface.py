@@ -1,8 +1,13 @@
 
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.5  2001/03/27 18:22:12  i10614
+Changed Session handling. A new session is created inside AddClick(). Whith
+each new Session a new watchdog is registered.
+The Watchdog now calls CloseSession() and gets discarded.
+
 Revision 1.4  2001/03/26 17:48:01  i10614
 activated filtering of invalid urls
 
@@ -113,13 +118,16 @@ class pClickstreamInterface:
         # read old sessions
         self.OpenSessions()
 
+        # Mike - changed session management, watchdog registering now happens in StartNewSession(),
+        #        StartNewSession() is called from within AddClick()
+
         # start current session
-        self.StartNewSession()
+        # self.StartNewSession()
 
         # register watchdog
-        if self.iWatchdogID == 0:
-            self.iWatchdogID = pManager.manager.RegisterWatchdog(\
-                self.StartNewSession, self.iRestart)
+        # if self.iWatchdogID == 0:
+        #     self.iWatchdogID = pManager.manager.RegisterWatchdog(\
+        #         self.StartNewSession, self.iRestart)
 
 
     def SetParam(self, sParameter, sValue):
@@ -141,12 +149,12 @@ class pClickstreamInterface:
         pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Shutting down.')
 
         # Mike
-        # try:
-        self.Session.CloseFile()
-        # except:
+        try:
+            self.Session.CloseFile()
+        except:
             # could not close file, probably because Session is not yet created
             # Happens when start of iOwl fails (mostly common "adress in use" - Error)
-            # pass
+            pass
 
 
     def RemoveUrl(self, sUrl):
@@ -173,7 +181,8 @@ class pClickstreamInterface:
         # self.lSessions stores only the last sessions
         # current session is in self.Session
         list = self.lSessions[:]
-        list.append(self.Session)
+        if self.Session != None:
+            list.append(self.Session)
         list.reverse()
         return list
 
@@ -229,27 +238,54 @@ class pClickstreamInterface:
                         pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Could not rename file "'+str(fullname)+'". Please move/delete it yourself.')
 
 
+    def CloseSession(self):
+        """Close current session.
+
+        Called by watchdog when session is over.
+
+        XXX - Re-calculate assorules when a new session is finished!
+
+        """
+
+        # stop watchdog, he has done its duty.
+        pManager.manager.StopWatchdog(self.iWatchdogID)
+        self.iWatchdogID = 0
+
+        if self.Session == None:
+            # no active session
+            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning: Trying to close non-existant session.')
+            return
+
+
+        pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Closing current session.')
+        # append old session to list of all available sessions
+        if self.Session.GetClicksCount() > 0:
+            self.lSessions.append(self.Session)
+        else:
+            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning: Session is empty.')
+
+        # close old session
+        try:
+            self.Session.CloseFile()
+        except:
+            pass
+
+        # clear current session
+        self.Session = None
+
+
+
     def StartNewSession(self):
-        """Starting new session."""
+        """Starting new session.
+
+        """
+
+        pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Starting new session.')
 
         # check if there is an old session active
         if self.Session != None:
-            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Closing old session.')
-
-            # append old session to list of all available sessions
-            if self.Session.GetClicksCount() > 0:
-                self.lSessions.append(self.Session)
-            else:
-                pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Old session is empty.')
-
-            # close old session
-            try:
-                self.Session.CloseFile()
-            except:
-                pass
-
-
-        pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Starting new session.')
+            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Error! Trying to start new session while there already is one.')
+            return
 
         # Build new session
         self.Session = cSession.cSession()
@@ -257,9 +293,24 @@ class pClickstreamInterface:
         sFileName = os.path.join(self.sClickstreamPathName, self.sClickstreamFileName)
         self.Session.OpenFile(sFileName)
 
+        # Register watchdog
+        if self.iWatchdogID == 0:
+            self.iWatchdogID = pManager.manager.RegisterWatchdog(self.CloseSession, self.iRestart)
+        else:
+            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Error! Trying to register watchdog while there already is one.')
+
+
 
     def AddClick(self, click):
-        """Add click to internal list."""
+        """Add click to internal list.
+
+        if there is no session active, start a new one.
+
+        """
+
+        if self.Session == None:
+            # First start a session
+            self.StartNewSession()
 
         if self.ClickIsValid(click) > 0:
             # Okay, click is valid. Append to session.
@@ -269,7 +320,7 @@ class pClickstreamInterface:
             # click should not be recorded!
             pManager.manager.DebugStr('cClickstream '+ __version__ +': Did not add click to session.')
 
-        # reset watchdog anyways
+        # reset watchdog regardless wether click is recorded or not
         pManager.manager.ResetWatchdog(self.iWatchdogID)
 
 

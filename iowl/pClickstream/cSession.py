@@ -1,8 +1,13 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cSession.py,v $
+Revision 1.4  2001/03/27 18:22:12  i10614
+Changed Session handling. A new session is created inside AddClick(). Whith
+each new Session a new watchdog is registered.
+The Watchdog now calls CloseSession() and gets discarded.
+
 Revision 1.3  2001/03/26 17:48:01  i10614
 activated filtering of invalid urls
 
@@ -53,7 +58,9 @@ import string
 import cFile
 import cData
 import cClick
-
+import time
+import os
+import stat
 
 class cSession(cData.cData):
 
@@ -67,7 +74,7 @@ class cSession(cData.cData):
 
     Clicks are stored in a dictionary. Key is an url in tuple
     (urlparse)-notation
-    
+
     Data is also a tuple of a tuple:
     (content_type, status, timestamp, title, referer)
     if one url is browsed twice during a session a new tuple is
@@ -79,6 +86,20 @@ class cSession(cData.cData):
         """Constructor."""
         # constructor from super class
         cData.cData.__init__(self, 'session', '0.1')
+
+        # remember creation time
+        self.iCreationTime = time.time()
+
+    def GetCreationTime(self):
+        """returns creationtime of underlying file"""
+
+        try:
+            time = os.stat(self.GetFileName())[stat.ST_MTIME]
+        except:
+            time = self.iCreationTime
+
+        return time
+
 
 
     def AddClick(self, click):
@@ -121,7 +142,7 @@ class cSession(cData.cData):
 
     def RemoveUrl(self, tUrl):
         """Delete URL from dict.
-        
+
         tUrl -- url to be deleted in urlparse notation
 
         XXX referer is not deleted! url can survive in referer!
@@ -205,14 +226,18 @@ def test():
 
     click2.SetClick(urltuple2, 'text/html', '200', '21312321', 'das ist noch eine html seite', urltuple2)
 
+    sess.Print()
     sess.AddClick(click)
-    sess.AddClick(click2)
+    # sess.AddClick(click2)
 
     sess.Print()
+    sess.file.Print()
     #sess.DeleteURL(urltuple2)
 
     sess.CloseFile()
+    sess.file.Print()
 
+    return
     sess2 = cSession()
 
     sess2.OpenFile('/tmp/foo.xml')
@@ -221,10 +246,17 @@ def test():
     sess2.file.Print()
     sess2.CloseFile()
 
+def test2():
+    sess = cSession()
+    print sess.GetFileName()
+    sess.OpenFile('/tmp/foo.xml')
+    print sess.GetFileName()
+    print time.ctime(sess.GetCreationTime())
 
 if __name__ == '__main__':
     #try:
-    test()
+    #test()
+    test2()
     #except:
     #import sys
     #print "debug:", sys.exc_type, sys.exc_value
