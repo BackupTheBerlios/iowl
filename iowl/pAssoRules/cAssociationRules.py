@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cAssociationRules.py,v $
+Revision 1.5  2002/01/24 14:32:59  aharth
+Computation of rules should be much faster
+
 Revision 1.4  2001/08/10 18:30:11  i10614
 added debuglevel to all messages.
 
@@ -42,6 +45,7 @@ import urlparse
 import cSession
 import pManager
 import cRule
+import time
 
 
 class cAssociationRules:
@@ -98,6 +102,8 @@ class cAssociationRules:
         oneItemsets = self.ComputeCandidateOneItemsets(lSessions)
         #print '*************One Itemsets'
         #oneItemsets.Print()
+        oneItemsets.OpenFile('/tmp/candidate1_'+str(time.time())+'.xml')
+        oneItemsets.CloseFile()
         #print '*************'
         # store large itemsets here
         largeItemsets = []
@@ -106,8 +112,13 @@ class cAssociationRules:
 
         # prune itemsets
         # XXX is that a good value??
-        # supportThreshold = 1.5 #.005*iOverallCount
-        supportThreshold = .005*iOverallCount
+        supportThreshold = iOverallCount/50
+        #supportThreshold = .005*iOverallCount
+        if (supportThreshold < 2):
+            supportThreshold = 2
+        if (supportThreshold > 10):
+            supportThreshold = 10
+        pManager.manager.DebugStr('pAssociationRules '+ __version__ +': Support threshold '+str(iOverallCount) + '/50 = '+str(supportThreshold)+'.', 2)
         oneItemsets.Prune(supportThreshold)
 
         # Mike - removed debug output
@@ -126,21 +137,24 @@ class cAssociationRules:
         k = 2
 
         while 1:
-            candidate = self.GenerateCandidates(largeItemsets[k-1])
+            candidateItemset = self.GenerateCandidates(largeItemsets[k-1])
 
-            if candidate == None:
+            if candidateItemset == None:
                 break
 
-            self.CountOccurrence(lSessions, candidate)
+            self.CountOccurrence(lSessions, candidateItemset)
             # prune itemsets
-            candidate.Prune(supportThreshold)
+            candidateItemset.Prune(supportThreshold)
 
             # Mike - removed debug output
             pManager.manager.DebugStr('pAssociationRules '+ __version__ +': Computed Candidate '+str(k)+'.', 2)
             # candidate.Print()
             # print '**************'
 
-            largeItemsets.append(candidate)
+            candidateItemset.OpenFile('/tmp/candidate'+str(k)+'_'+str(time.time())+'.xml')
+            candidateItemset.CloseFile()
+
+            largeItemsets.append(candidateItemset)
 
             k = k+1
 

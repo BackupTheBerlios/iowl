@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.19 $"
+__version__ = "$Revision: 1.20 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.20  2002/01/24 14:33:00  aharth
+Computation of rules should be much faster
+
 Revision 1.19  2002/01/24 09:41:52  Saruman
 adapted to new directory-structure
 
@@ -220,8 +223,19 @@ class pClickstreamInterface:
             # XXX - Check this, we are deleting list items while iterating the list!
             if (session.GetClicksCount() == 0):
                 session.CloseFile()
-                iIndex = self.lSessions.index(session)
-                del self.lSessions[iIndex]
+                iIndex = lSessions.index(session)
+                # check whether it's current session
+                if lSessions[iIndex] == self.Session:
+                    del self.Session
+                    self.Session = None
+                else:
+                    del self.lSessions[iIndex]
+                #lRemoveSessions.append(iIndex)
+            #    except:
+             #       self.Sesssion
+
+#        for iIndex in lRemoveSessions:
+ #           del self.lSessions[iIndex]
 
 
     def GetSessions(self):

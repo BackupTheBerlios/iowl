@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.7 $"
+__version__ = "$Revision: 1.8 $"
 
 """
 $Log: pAssocRulesInterface.py,v $
+Revision 1.8  2002/01/24 14:32:59  aharth
+Computation of rules should be much faster
+
 Revision 1.7  2001/08/10 18:30:11  i10614
 added debuglevel to all messages.
 
@@ -78,9 +81,7 @@ class pAssocRulesInterface:
 
     def Shutdown(self):
         """Kind of destructor."""
-
         pManager.manager.DebugStr('pAssocRulesInterface '+ __version__ +': Shutting down.', 1)
-        pass
 
 
     def ComputeRules(self, lSessions, iCount):
@@ -90,11 +91,13 @@ class pAssocRulesInterface:
         iCount -- overall count of urls in clickstream
 
         """
+        self.AssocRules.ComputeRules(lSessions, iCount)
         try:
-            self.AssocRules.ComputeRules(lSessions, iCount)
+            pass
         except:
             # unknown error. log and forget.
             # get exception
+            print 'AssocRules Exception'
             eType, eValue, eTraceback = sys.exc_info()
 
             # build stacktrace string
