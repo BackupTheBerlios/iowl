@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.23 $"
+__version__ = "$Revision: 1.24 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.24  2002/02/25 16:46:43  Saruman
+modified exit code(s).
+
 Revision 1.23  2002/02/22 14:48:33  Saruman
 added thread-id to logmessages.
 
@@ -543,10 +546,6 @@ class cManager:
             self.LogFileHandle.close()
         except:
             pass
-
-        # exit
-        # os._exit() should kill all running threads
-        os._exit(0)
 
 
     def GetVersion(self):

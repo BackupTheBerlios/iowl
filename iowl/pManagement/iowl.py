@@ -1,9 +1,12 @@
 #!/usr/local/bin/python
 
-__version__ = "$Revision: 1.13 $"
+__version__ = "$Revision: 1.14 $"
 
 """
 $Log: iowl.py,v $
+Revision 1.14  2002/02/25 16:46:43  Saruman
+modified exit code(s).
+
 Revision 1.13  2002/02/19 17:21:28  Saruman
 installed handler for SIGUSR1 on unix-systems.
 iOwl should now be able to be shut down with a kill -SIGUSR1.
@@ -207,7 +210,7 @@ if sys.platform[:3] == 'win':
                 # Open Browser pointing to "http://my.iowl.net"
                 ShellExecute(0, "open", "http://my.iowl.net", None, None, win32con.SW_SHOWNORMAL);
             elif id == 1026:
-                # Close iOwl.net"
+                # Close iOwl.net
                 # remove icon
                 nid = (self.hwnd, 0)
                 Shell_NotifyIcon(NIM_DELETE, nid)
@@ -280,7 +283,7 @@ def main():
     except getopt.GetoptError:
         # print help information and exit:
         usage()
-        sys.exit(2)
+        sys.exit(1)
 
     configfile = "iowl.cfg"
     output = None
@@ -312,6 +315,7 @@ def signal_SIGUSR1(signo, frame):
     """
     pManager.manager.DebugStr('pManager '+ __version__ +': Received signal SIGUSR1. Starting shutdown.')
     pManager.manager.ShutDown()
+    sys.exit(0)
 
 
 def StartiOwl(tray):
@@ -332,6 +336,8 @@ def StartiOwl(tray):
         # shutdown owl
         pManager.manager.DebugStr('pManager '+ __version__ +': Received Keyboard-interrupt. Starting shutdown.')
         pManager.manager.ShutDown()
+        sys.exit(0)
+
     except socket.error:
         # socket error while trying to start proxy -> Adress in use
         # get exception
@@ -339,6 +345,8 @@ def StartiOwl(tray):
         pManager.manager.DebugStr('pManager '+ __version__ +': Exception: Type: '+str(eType)+', value: '+str(eValue))
         pManager.manager.DebugStr('pManager '+ __version__ +': Now shutting down.')
         pManager.manager.ShutDown()
+        sys.exit(2)
+
     except:
         # unknown error. log and try to shutdown
 
@@ -354,6 +362,7 @@ def StartiOwl(tray):
         pManager.manager.DebugStr('pManager '+ __version__ +': Traceback:\n'+str(tb))
         pManager.manager.DebugStr('pManager '+ __version__ +': Now shutting down.')
         pManager.manager.ShutDown()
+        sys.exit(1)
 
 
 
