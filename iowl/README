@@ -1,4 +1,4 @@
-#README iOwl.net
+#  README iOwl.net
 
 Introduction
 
@@ -33,9 +33,21 @@ Using your agent
 this link is local on your pc and gives the database of your visited sites
 also you can get recommendation
 
+You want recommendation? - test this
+
+    * edit iowl.cfg (in the root of iowl) and add
+    
+    [pNetwork]
+    entryip = kingfisher.berlios.de # a modified owl; gives recommendation for google.de
+    entryport = 2323
+
+    * restart the owl ./iowl.sh restart
+    * http://my.iowl.net/ -> click recommendation
+
 Stopping the agent
 
     * ./iowl.stop or ./iowl.sh stop to stop iOwl.net
     * ./install to improve automatic start of iOwl.net
 
-more follows Andreas Biessmann
+more follows 
+Andreas Biessmann
