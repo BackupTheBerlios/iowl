@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.18 $"
+__version__ = "$Revision: 1.19 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.19  2002/02/20 18:42:11  aharth
+fixed store page bug
+
 Revision 1.18  2002/02/19 19:01:35  aharth
 added comments
 
@@ -157,25 +160,34 @@ class cGuiRequestHandler:
             self.sEndFilename = str(sValue)
 
 
-    """Store previous command.
-    
-    Stores previous command to redisplay the current page when
-    switching from active to inactive and vice versa
-    
-    """
-    
     def StoreCommand(self, sCommand, dParams):
+        """Store previous command.
+    
+        Stores previous command to redisplay the current page when
+        switching from active to inactive and vice versa
+        
+        """
         self.sPreviousCommand = sCommand
         self.dPreviousParams = dParams
 
 
-    """Execute command.
+    def ReexecuteCommand(self):
+        """Reexecute command when clicking deactivate/activate."""
+        sTmpPreviousCommand = self.sPreviousCommand
+        dTmpPreviousParams = self.dPreviousParams
+        result = self.ExecuteCommand(self.sPreviousCommand, self.dPreviousParams)
+        self.sPreviousCommand = sTmpPreviousCommand
+        self.dPreviousParams = dTmpPreviousParams        
+        return result
 
-    Parses commands and executes the appropriate action. Previous command
-    is stored sometimes for UI clarity.
 
-    """
     def ExecuteCommand(self, sCommand, dParams):
+        """Execute command.
+        
+        Parses commands and executes the appropriate action. Previous command
+        is stored sometimes for UI clarity.
+
+        """
         # execute command
         if sCommand == 'showhelp':
             self.StoreCommand(sCommand, dParams)
@@ -217,13 +229,13 @@ class cGuiRequestHandler:
         elif sCommand == 'activate':
             # activate clickstream recording
             pManager.manager.UpdateConfig('pProxy','recording','1')
-            return self.ExecuteCommand(self.sPreviousCommand, self.dPreviousParams)
-            # return mainpage
+            # return previous page
+            return self.ReexecuteCommand()
         elif sCommand == 'deactivate':
             # deactivate clickstream recording
             pManager.manager.UpdateConfig('pProxy','recording','0')
-            # return mainpage
-            return self.ExecuteCommand(self.sPreviousCommand, self.dPreviousParams)
+            # return previous page
+            return self.ReexecuteCommand()
         elif sCommand == 'remove':
             # remove url from clickstream
             # get clickstreaminterface
