@@ -1,9 +1,13 @@
 #!/usr/local/bin/python
 
-__version__ = "$Revision: 1.12 $"
+__version__ = "$Revision: 1.13 $"
 
 """
 $Log: iowl.py,v $
+Revision 1.13  2002/02/19 17:21:28  Saruman
+installed handler for SIGUSR1 on unix-systems.
+iOwl should now be able to be shut down with a kill -SIGUSR1.
+
 Revision 1.12  2001/07/15 10:17:32  i10614
 added doubleclick -> show iowl.net to trayicon
 
@@ -247,9 +251,9 @@ def usage():
 def winstart():
     """Start iOwl on win32
 
-    Create a trayicon with basic iOwl commands    
+    Create a trayicon with basic iOwl commands
     """
-    
+
     # create trayicon
     tray = TrayIcon()
 
@@ -300,10 +304,26 @@ def main():
         # start console-based
         unixstart()
 
+
+def signal_SIGUSR1(signo, frame):
+    """signal handler for SIGUSR1
+
+    initiate shutdown if SIGUSR1 is caught.
+    """
+    pManager.manager.DebugStr('pManager '+ __version__ +': Received signal SIGUSR1. Starting shutdown.')
+    pManager.manager.ShutDown()
+
+
 def StartiOwl(tray):
     if tray!=None:
         # pManager needs the trayicon to update it...
         pManager.manager.SetTray(tray)
+
+    # install signal handler on non-win32 systems
+    if sys.platform[:3] != 'win':
+        import signal
+        signal.signal(signal.SIGUSR1, signal_SIGUSR1)
+
 
     # start iOwl.net
     try:
