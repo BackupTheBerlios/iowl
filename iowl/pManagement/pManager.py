@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.12 $"
+__version__ = "$Revision: 1.13 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.13  2001/07/15 10:18:39  i10614
+added functions to get logfile and configfile handles
+
 Revision 1.12  2001/05/26 14:00:58  i10614
 changed default params
 
@@ -298,6 +301,10 @@ class cManager:
         self.DebugStr('pManager '+ __version__ +': Info -- finished parsing config file.')
 
 
+    def GetConfHandle(self):
+        """return configparser"""
+        return self.Config
+
 
     def SetParam(self, sOption, sValue):
         """ Accept settings
@@ -438,7 +445,9 @@ class cManager:
             pass
 
         # exit
-        sys.exit()
+        # sys.exit()
+        # try alternative with os
+        os._exit(0)
 
     def GetVersion(self):
         """return version of iOwl"""
@@ -538,6 +547,14 @@ class cManager:
             return
         
         self.tray.SetIcon(bState)
+
+
+    def GetLogfilePath(self):
+        """return string containing path to logfile"""
+
+        return self.sLogFileName
+
+
 
         
 ####################################################################
