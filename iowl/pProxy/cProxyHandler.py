@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.8 $"
+__version__ = "$Revision: 1.9 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.9  2001/04/22 13:28:50  i10614
+added http-headers to prevent caching of iOwl-pages
+
 Revision 1.8  2001/04/16 13:05:38  i10614
 added debug output for unicode error
 
@@ -497,7 +500,9 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         # write header
         self.wfile.write("HTTP/1.0 %s %s\r\n" % ('200', 'OK'))
         self.wfile.write("Server: iOwl.net ProxyServer\r\n")
-        # self.wfile.write("Content-type: text/html\r\n")
+        self.wfile.write("Cache-Control: no-cache\r\n")
+        self.wfile.write("Expires: -1\r\n")
+        self.wfile.write("Pragma: no-cache\r\n")
         self.wfile.write("Content-type: %s\r\n" % sContentType)
         self.wfile.write("\r\n")
 
