@@ -11,8 +11,8 @@
 ##	 check out the path for yourself and uncomment the first PIDOF
 ##	 with a # and use your own
 ##
-##	$PYTHONPATH -> path to the modules of iOwl.net + original $PYTHONPATH
 ##	$IOWL_DIR -> maybe $HOME/iowl/ or something
+##	$PYTHONPATH -> path to the modules of iOwl.net + original $PYTHONPATH
 ###############################################################################
 
 # PYTHON="python"
@@ -20,7 +20,6 @@ PYTHON="python2.2"
 
 ARGUMENTS="pManagement/iowl.py"
 
-PIDOF=`which pidof`
 # PIDOF=path_to_your_pidof
 
 IOWL_DIR=`pwd`
@@ -33,6 +32,27 @@ exit 1;
 fi
 
 PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
+
+###############################################################################
+# special for pidof on non Debian Systems
+###############################################################################
+
+if [ -x /bin/pidof ]; then
+PIDOF=/bin/pidof;
+fi
+
+if [ -x /sbin/pidof ]; then 
+PIDOF=/sbin/pidof;
+fi
+
+if [ -x /usr/bin/pidof ]; then 
+PIDOF=/usr/bin/pidof;
+fi
+
+if [ -x /usr/sbin/pidof ]; then
+PIDOF=/usr/sbin/pidof;
+fi
+
 
 ###############################################################################
 # how start|stop|status|kill does work
