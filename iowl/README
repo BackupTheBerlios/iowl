@@ -40,7 +40,7 @@ Thats it!
 	    * make install (root)
 
 And of course a cvs-snapshot of the iOwl.net software.
-It is available at http://www.iowl.net/files/daily/current-iowl.tar.gz 
+It is available at http://iowl.berlios.de/files/daily/current-iowl.tar.gz 
 or using cvs diretly look at http://developer.berlios.de/cvs/?group_id=250
 
 ###############################################################################
@@ -72,7 +72,7 @@ visited sites. From this page you can also get recommendations.
     		* restart the owl ./iowl.sh restart
     		* http://my.iowl.net/ -> click recommendation
 		  or use the link
-		  http://my.iowlnet/command?action=sessionrecommandation
+		  http://my.iowl.net/command?action=sessionrecommandation
 
 	Stopping the agent
 

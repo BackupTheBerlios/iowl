@@ -10,7 +10,7 @@ Table of contents
 python2.2 		-> apt-get install python2.2
 python2.2-xmlbase	-> apt-get install python2.2-xmlbase
 
-iOwl.net - sources	-> http://www.iowl.net/files/daily/current-iowl.tar.gz
+iOwl.net - sources	-> http://iowl.berlios.de/files/daily/current-iowl.tar.gz
 
 
 ###############################################################################
@@ -23,7 +23,7 @@ cd iowl
 ./iowl.sh start
 
 changing http-proxy in your favorite browser to localhost:3228 
--> see http://www.iowl.net/support/browser.php
+-> see http://iowl.berlios.de/support/browser.php
 
 browsing http://my.iowl.net/ -> does it work? great iOwl.net is running!
 
