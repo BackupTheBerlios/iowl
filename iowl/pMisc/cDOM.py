@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cDOM.py,v $
+Revision 1.4  2001/05/20 16:44:43  i10614
+changed import statements to enable building of win32-exe.
+
 Revision 1.3  2001/04/22 16:20:47  i10614
 Implemented changes for Python 2.1. Dont run with older versions of python\!
 
@@ -60,6 +63,10 @@ added cItemset and cDOM
 """
 
 import xml.dom.minidom
+import xml.sax.expatreader
+
+# import pyexpat
+# import xml.dom.minidom
 
 
 
