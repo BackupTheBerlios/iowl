@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.14 $"
+__version__ = "$Revision: 1.15 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.15  2001/07/19 19:45:15  i10614
+implemented framework for real debuglevels
+
 Revision 1.14  2001/07/15 14:38:39  i10614
 implemented config-change from GUI
 
@@ -155,7 +158,7 @@ class cManager:
         self.timer = watchdog.timer()
 
         # my state
-        self.bIsRunning = 0
+        self.m_bIsRunning = 0
 
         # tray icon
         self.tray=None
@@ -164,28 +167,41 @@ class cManager:
         self.Config = ConfigParser.ConfigParser()
         self.sConfigFileName = sConfigFileName
 
-        # default Debug-level: 0 -> console only
-        #                      1 -> logfile only
-        #                      2 -> both
-        self.iDebugLevel = 1
+        # default Debug-mode: "console"
+        #                     "logfile"
+        #                     "both"
+        #                     "none"
+        self.sDebugMode = 'both'
 
+        # default debug level
+        self.iDebugLevel = 1    # 0 -> only system critical messages
+                                # 5 -> all messages
 
         # get basedir
         self.sBaseDir=os.getcwd()
         self.DebugStr('pManager '+ __version__ +': Basedir is "'+self.sBaseDir+'".')
 
 
-    def DebugStr(self, sDebugInfo):
+    def DebugStr(self, sDebugInfo, iLevel=0):
         """Handles Debug-Output from all classes.
 
-        According to debuglevel either dump message to
-        console (level 0), append it to logfile (level 1),
-        or do both (level 2).
+        According to debugmode either ignore message ("none"),
+        dump message to console ("console"), append it to
+        logfile ("logfile"), or do both ("both").
+
+        If iLevel > current debuglevel, message is ignored.
+
         Complete message with a timestamp prior to printing.
 
+        iLevel     -- integer representing importance of message. 0 -> system critical, 5 -> unimportant
         sDebugInfo -- string containing message
 
         """
+
+        # compare mode and debuglevel
+        if (self.sDebugMode == 'none') or (iLevel > self.iDebugLevel):
+            # do not log
+            return
 
         # Queue up for critical section - only one output a time!
         # Acquire Lock
@@ -196,14 +212,14 @@ class cManager:
         message = message + ' -- '
         message = message + sDebugInfo
 
-        # Handle output according to debuglevel
-        if self.iDebugLevel == 0:
+        # Handle output according to debugmode
+        if self.sDebugMode == 'console':
             print(message)
-        elif self.iDebugLevel == 1:
+        elif self.sDebugMode == 'logfile':
             # write message to logfile only
             self.LogFileHandle.write(message+'\n')
             self.LogFileHandle.flush()
-        elif self.iDebugLevel == 2:
+        elif self.sDebugMode == 'both':
             # Write message to logfile and print on console
             print(message)
             self.LogFileHandle.write(message+'\n')
@@ -315,7 +331,7 @@ class cManager:
         Available parameters:
 
         logfilename -- complete path to logfile
-        debuglevel -- Debug Level (0,1,2)
+        debuglevel -- Debug Level ("none", "console", "logfile", "both")
 
         """
 
@@ -335,8 +351,8 @@ class cManager:
                     # release lock
                     self.DbgLock.release()
 
-        elif sOption == 'debuglevel':
-            self.iDebugLevel = int(sValue)
+        elif sOption == 'debugmode':
+            self.sDebugMode = sValue
 
         else:
             # unknown option!
@@ -416,13 +432,13 @@ class cManager:
         self.intfStatistics.Start()
 
         # we are running
-        self.bIsRunning = 1
+        self.m_bIsRunning = 1
 
         # Focus does not come back from pProxy until iOwl is shut down
         self.intfProxy.Start()
 
-        # we are running
-        self.bIsRunning = 0
+        # we are shut down!
+        self.m_bIsRunning = 0
 
         # Focus returned. iOwl is shut down.
         self.DebugStr('pManager '+ __version__ +': iOwl shut down. Now exiting.')
@@ -458,6 +474,11 @@ class cManager:
         return self.intfProxy
 
 
+    def IsRunning(self):
+        """true if all packages started"""
+        return self.m_bIsRunning
+
+
     def ShutDown(self):
         """Initiate shutdown
 
@@ -467,6 +488,8 @@ class cManager:
             collisions with active focus if pProxy is stopped from its own thread.
 
         """
+
+        self.m_bIsRunning = 0
 
         self.intfClickstream.Shutdown()
         self.intfGui.Shutdown()
@@ -483,9 +506,9 @@ class cManager:
             pass
 
         # exit
-        # sys.exit()
-        # try alternative with os
+        # os._exit() should kill all running threads
         os._exit(0)
+
 
     def GetVersion(self):
         """return version of iOwl"""
@@ -507,20 +530,18 @@ class cManager:
         return self.sBaseDir
 
 
-    def SetDebugLevel(self, iLevel):
-        """Set Debug-level.
+    def SetDebugMode(self, sMode):
+        """Set Debug mode.
 
-        iLevel -- Type of Debug: 0 -> Console only
-                                 1 -> Logfile only
-                                 2 -> Both
+        sMode -- Type of Debug:  "none"    -> no output
+                                 "console" -> Console only
+                                 "logfile" -> Logfile only
+                                 "both"    -> Both
 
         """
 
         # set level
-        self.iDebugLevel = iLevel
-
-        # log change
-        # self.DebugStr('pManager '+ __version__ +': Changed Debug-level to ' + str(iLevel) + '.')
+        self.sDebugMode = iMode
 
 
     def RegisterWatchdog(self, function, interval):
@@ -580,16 +601,13 @@ class cManager:
 
     def SetIcon(self, bState):
         """Change trayicon"""
-
         if self.tray==None:
             return
-
         self.tray.SetIcon(bState)
 
 
     def GetLogfilePath(self):
         """return string containing path to logfile"""
-
         return self.sLogFileName
 
 
