@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: cNeighbourOwl.py,v $
+Revision 1.6  2001/06/05 18:20:18  i10614
+minor change
+
 Revision 1.5  2001/05/30 20:25:37  i10614
 changed debug output
 
@@ -38,7 +41,6 @@ initial checkin
 
 import xmlrpclib
 import pManager
-# import cOwlManager
 
 
 class cNeighbourOwl:
