@@ -1,10 +1,13 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cDOM.py,v $
-Revision 1.1  2001/03/24 19:23:01  i10614
-Initial revision
+Revision 1.2  2001/04/14 15:03:11  i10614
+added GetElementsByName
+
+Revision 1.1.1.1  2001/03/24 19:23:01  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.7  2001/02/20 17:37:05  a
 minor changes
@@ -165,6 +168,18 @@ class cDOM:
         return lEls
 
 
+    def MatchingElementsByName(self, sName):
+        """Return elements that match given name
+
+        sName -- tag name of element
+
+        return -- list of matching elements
+        """
+
+        return self.Document.getElementsByTagName(sName)
+
+
+
     def GetElements(self):
         """Return list of elements despite root element in the document."""
         return self.Document.documentElement.childNodes
@@ -192,7 +207,7 @@ class cDOM:
         el -- element
 
         return -- sName
-        
+
         """
         if el.nodeType == xml.dom.minidom.Node.ELEMENT_NODE:
             return el.nodeName
@@ -272,7 +287,7 @@ class cDOM:
         """
         lContents = []
         lAttrs = []
-        
+
         # now here are the elements with given name
         for el in lEls:
             sTagName, dAttr, sContent = self.GetElementContent(el, lAttr)
@@ -296,7 +311,7 @@ class cDOM:
         """
         dAttr = {}
         sContent = ''
-        
+
         # e.g. <tag at="37" foo="bar">text</tag>
         # returns tag, value: dict with at:37, foo:bar
         # and text
