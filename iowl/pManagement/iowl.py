@@ -1,9 +1,12 @@
 #!/usr/local/bin/python
 
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 
 """
 $Log: iowl.py,v $
+Revision 1.7  2001/05/24 19:26:49  i10614
+Changed icon filename. Removed "stop iowl" from systray menu.
+
 Revision 1.6  2001/05/20 16:16:10  i10614
 small changes for .exe-building
 
@@ -111,7 +114,7 @@ if sys.platform[:3] == 'win':
             UpdateWindow(self.hwnd)
 
             # set icon
-            iconPathName = "data/iowl2.ico"
+            iconPathName = "data/iowl.ico"
             if not os.path.isfile(iconPathName):
                 # Look in the source tree.
                 iconPathName = os.path.abspath(os.path.join( os.path.split(sys.executable)[0], "..\\PC\\pyc.ico" ))
@@ -142,8 +145,8 @@ if sys.platform[:3] == 'win':
                 menu = CreatePopupMenu()
                 AppendMenu( menu, win32con.MF_STRING, 1023, "Activate")
                 AppendMenu( menu, win32con.MF_STRING, 1024, "De-Activate")
-                AppendMenu( menu, win32con.MF_STRING, 1025, "Show iOwl.net" )
-                AppendMenu( menu, win32con.MF_STRING, 1026, "Close iOwl.net" )
+                AppendMenu( menu, win32con.MF_STRING, 1025, "Show iOwl.net")
+                # AppendMenu( menu, win32con.MF_STRING, 1026, "Close iOwl.net" )
                 pos = GetCursorPos()
                 TrackPopupMenu(menu, win32con.TPM_LEFTALIGN, pos[0], pos[1], 0, self.hwnd, None)
             return 1
