@@ -1,6 +1,6 @@
 #
 # XML-RPC SERVER
-# $Id: xmlrpcserver.py,v 1.1 2001/03/24 19:22:40 i10614 Exp $
+# $Id: xmlrpcserver.py,v 1.2 2001/04/09 12:22:16 i10614 Exp $
 #
 # a simple XML-RPC server for Python
 #
@@ -26,7 +26,14 @@ import SocketServer, BaseHTTPServer
 import xmlrpclib
 import sys
 
-class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+    def log_message(self, format, *args):
+        """throw away annoying logmessages...
+        """
+        pass
+
+# class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+class RequestHandler(MyHandler):
 
     def do_POST(self):
         try:

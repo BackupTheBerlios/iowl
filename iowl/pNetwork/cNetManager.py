@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.3  2001/04/09 12:22:16  i10614
+Implemented protocol version check, more fixes for network communication
+
 Revision 1.2  2001/04/07 17:06:24  i10614
 many, many bugfixes for working network communication
 
@@ -74,6 +77,9 @@ class cNetManager:
 
         # create cOwlManager, pass myself
         self.cOwlManager = cOwlManager.cOwlManager(self)
+
+        # protocol version
+        self.sProtocol = "0.2"
 
 
     def SetParam(self, sOption, sValue):
@@ -375,7 +381,7 @@ class cNetManager:
 
         a Ping looks like:
 
-        <iowl.net version="0.1" id="4711" type="Ping" ttl="12">
+        <iowl.net version="0.1" "protocol="0.2" id="4711" type="Ping" ttl="12">
             <originator ip="192.168.99.2" port="2323"></originator>
         </iowl.net>
 
@@ -409,7 +415,7 @@ class cNetManager:
         # sVersion = 'Testversion'
 
         # create container: iowl.net
-        elCont = domPing.CreateElementContainer('iowl.net', {'version':sVersion, 'id':str(id), 'type':'Ping', 'ttl':str(self.iTTL)}, els)
+        elCont = domPing.CreateElementContainer('iowl.net', {'version':sVersion, 'protocol':self.sProtocol, 'id':str(id), 'type':'Ping', 'ttl':str(self.iTTL)}, els)
 
         # save elements in dom
         domPing.SetRootElement(elCont)
@@ -430,7 +436,7 @@ class cNetManager:
 
         a Pong looks like:
 
-        <iowl.net version="0.1" id="4711" type="Pong" ttl="10">
+        <iowl.net version="0.1" "protocol="0.2" id="4711" type="Pong" ttl="10">
             <originator ip="192.168.99.2" port="2323"></originator>
             <answerer ip="192.168.99.2" port="2323"></answer>
         </iowl.net>
@@ -441,7 +447,7 @@ class cNetManager:
 
         # get id of PING
         # id = 123
-        version, id, type, ttl, ip, port = self.cOwlManager.GetDomInfo(domPing)
+        version, protocol, id, type, ttl, ip, port = self.cOwlManager.GetDomInfo(domPing)
 
         # get own IP from manager
         ownip = pManager.manager.GetOwnIP()
@@ -468,7 +474,7 @@ class cNetManager:
         # sVersion = 'Testversion'
 
         # create container: iowl.net
-        elCont = domPong.CreateElementContainer('iowl.net', {'version':sVersion, 'id':str(id), 'type':'Pong', 'ttl':'10'}, els)
+        elCont = domPong.CreateElementContainer('iowl.net', {'version':sVersion, 'protocol':self.sProtocol, 'id':str(id), 'type':'Pong', 'ttl':'10'}, els)
 
         # save elements in dom
         domPong.SetRootElement(elCont)
@@ -513,7 +519,7 @@ class cNetManager:
         # sVersion = 'Testversion'
 
         # create container: iowl.net
-        elCont = domRequest.CreateElementContainer('iowl.net', {'version':sVersion, 'id':str(id), 'type':'Request', 'ttl':str(self.iTTL)}, els)
+        elCont = domRequest.CreateElementContainer('iowl.net', {'version':sVersion, 'protocol':self.sProtocol, 'id':str(id), 'type':'Request', 'ttl':str(self.iTTL)}, els)
 
         # save elements in dom
         domRequest.SetRootElement(elCont)
@@ -558,7 +564,7 @@ class cNetManager:
         # sVersion = 'Testversion'
 
         # create container: iowl.net
-        elCont = domAnswer.CreateElementContainer('iowl.net', {'version':sVersion, 'id':str(id), 'type':'Answer', 'ttl':str(self.iTTL)}, els)
+        elCont = domAnswer.CreateElementContainer('iowl.net', {'version':sVersion, 'protocol':self.sProtocol, 'id':str(id), 'type':'Answer', 'ttl':str(self.iTTL)}, els)
 
         # save elements in dom
         domAnswer.SetRootElement(elCont)
@@ -615,7 +621,19 @@ class cNetManager:
         except:
             # socket-connect failed :-(
             pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not connect socket to determine own IP. Reverting to "gethostbyname()"...')
-            sOwnIP = socket.gethostbyname(socket.gethostname())
+            try:
+                sOwnIP = socket.gethostbyname(socket.gethostname())
+            except:
+                # Uh-oh. Cant determine own IP. Wait a few seconds
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not execute "gethostbyname()". Trying again.')
+                time.sleep(10)
+                try:
+                    # try again. if it fails again, shut down :-(
+                    sOwnIP = socket.gethostbyname(socket.gethostname())
+                except:
+                    pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not determine own IP!')
+                    raise socket.error
+
 
         return sOwnIP
 
