@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.26 $"
+__version__ = "$Revision: 1.27 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.27  2001/08/10 18:44:36  i10614
+changed debug output.
+
 Revision 1.26  2001/08/10 18:41:46  i10614
 changed debug output.
 
@@ -327,10 +330,10 @@ class cNetManager:
         try:
             owlfile = open(self.sOwlFilename, "w");
         except:
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': Cant open owlfile for caching owls.', 0)
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Cant open file for caching owls.', 0)
             return
 
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': Caching neighbourowls.', 0)
+        pManager.manager.DebugStr('cNetManager '+ __version__ +': Caching neighbourowls.', 1)
         iOwls=0
         for owl in self.cOwlManager.lKnownOwls:
             iOwls += 1
