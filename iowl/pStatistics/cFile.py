@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cFile.py,v $
+Revision 1.3  2001/04/14 15:04:45  i10614
+minor fixes
+
 Revision 1.2  2001/03/27 18:26:34  i10614
 added GetFileName()
 
@@ -70,7 +73,7 @@ import string
 import xml.dom.minidom
 import cDOM
 import time
-#XXXimport pManager
+import pManager
 
 
 class cFile(cDOM.cDOM):
@@ -117,12 +120,11 @@ class cFile(cDOM.cDOM):
             file = open(self.sFileName, 'r')
             # now read file and parse into dom
             self.Parse(file)
-            file.close()
             return 1
         # if can't open then create file
         except IOError:
-            #pManager.manager.DebugStr('cFile '+ __version__ +': Cannot find '+ self.sFileName + '. Creating new.')
             self.CleanElements()
+            return 0
 
 
     def Save(self):
