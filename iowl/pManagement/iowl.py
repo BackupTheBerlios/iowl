@@ -1,11 +1,11 @@
 #!/usr/local/bin/python
 
-__version__ = "$Revision: 1.9 $"
+__version__ = "$Revision: 1.10 $"
 
 """
 $Log: iowl.py,v $
-Revision 1.9  2001/05/25 19:24:38  i10614
-added "hide menu" for workaround for sticky popup-menu
+Revision 1.10  2001/05/25 19:28:48  i10614
+bugfix for menu
 
 Revision 1.7  2001/05/24 19:26:49  i10614
 Changed icon filename. Removed "stop iowl" from systray menu.
@@ -175,7 +175,7 @@ if sys.platform[:3] == 'win':
                 Shell_NotifyIcon(NIM_DELETE, nid)
                 # stop iOwl
                 StopiOwl()
-             elif id == 1027:
+            elif id == 1027:
                 # do nothing, just a workaround for broken popup-menu
                 pass
 
