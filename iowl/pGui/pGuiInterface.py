@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: pGuiInterface.py,v $
+Revision 1.4  2002/01/21 17:33:20  Saruman
+modified comment
+
 Revision 1.3  2001/08/10 18:42:50  i10614
 added debuglevel to all messages.
 
@@ -67,7 +70,7 @@ class pGuiInterface:
 
 
     def AcceptCommand(self, sUrl):
-        """take command from pProxy
+        """accept command from pProxy
 
         sUrl    -- complete url containing command
 
