@@ -12,6 +12,7 @@ include '/home/groups/iowl/htdocs/header.html';
    answered and the FAQ is updated permanently. </p>
 <p><b>Support:</b> <a href="mailto:support@iowl.net">support@iowl.net</a></p>
 <p><b>Bug reports:</b> <a href="mailto:bugs@iowl.net">bugs@iowl.net</a></p>
+<p><b>Mailing list:</b> <a href="mailto:iowl-users@lists.berlios.de">iowl-users@lists.berlios.de</a></p>
 <?php
 include '/home/groups/iowl/htdocs/footer.html';
 ?>
