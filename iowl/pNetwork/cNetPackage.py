@@ -1,8 +1,13 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cNetPackage.py,v $
+Revision 1.4  2002/02/11 15:12:38  Saruman
+Major network changes.
+Network protocol now 0.3, incompatible to older versions!
+Should fix all problems regarding the detection of own ip and enable use of iOwl behind a firewall.
+
 Revision 1.3  2001/04/15 21:16:21  i10614
 fixed for recommendations and answers
 
@@ -33,9 +38,9 @@ class cNetPackage:
         """constructor"""
 
         # ip of creator
-        self.sOriginator = ''
+        self.sOrigIP = '127.0.0.1'
         # port of creator
-        self.iPort = 0
+        self.iOrigPort = 0
         # iOwl-version
         self.sVersion = ''
         # network-version
@@ -48,9 +53,13 @@ class cNetPackage:
         self.iTTL = 0
 
 
-    def SetOriginator(self, sIP, iPort):
-        """Set originator"""
+    def SetOriginatorIP(self, sIP):
+        """Set originator IP"""
         self.sOrigIP = sIP
+
+
+    def SetOriginatorPort(self, iPort):
+        """Set originator port"""
         self.iOrigPort = iPort
 
 
@@ -192,7 +201,8 @@ class cNetPackage:
         # list with text and attributes
         sName, dAttrs, sContent = cDom.GetElementContent(elOriginator, ['ip','port'])
         # store originator info
-        self.SetOriginator(dAttrs['ip'], int(dAttrs['port']))
+        self.SetOriginatorIP(dAttrs['ip'])
+        self.SetOriginatorPort(int(dAttrs['port']))
 
 
     def Print(self):
@@ -230,9 +240,13 @@ class cPong(cNetPackage):
         self.iAnswPort = 0
 
 
-    def SetAnswerer(self, sIP, iPort):
-        """Set Answerer IP and port"""
+    def SetAnswererIP(self, sIP):
+        """Set Answerer IP"""
         self.sAnswIP = sIP
+
+
+    def SetAnswererPort(self, iPort):
+        """Set Answerer port"""
         self.iAnswPort = iPort
 
 
@@ -306,7 +320,8 @@ class cPong(cNetPackage):
         # list with text and attributes
         sName, dAttrs, sContent = cDom.GetElementContent(elAnswerer, ['ip','port'])
         # store originator info
-        self.SetAnswerer(dAttrs['ip'], int(dAttrs['port']))
+        self.SetAnswererIP(dAttrs['ip'])
+        self.SetAnswererPort(int(dAttrs['port']))
 
 
     def Print(self):

@@ -1,8 +1,13 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cRPCRequestHandler.py,v $
+Revision 1.3  2002/02/11 15:12:38  Saruman
+Major network changes.
+Network protocol now 0.3, incompatible to older versions!
+Should fix all problems regarding the detection of own ip and enable use of iOwl behind a firewall.
+
 Revision 1.2  2001/08/10 18:36:21  i10614
 added debug output.
 
@@ -43,9 +48,11 @@ class cRPCRequestHandler(xmlrpcserver.RequestHandler):
 
         pManager.manager.DebugStr('cRPCReqHandler '+ __version__ +': Dispatching: ' + str(method) + str(params), 4)
         try:
+                # Look if requested method exists
                 server_method = getattr(self, method)
         except:
                 raise AttributeError, 'Server does not have XML-RPC procedure "%s"' % method
+        # execute requested method
         return server_method(method, params)
 
 
@@ -61,6 +68,12 @@ class cRPCRequestHandler(xmlrpcserver.RequestHandler):
 
         # get cNetManager
         cNetManager = cNetworkInterface.cNetManager
+
+        # get originating owl
+        host, port = self.client_address;
+
+        # add host to params
+        params = params + (host,)
 
         # start new thread
         thread.start_new_thread(cNetManager.HandlePing, params)
@@ -83,6 +96,12 @@ class cRPCRequestHandler(xmlrpcserver.RequestHandler):
         # get cNetManager
         cNetManager = cNetworkInterface.cNetManager
 
+        # get originating owl
+        host, port = self.client_address;
+
+        # add host to params
+        params = params + (host,)
+
         # start new thread
         thread.start_new_thread(cNetManager.HandlePong, params)
         # without new thread:
@@ -104,6 +123,12 @@ class cRPCRequestHandler(xmlrpcserver.RequestHandler):
         # get cNetManager
         cNetManager = cNetworkInterface.cNetManager
 
+        # get originating owl
+        host, port = self.client_address;
+
+        # add host to params
+        params = params + (host,)
+
         # start new thread
         thread.start_new_thread(cNetManager.HandleRequest, params)
         # without new thread:
@@ -124,6 +149,12 @@ class cRPCRequestHandler(xmlrpcserver.RequestHandler):
 
         # get cNetManager
         cNetManager = cNetworkInterface.cNetManager
+
+        # get originating owl
+        host, port = self.client_address;
+
+        # add host to params
+        params = params + (host,)
 
         # start new thread
         thread.start_new_thread(cNetManager.HandleAnswer, params)

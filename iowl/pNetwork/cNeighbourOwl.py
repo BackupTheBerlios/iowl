@@ -1,8 +1,13 @@
 
-__version__ = "$Revision: 1.7 $"
+__version__ = "$Revision: 1.8 $"
 
 """
 $Log: cNeighbourOwl.py,v $
+Revision 1.8  2002/02/11 15:12:38  Saruman
+Major network changes.
+Network protocol now 0.3, incompatible to older versions!
+Should fix all problems regarding the detection of own ip and enable use of iOwl behind a firewall.
+
 Revision 1.7  2001/08/07 18:50:42  i10614
 introduced debuglevels
 
@@ -79,7 +84,6 @@ class cNeighbourOwl:
 
     def Ping(self, sPing):
         """Ping owl"""
-
         try:
             # get remote owlserver ("myself")
             myself = self.GetServer()

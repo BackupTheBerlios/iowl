@@ -1,8 +1,13 @@
 
-__version__ = "$Revision: 1.17 $"
+__version__ = "$Revision: 1.18 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.18  2002/02/11 15:12:38  Saruman
+Major network changes.
+Network protocol now 0.3, incompatible to older versions!
+Should fix all problems regarding the detection of own ip and enable use of iOwl behind a firewall.
+
 Revision 1.17  2001/08/10 18:35:59  i10614
 more debug output.
 added debuglevel to all messages.
@@ -187,9 +192,11 @@ class cOwlManager:
 
         """
 
+        # dont add localhost - return owl object without adding to list
+        if (str(tOrig[0])=='127.0.0.1') or (str(tOrig[0])=='localhost'):
+            return cNeighbourOwl.cNeighbourOwl(tOrig[0], tOrig[1], self)
+
         # Acquire Lock
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': AddOwl - acquiring lock for '+ \
-                str(tOrig[0]) + ':' + str(tOrig[1]) +'.', 4)
         self.OwlLock.acquire()
 
         # look if owl is kown already
@@ -197,20 +204,19 @@ class cOwlManager:
             if (str(owl.IP) == str(tOrig[0])) and (str(owl.iPort) == str(tOrig[1])):
                 # already there -> return old owl
                 # release Lock
-                pManager.manager.DebugStr('cOwlManager '+ __version__ +': AddOwl - releasing lock for '+ \
-                     str(tOrig[0]) + ':' + str(tOrig[1]) +'.', 4)
                 self.OwlLock.release()
                 return owl
 
         # okay, this is a new owl.
         newOwl = cNeighbourOwl.cNeighbourOwl(tOrig[0], tOrig[1], self)
 
+        # log
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Adding owl at '+ str(tOrig[0]) + ':' + str(tOrig[1]) +'.', 4)
+
         # Add to list
         self.lKnownOwls.append(newOwl)
 
         # release Lock
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': AddOwl - releasing lock for '+ \
-             str(tOrig[0]) + ':' + str(tOrig[1]) +'.', 4)
         self.OwlLock.release()
 
         # return owl
@@ -221,8 +227,6 @@ class cOwlManager:
         """Delete an owl from lOwlList"""
 
         # Acquire Lock
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': DeleteOwl - acquiring lock for '+ \
-            str(tOwl[0]) + ':' + str(tOwl[1]) +'.', 4)
         self.OwlLock.acquire()
 
         # look for owl
@@ -231,15 +235,11 @@ class cOwlManager:
                 # found! Now delete it
                 lOwlList.remove(owl)
                 # release Lock
-                pManager.manager.DebugStr('cOwlManager '+ __version__ +': DeleteOwl - releasing lock for '+ \
-                    str(tOwl[0]) + ':' + str(tOwl[1]) +'.', 4)
                 self.OwlLock.release()
                 return
 
         # Uh-oh. Trying to delete non-existing owl?
         # release Lock
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': DeleteOwl - releasing lock for '+ \
-            str(tOwl[0]) + ':' + str(tOwl[1]) +'.', 4)
         self.OwlLock.release()
         return
 
@@ -268,19 +268,7 @@ class cOwlManager:
         if cNetPackage.GetID() in self.dRequests.keys():
             # Log error, throw domObj away and continue operation
             pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Detected vicious circle.', 3)
-            # To prevent sending more requests to the owl causing the circle, delete originating owl from known owls (if it is there)
-            #try:
-                # i need to get reference to neighbourowl object representing the originating owl.
-                # get value list from request dictionary (== get attributes of request)
-            #    reqAttributes = self.dRequests[cNetPackage.GetID()]
-                # try to delete first element of list (should be a reference to a neighbourOwl) from KnownOwls.
-                # might not exist in list if i dont know that owl
-            #    self.lKnownOwls.remove(reqAttributes[self.SourceOwl])
-            #except:
-            #    pass
-
             return 0
-
 
         # ok, request is valid and can be sent out.
         return 1
@@ -344,13 +332,15 @@ class cOwlManager:
             # need a deep copy of list, not just reference...
             lNeighbours = self.lKnownOwls[:]
 
-        # remove originating owl from neighbours - dont want to send to creator of packet!
+        # remove originating owl from list of target owls - dont want to send to creator of packet!
         self.DeleteOwl(lNeighbours, cNetPackage.GetOriginator())
         # remove myself from neighbours - dont want to send to myself!
         self.DeleteOwl(lNeighbours, (pManager.manager.GetOwnIP(), self.cNetManager.cNetServer.GetListenPort()))
 
         # now replace originator of netpackage with myself
-        cNetPackage.SetOriginator(pManager.manager.GetOwnIP(), self.cNetManager.cNetServer.GetListenPort())
+        # CHANGE mb
+        # cNetPackage.SetOriginator(pManager.manager.GetOwnIP(), self.cNetManager.cNetServer.GetListenPort())
+        cNetPackage.SetOriginatorPort(self.cNetManager.cNetServer.GetListenPort())
 
         # just for debug purposes...
         distri = []
@@ -358,10 +348,6 @@ class cOwlManager:
             distri.append(str(i.IP) +':'+ str(i.iPort))
 
         pManager.manager.DebugStr('cOwlManager '+ __version__ +': Distributing to '+str(len(distri))+' owls.', 3)
-
-        # if len(lNeighbours) == 0:
-            # empty list!
-            #  pManager.manager.DebugStr('cOwlManager '+ __version__ +': Cant Distribute. NeighbourList is empty.')
 
         # Get cDom-representation of cNetPackage
         domObj = cNetPackage.GetDOM()
@@ -554,27 +540,6 @@ class cOwlManager:
     def GetNumNeighbours(self):
         """return number of known neighbourowls"""
         return len(self.lKnownOwls)
-
-
-###########################
-#   OBSOLETE!
-###########################
-    def GetSingleOwl(self):
-        """return tuple containing IP and Port of one owl"""
-
-        # acquire Lock
-        self.OwlLock.acquire()
-        if len(self.lKnownOwls) > 0:
-            owl = self.lKnownOwls[0]
-            # release Lock
-            self.OwlLock.release()
-            return (owl.GetIP(), owl.GetPort())
-        else:
-            # release Lock
-            self.OwlLock.release()
-            return ('0.0.0.0', '0')
-
-
 
 
 

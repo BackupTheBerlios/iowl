@@ -1,8 +1,13 @@
 
-__version__ = "$Revision: 1.28 $"
+__version__ = "$Revision: 1.29 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.29  2002/02/11 15:12:38  Saruman
+Major network changes.
+Network protocol now 0.3, incompatible to older versions!
+Should fix all problems regarding the detection of own ip and enable use of iOwl behind a firewall.
+
 Revision 1.28  2002/01/28 18:50:54  Saruman
 changed default port 2323 for entryowl
 
@@ -152,7 +157,7 @@ class cNetManager:
         self.cOwlManager = cOwlManager.cOwlManager(self)
 
         # protocol version
-        self.sProtocol = "0.2"
+        self.sProtocol = "0.3"
 
         # name for owlfile
         self.sOwlFilename = "data/cache.txt"
@@ -161,12 +166,12 @@ class cNetManager:
         self.sOwlUrl = "http://www.iowl.net/entry.pl"
 
         # use webowls
-        self.bGetWebOwls = 1
+        self.bGetWebOwls = 0
 
         # use smart IP detection
         self.bSmartIP = 1
 
-        # mimimun number of owls
+        # minimun number of owls
         self.iMinOwls = 15
 
         # entryowl
@@ -227,7 +232,7 @@ class cNetManager:
         elif sOption == 'getwebowls':
             self.bGetWebOwls = int(sValue)
         elif sOption == 'smartipdetection':
-            self.bGetWebOwls = int(sValue)
+            self.bSmart = int(sValue)
         else:
             pManager.manager.DebugStr('cNetManager '+ __version__ +': Warning: unknown option %s' %(sOption, ), 0)
 
@@ -272,11 +277,11 @@ class cNetManager:
         self.cOwlManager.ValidateOwls()
 
         # do i need to look up more owls at website?
-        if (self.cOwlManager.GetNumNeighbours() < self.iMinOwls) and (self.bGetWebOwls == 1):
+        if ((self.cOwlManager.GetNumNeighbours() < self.iMinOwls) and (self.bGetWebOwls == 1)):
             thread.start_new_thread(self.GetWebOwls, ())
 
         # determine own IP adress
-        pManager.manager.SetOwnIP(self.GetOwnIP())
+        # pManager.manager.SetOwnIP(self.GetOwnIP())
 
         # start server
         self.cNetServer.StartListen()
@@ -345,7 +350,7 @@ class cNetManager:
         pManager.manager.DebugStr('cNetManager '+ __version__ +': Saved %s neighbourowls in cache.' % str(iOwls), 1)
 
 
-    def HandlePing(self, sPing):
+    def HandlePing(self, sPing, sOrigin):
         """Handle incoming Ping
 
         Called by CRPCRequestHandler.
@@ -364,6 +369,9 @@ class cNetManager:
             # create cNetPackage from DOM-Ping
             cPing = cNetPackage.cNetPackage('ping')
             cPing.ParseDOM(domPing)
+
+            # set originator ip
+            cPing.SetOriginatorIP(sOrigin)
 
             # log incoming ping
             pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Ping from %s:%s.' %(str(cPing.GetOriginator()[0]), str(cPing.GetOriginator()[1])), 2)
@@ -400,7 +408,7 @@ class cNetManager:
 
 
 
-    def HandlePong(self, sPong):
+    def HandlePong(self, sPong, sOrigin):
         """Handle incoming Pong
 
         Called by CRPCRequestHandler.Pong().
@@ -419,6 +427,15 @@ class cNetManager:
             # create cNetPackage from DOM-Pong
             cPong = cNetPackage.cPong()
             cPong.ParseDOM(domPong)
+
+            # check if i am the first hop of this pong (originator set to 127.0.0.1)
+            # -> set answerer ip!
+            if cPong.GetOriginator()[0]=='127.0.0.1':
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': First hop. Setting Answerer IP to %s' % (sOrigin), 2)
+                cPong.SetAnswererIP(sOrigin)
+
+            # set originator ip
+            cPong.SetOriginatorIP(sOrigin)
 
             # log incoming pong
             pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Pong from %s:%s' % (str(cPong.GetAnswerer()[0]), str(cPong.GetAnswerer()[1])), 2)
@@ -443,16 +460,13 @@ class cNetManager:
             pManager.manager.DebugStr('pNetwork '+ __version__ +': Traceback:\n'+str(tb), 3)
 
 
-    def HandleRequest(self, sRequest):
+    def HandleRequest(self, sRequest, sOrigin):
         """Handle incoming Request
 
         Called by cRPCRequestHandler.Request().
         Pass Request to cOwlManager.Distribute() for further spreading.
 
         """
-
-        # log incoming Request
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Request...', 2)
 
         try:
             # create cDOM from ascii-request
@@ -461,6 +475,10 @@ class cNetManager:
             # create cNetPackage from DOM-request
             cRequest = cNetPackage.cRecPackage('')
             cRequest.ParseDOM(domRequest)
+            # set originator ip
+            cRequest.SetOriginatorIP(sOrigin)
+            # log incoming Request
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Request from %s:%s.' %(str(cRequest.GetOriginator()[0]), str(cRequest.GetOriginator()[1])), 2)
             # pass to cOwlManager
             self.cOwlManager.Distribute(cRequest)
         except:
@@ -478,7 +496,7 @@ class cNetManager:
 
 
 
-    def HandleAnswer(self, sAnswer):
+    def HandleAnswer(self, sAnswer, sOrigin):
         """Handle incoming Answer
 
         Called by cRPCRequestHandler.Answer().
@@ -496,6 +514,8 @@ class cNetManager:
             # create cNetPackage from DOM-answer
             cAnswer = cNetPackage.cRecPackage('')
             cAnswer.ParseDOM(domAnswer)
+            # set originator ip
+            cAnswer.SetOriginatorIP(sOrigin)
             # pass on to cOwlManager
             self.cOwlManager.Answer(cAnswer)
         except:
@@ -584,7 +604,9 @@ class cNetManager:
         # set unique id
         cPing.SetID(pManager.manager.GetUniqueNumber())
         # set originator
-        cPing.SetOriginator(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
+        # CHANGE mb
+        # cPing.SetOriginator(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
+        cPing.SetOriginatorPort(self.cNetServer.GetListenPort())
         # set iOwl-Version
         cPing.SetOwlVersion(pManager.manager.GetVersion())
         # set network protocol version
@@ -603,13 +625,17 @@ class cNetManager:
         # set id from ping
         cPong.SetID(cPing.GetID())
         # set originator
-        cPong.SetOriginator(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
+        # CHANGE mb
+        # cPong.SetOriginator(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
+        cPong.SetOriginatorPort(self.cNetServer.GetListenPort())
         # set iOwl-Version
         cPong.SetOwlVersion(pManager.manager.GetVersion())
         # set network protocol version
         cPong.SetProtocolVersion(self.sProtocol)
         # set answerer
-        cPong.SetAnswerer(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
+        # CHANGE mb
+        # cPong.SetAnswerer(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
+        cPong.SetAnswererPort(self.cNetServer.GetListenPort())
 
         return cPong
 
@@ -628,7 +654,9 @@ class cNetManager:
         # set unique id
         cRequest.SetID(pManager.manager.GetUniqueNumber())
         # set originator
-        cRequest.SetOriginator(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
+        # CHANGE mb
+        # cRequest.SetOriginator(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
+        cRequest.SetOriginatorPort(self.cNetServer.GetListenPort())
         # set iOwl-Version
         cRequest.SetOwlVersion(pManager.manager.GetVersion())
         # set network protocol version
@@ -657,7 +685,9 @@ class cNetManager:
         # set id
         cAnswer.SetID(id)
         # set originator
-        cAnswer.SetOriginator(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
+        # CHANGE mb
+        # cAnswer.SetOriginator(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
+        cAnswer.SetOriginatorPort(self.cNetServer.GetListenPort())
         # set iOwl-Version
         cAnswer.SetOwlVersion(pManager.manager.GetVersion())
         # set network protocol version

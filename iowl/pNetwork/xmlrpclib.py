@@ -1,6 +1,6 @@
 #
 # XML-RPC CLIENT LIBRARY
-# $Id: xmlrpclib.py,v 1.2 2001/04/14 15:00:59 i10614 Exp $
+# $Id: xmlrpclib.py,v 1.3 2002/02/11 15:12:38 Saruman Exp $
 #
 # an XML-RPC client interface for Python.
 #
