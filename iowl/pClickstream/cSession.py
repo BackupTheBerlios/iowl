@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 
 """
 $Log: cSession.py,v $
+Revision 1.7  2002/03/16 15:45:54  aharth
+fixed delete bug
+
 Revision 1.6  2001/07/15 10:12:31  i10614
 bugfix for url removing (andi)
 
@@ -164,13 +167,15 @@ class cSession(cData.cData):
             memory, not on disc!
 
         """
-        # for deleting
-        foo = self.lData[:]
-        for click in foo:
+        # add indices for deletion
+        toDelete = []
+
+        # remove urls - make copy of lData to iterate and remove safely
+        for click in self.lData[:]:
             if click.GetUrl() == tUrl:
-                iIndex = self.lData.index(click)
-                del self.lData[iIndex]
-                self.CloseFile()
+                self.lData.remove(click)
+
+        self.CloseFile()
 
 
     def GetElements(self):

@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cData.py,v $
+Revision 1.5  2002/03/16 15:45:54  aharth
+fixed delete bug
+
 Revision 1.4  2001/08/07 18:46:18  i10614
 bugfixes by Andi
 
@@ -89,6 +92,9 @@ class cData:
         """Save content and close file."""
         # get elements from internal representation...
         els = self.GetElements()
+        # clean file
+        self.file.CleanElements()
+        
         # ...and save to disk
         for el in els:
             self.file.AddElement(el)

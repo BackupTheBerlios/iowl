@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.23 $"
+__version__ = "$Revision: 1.24 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.24  2002/03/16 15:45:54  aharth
+fixed delete bug
+
 Revision 1.23  2002/03/16 13:30:35  aharth
 bugfixes for #104 and #139
 
@@ -221,15 +224,12 @@ class pClickstreamInterface:
                 del self.Session
                 self.Session = None
 
-        # remove urls
-        for session in self.lSessions:
+        # remove urls - make copy of lSessions to iterate and remove safely
+        for session in self.lSessions[:]:
             session.RemoveUrl(tUrl)
             
-            # XXX - Check this, we are deleting list items while iterating the list!
             if (session.GetClicksCount() == 0):
-                session.CloseFile()
-                iIndex = self.lSessions.index(session)
-                del self.lSessions[iIndex]
+                self.lSessions.remove(session)
 
 
     def GetSessions(self):

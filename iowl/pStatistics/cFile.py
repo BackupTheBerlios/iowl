@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 
 """
 $Log: cFile.py,v $
+Revision 1.7  2002/03/16 15:45:55  aharth
+fixed delete bug
+
 Revision 1.6  2002/01/30 17:09:21  aharth
 changed test method
 
@@ -161,13 +164,14 @@ class cFile(cDOM.cDOM):
 
     def CleanElements(self):
         """Remove all elements despite root element."""
+        
         # create root element
         el = self.CreateElement(self.sRootElementName, {'version' : self.sVersion}, '')
 
         if (self.Document.documentElement):
             self.Document.removeChild(self.Document.documentElement)
-            # bug in python 2.0
-            # self.Document.documentElement = None
+            # not used further
+            #self.Document.documentElement.unlink()
 
         self.SetRootElement(el)
 
