@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.9 $"
+__version__ = "$Revision: 1.10 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.10  2001/05/26 11:40:34  i10614
+added changing trayicon
+
 Revision 1.9  2001/05/20 16:16:22  i10614
 small changes for .exe-building
 
@@ -138,6 +141,12 @@ class cManager:
 
         # create timer
         self.timer = watchdog.timer()
+
+        # my state
+        self.bIsRunning = 0
+
+        # tray icon
+        self.tray=None
 
         # init parser for configfile
         self.Config = ConfigParser.ConfigParser()
@@ -355,8 +364,14 @@ class cManager:
         self.intfNetwork.Start()
         self.intfStatistics.Start()
 
+        # we are running
+        self.bIsRunning = 1
+
         # Focus does not come back from pProxy until iOwl is shut down
         self.intfProxy.Start()
+
+        # we are running
+        self.bIsRunning = 0
 
         # Focus returned. iOwl is shut down.
         self.DebugStr('pManager '+ __version__ +': iOwl shut down. Now exiting.')
@@ -505,6 +520,20 @@ class cManager:
         self.sOwnIP = ownIP
 
 
+    def SetTray(self, tray):
+        """Set trayicon-handle"""
+        self.tray = tray
+
+    def SetIcon(self, bState):
+        """Change trayicon"""
+
+        if self.tray==None:
+            print "pManager --> No Icon..."
+            return
+        
+        self.tray.SetIcon(bState)
+
+        
 ####################################################################
 ## TEST FUNCTIONS ##################################################
 
