@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.10 $"
+__version__ = "$Revision: 1.11 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.11  2001/04/22 13:31:39  i10614
+bugfix - entryIP was not initialized
+
 Revision 1.10  2001/04/22 13:27:51  i10614
 extended owl-caching -> now verifying old owls
 
@@ -100,6 +103,10 @@ class cNetManager:
 
         # name for owlfile
         self.sOwlFilename="owls.txt"
+
+        # entryowl
+        self.EntryIP = ''
+        self.EntryPort = 0
 
 
     def SetParam(self, sOption, sValue):
