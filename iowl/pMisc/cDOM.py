@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cDOM.py,v $
+Revision 1.5  2002/01/18 11:07:48  aharth
+Minor bugfixes
+
 Revision 1.4  2001/05/20 16:44:43  i10614
 changed import statements to enable building of win32-exe.
 
@@ -304,6 +307,8 @@ class cDOM:
         # now here are the elements with given name
         for el in lEls:
             sTagName, dAttr, sContent = self.GetElementContent(el, lAttr)
+            if content == null and sTagName == null:
+                skip
             if (sTagName == sName):
                 lContents.append(sContent)
                 lAttrs.append(dAttr)

@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.17 $"
+__version__ = "$Revision: 1.18 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.18  2002/01/18 11:07:48  aharth
+Minor bugfixes
+
 Revision 1.17  2002/01/16 21:49:08  aharth
 data dir needs to be changed...
 
@@ -211,12 +214,11 @@ class pClickstreamInterface:
         for session in lSessions:
             session.RemoveUrl(tUrl)
 
-# XXX - Check this, we are deleting list items while iterating the list!
-#
-#    if (session.GetClicksCount() == 0):
-#        session.CloseFile()
-#        iIndex = self.lSessions.index(session)
-#        del self.lSessions[iIndex]
+            # XXX - Check this, we are deleting list items while iterating the list!
+            if (session.GetClicksCount() == 0):
+                session.CloseFile()
+                iIndex = self.lSessions.index(session)
+                del self.lSessions[iIndex]
 
 
     def GetSessions(self):
