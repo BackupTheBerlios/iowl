@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.12 $"
+__version__ = "$Revision: 1.13 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.13  2001/05/30 20:30:02  i10614
+shortened debug output
+
 Revision 1.12  2001/05/07 07:39:36  i10614
 added mutex for neighbour-handling
 
@@ -184,10 +187,13 @@ class cOwlManager:
         # okay, this is a new owl.
         newOwl = cNeighbourOwl.cNeighbourOwl(tOrig[0], tOrig[1], self)
 
-        # Add to list and return new owl
+        # Add to list
         self.lKnownOwls.append(newOwl)
+
         # release Lock
         self.OwlLock.release()
+
+        # return owl
         return newOwl
 
 
@@ -327,10 +333,9 @@ class cOwlManager:
             distri.append(str(i.IP) +':'+ str(i.iPort))
         pManager.manager.DebugStr('cOwlManager '+ __version__ +': Distributing to: '+str(distri)+'.')
 
-        if len(lNeighbours) == 0:
+        # if len(lNeighbours) == 0:
             # empty list!
-            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Cant Distribute. NeighbourList is empty.')
-
+            # pManager.manager.DebugStr('cOwlManager '+ __version__ +': Cant Distribute. NeighbourList is empty.')
 
         # Get cDom-representation of cNetPackage
         domObj = cNetPackage.GetDOM()
@@ -494,7 +499,9 @@ class cOwlManager:
                 del self.dRequests[id]
                 iNumDeleted = iNumDeleted + 1
 
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Cleaned Requeststable from expired entries. Deleted: '+str(iNumDeleted)+', remaining: '+str(len(self.dRequests.keys())))
+        if iNumDeleted > 1:
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Cleaned Requeststable from expired entries. Deleted: '+str(iNumDeleted)+', remaining: '+str(len(self.dRequests.keys())))
+    
         return
 
 
@@ -517,6 +524,15 @@ class cOwlManager:
                 self.DeleteOwl(self.lKnownOwls, (owl.GetIP(), owl.GetPort()))
 
 
+
+    def GetNumNeighbours(self):
+        """return number of known neighbourowls"""
+        return len(self.lKnownOwls)
+
+
+###########################
+#   OBSOLETE!
+###########################
     def GetSingleOwl(self):
         """return tuple containing IP and Port of one owl"""
 
@@ -532,10 +548,6 @@ class cOwlManager:
             self.OwlLock.release()
             return ('0.0.0.0', '0')
 
-
-    def GetNumNeighbours(self):
-        """return number of known neighbourowls"""
-        return len(self.lKnownOwls)
 
 
 

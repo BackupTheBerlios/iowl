@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.17 $"
+__version__ = "$Revision: 1.18 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.18  2001/05/30 20:31:32  i10614
+shortened debug output
+
 Revision 1.17  2001/05/26 14:01:34  i10614
 changed default params
 
@@ -167,7 +170,6 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             # Add Click to Clickstream
             ClickstreamInterface = pManager.manager.GetClickstreamInterface()
             # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click. Title: '+str(self.ClickTitle)+' Status: '+str(self.ClickStatus))
-            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click. Status: '+str(self.ClickStatus))
 
             click = cClick.cClick()
 
@@ -485,7 +487,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
 
         # dont record invalid or temporary urls
         if self.ClickStatus.startswith('3') or self.ClickStatus.startswith('4') or self.ClickStatus.startswith('5'):
-            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Skipping Click (Status: '+str(self.ClickStatus)+')')
+            # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Skipping Click (Status: '+str(self.ClickStatus)+')')
             return 0
 
         # Get cProxyInterface
