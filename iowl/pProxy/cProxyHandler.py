@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.15 $"
+__version__ = "$Revision: 1.16 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.16  2001/05/26 11:48:31  i10614
+changed "No Title" to "Unknown Title".
+
 Revision 1.15  2001/05/26 11:47:11  i10614
 changed chunksize to 1024Byte -> needed for title extraction.
 
@@ -129,7 +132,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
                 return
 
             # init title string
-            self.ClickTitle = 'No Title'
+            self.ClickTitle = 'Unknown Title'
 
             # Build Timestamp for click
             self.ClickTimestamp = time.time()
