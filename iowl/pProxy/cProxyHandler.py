@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.14 $"
+__version__ = "$Revision: 1.15 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.15  2001/05/26 11:47:11  i10614
+changed chunksize to 1024Byte -> needed for title extraction.
+
 Revision 1.14  2001/05/26 11:42:12  i10614
 removed page title from debug output
 
@@ -346,7 +349,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             self.wfile.write('\r\n')
 
             bChecked = 0
-            iBufferSize = 512
+            iBufferSize = 1024
             iCount = 0;
             # transfer actual document by chunks of iBufferSize
             while 1:
