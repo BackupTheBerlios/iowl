@@ -10,7 +10,7 @@ ARGUMENTS="pManagement/iowl.py"
 
 # var's for start - stop
 IOWLPS=`ps U $UID | egrep "$PYTHON $IOWL_DIR/$ARGUMENTS" | head -1 | tail -1` 
-PROG=`echo "$IOWLPS" | cut -c27-90`
+PROG=`echo "$IOWLPS" | cut -c27-82`
 IOWLPID=`echo "$IOWLPS" | cut -c-5`
 
 # set Pythonpath so python can find all our modules and append original $PYTHONPATH.
