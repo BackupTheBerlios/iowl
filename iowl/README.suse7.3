@@ -1,0 +1,51 @@
+Table of contents
+
+	1. You need
+	2. Usage
+	3. Tips
+
+###############################################################################
+1. You Need
+
+expat 			-> series sgm locatet in sgm1
+python 			-> series d locatet in d3
+pyxml 			-> series sgm locatet in sgm1
+
+lynx 			-> series n locatet in n1 
+or other browser!
+
+iOwl.net - sources 	-> http://www.iowl.net/files/daily/current-iowl.tar.gz
+
+###############################################################################
+2. Usage
+
+tar -xzvf current-iowl.tar-gz
+
+cd iowl
+
+./iowl.sh start
+	
+changing http-proxy in your favorite browser to localhost:3228
+-> see http://www.iowl.net/support/browser.php
+
+browsing http://my.iowl.net -> does it work? great iOwl.nwt is running!
+
+eg:
+export http_proxy=http://localhost:3228/
+lynx my.iowl.net
+
+
+###############################################################################
+3. Tips
+
+maybee get python2.2-rpm from  
+ftp://ftp.python.org/pub/python/2.2/rpms/python2-2.2-2.rpm
+(there are some dependency problems, wenn using 7.3 minimal-system .. I'm
+looking for doc's)
+
+maybe subscribe to iowl-users@lists.berlios.de at
+http://developer.berlios.de/mail/?group_id=250   
+
+if there some bugs submit them at
+http://developer.berlios.de/bugs/?func=addbug&group_id=250
+and if you are not member @ berlios.de use mailto:iowl-devel@lists.berlios.de
