@@ -1,9 +1,12 @@
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cProxyCore.py,v $
-Revision 1.1  2001/03/24 19:23:01  i10614
-Initial revision
+Revision 1.2  2001/03/26 17:49:35  i10614
+changed http://iowl to http://my.iowl.net. Improved title extraction.
+
+Revision 1.1.1.1  2001/03/24 19:23:01  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.5  2001/03/18 18:51:32  mbauer
 proxy now only listens on localhost, not reachable from other computers
@@ -42,7 +45,7 @@ class cProxyCore:
         self.iProxyPort = 3228
 
         # clicktime in seconds to seperate implicit and explicit clicks
-        self.fClickTime = 1.0
+        self.fClickTime = 2.0
 
 
     def SetPort(self, port):
@@ -93,7 +96,7 @@ class cProxyCore:
     def StopListen(self):
         """Stop the Proxy"""
 
-        # dont know how to stop a server that started throug serve_forever() ...
+        # XXX - dont know how to stop a server that started through serve_forever() ...
         pass
 
 

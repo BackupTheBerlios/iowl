@@ -1,9 +1,12 @@
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cProxyHandler.py,v $
-Revision 1.1  2001/03/24 19:23:03  i10614
-Initial revision
+Revision 1.2  2001/03/26 17:49:35  i10614
+changed http://iowl to http://my.iowl.net. Improved title extraction.
+
+Revision 1.1.1.1  2001/03/24 19:23:03  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.15  2001/03/18 22:28:19  mbauer
 catching socket-errors
@@ -48,6 +51,7 @@ import string
 import socket
 import urlparse
 import cClick
+import htmlentitydefs
 
 class cProxyHandler(SocketServer.StreamRequestHandler):
     """The handler hook-in for the proxyServer
@@ -310,6 +314,8 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         data    -- data as read from server
         return  -- string containing title of data
 
+        XXX - replace html entities with their characters
+
         """
 
         # be sure to have a string
@@ -323,14 +329,21 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
 
         sTitle = ''
         if (iStart >= 0) and (iEnd > iStart):
-            # okay, we have a complete title-tag :-)
-            sTempTitle = sData[iStart+len('<title>'):iEnd]
-            if len(sTempTitle) > 45:
-                # cut off too long title
-                sTitle = sTempTitle[:45] + '...'
-                return sTitle
+            # okay, we have a complete title-tag
+            sTitle = sData[iStart+len('<title>'):iEnd]
 
-            return sTempTitle
+            # remove leading / trailing whitespaces
+            sTitle = string.strip(sTitle)
+
+            if len(sTitle) > 55:
+                # cut off too long title
+                sTitle = sTitle[:55] + '...'
+
+            # replace html entities
+            # for ent in htmlentitydefs.entitydefs.keys():
+            #     string.replace(sTitle, '&'+ent+';', htmlentitydefs.entitydefs[ent])
+
+            return sTitle
 
         return 'Unknown Title'
 
@@ -409,12 +422,12 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
     def IsCommand(self, host):
         """true if this request is a command for iOwl
 
-        commands have a url of type http://iowl/...
+        commands have a url of type http://my.iowl.net
         -> if host == iowl i received a command.
 
         """
 
-        if str(host) == 'iowl':
+        if str(host) == 'my.iowl.net':
             return 1
 
         return 0
