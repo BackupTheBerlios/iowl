@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.11 $"
+__version__ = "$Revision: 1.12 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.12  2001/05/25 18:47:31  i10614
+bugfix for downloading in chunks
+
 Revision 1.11  2001/04/22 17:53:27  i10614
 removed debug output
 
@@ -221,7 +224,6 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         # XXX Cant handle keep-alive <-- FIXME!
         self.try_del(dHeaders, 'connection')
 
-
         # build new request
         try:
             request = '%s %s HTTP/1.0\r\n%s\r\n%s' % (method, path,
@@ -300,6 +302,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         """Send request to target server"""
         try:
             server.write(request)
+            # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Sending request: '+str(request))
             server.flush()
         except socket.error, err:
             self.error(500, 'Error sending data to "%s" (%s)' % (host, err))
@@ -320,6 +323,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         self.ClickStatus = string.strip(status)
 
         dHeaders = self.ParseHeaders(server)
+
         # store content-type for Clickstream:
         self.ClickContent = ''
         if dHeaders.has_key('content-type'):
@@ -335,19 +339,24 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             self.wfile.write('\r\n')
 
             bChecked = 0
-            # iBufferSize = 4096
-            iBufferSize = 40
+            iBufferSize = 512
+            iCount = 0;
             # transfer actual document by chunks of iBufferSize
             while 1:
-                data = server.read()
+                iCount+=1
+                pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Getting Chunk '+str(iCount))
+                data = server.read(iBufferSize)
                 if bChecked==0:
+                    pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Extracting Title!')
                     # need to look inside first buffer to determine if there is a <title></title> tag.
                     self.ClickTitle = self.ExtractTitle(str(data[:]))
                     bChecked = 1
                 if not data:
                     break
                 self.wfile.write(data)
+
             self.wfile.flush()
+
         except:
             # cant write to socket. probably user hit the stop-button of browser
             # ignore error
