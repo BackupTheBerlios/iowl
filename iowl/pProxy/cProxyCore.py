@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.8 $"
+__version__ = "$Revision: 1.9 $"
 
 """
 $Log: cProxyCore.py,v $
+Revision 1.9  2002/02/19 13:47:58  Saruman
+fixed typo handler_error to handle_error.
+
 Revision 1.8  2002/02/18 11:31:16  Saruman
 Fixed bug #102:
 SystemExit exception no longer dumps irritating messages
@@ -66,7 +69,7 @@ class MyThreadingTCPServer(SocketServer.ThreadingTCPServer):
             pass
         else:
             # call superclass' handle_error
-            SocketServer.ThreadingTCPServer.handler_error(request, client_adress)
+            SocketServer.ThreadingTCPServer.handle_error(request, client_adress)
 
 
 
@@ -144,7 +147,6 @@ class cProxyCore:
         """
 
         # create Server, pass cProxyHandler
-        # self.Server = SocketServer.ThreadingTCPServer((self.sListenAt, self.iProxyPort), cProxyHandler.cProxyHandler)
         self.Server = MyThreadingTCPServer((self.sListenAt, self.iProxyPort), cProxyHandler.cProxyHandler)
         # prevent "address in use"-error
         self.Server.allow_reuse_address = 1
