@@ -1,8 +1,11 @@
   
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cRule.py,v $
+Revision 1.3  2002/03/04 22:05:18  aharth
+added recommendations count
+
 Revision 1.2  2002/02/10 21:39:09  aharth
 added showrules feature
 
@@ -156,6 +159,16 @@ class cRule:
 
         """
         self.iSupport = iSupport
+
+
+    def GetConfidence(self):
+        """Return confidence for rule. """
+        return self.iConfidence
+
+
+    def GetSupport(self):
+        """Set support for rule. """
+        return self.iSupport
 
 
     def HasUrls(self, lUrls):

@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.7 $"
+__version__ = "$Revision: 1.8 $"
 
 """
 $Log: cAssociationRules.py,v $
+Revision 1.8  2002/03/04 22:05:18  aharth
+added recommendations count
+
 Revision 1.7  2002/01/30 17:52:50  aharth
 fixed bug #105
 
@@ -136,14 +139,14 @@ class cAssociationRules:
 
         # prune itemsets
         # XXX is that a good value??
-        supportThreshold = iOverallCount/50
+        supportThreshold = 3 #iOverallCount/400
         #supportThreshold = .005*iOverallCount
         if (supportThreshold < 2):
             supportThreshold = 2
         if (supportThreshold > 10):
             supportThreshold = 10
 
-        pManager.manager.DebugStr('pAssociationRules '+ __version__ +': Support threshold '+str(iOverallCount) + '/50 = '+str(supportThreshold)+'.', 2)
+        pManager.manager.DebugStr('pAssociationRules '+ __version__ +': Support threshold '+str(iOverallCount) + '/400 = '+str(supportThreshold)+'.', 2)
         oneItemsets.Prune(supportThreshold)
 
         oneItemsets.CloseFile()
@@ -219,6 +222,7 @@ class cAssociationRules:
 
         for itemset in largeItemsets.GetList():
             lUrls = itemset.GetUrls()
+            iCount = itemset.GetCount()
             for url in lUrls:
                 # create new rule
                 rule = cRule.cRule()
@@ -229,6 +233,9 @@ class cAssociationRules:
                 index = lAnts.index(url)
                 del lAnts[index]
                 rule.SetAntecedents(lAnts)
+                # FIXME XXX only sets count of itemsets, not real
+                # support or confidence
+                rule.SetSupport(iCount)
                 psi.AddRule(rule)
 
 
