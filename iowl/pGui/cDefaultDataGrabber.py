@@ -1,9 +1,12 @@
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cDefaultDataGrabber.py,v $
-Revision 1.1  2001/03/24 19:22:54  i10614
-Initial revision
+Revision 1.2  2001/03/26 12:08:23  i10614
+added version and build date
+
+Revision 1.1.1.1  2001/03/24 19:22:54  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.13  2001/03/19 00:58:18  mbauer
 added timestamp to history output
@@ -83,8 +86,8 @@ class cDefaultDataGrabber:
         lSessions = cClickstreamInterface.GetSessions()
 
         # generate dynamic content
-
         sContent = '<h1><b><font face="Arial, Helvetica, sans-serif" size="5" color="#666666">History</font></b></h1>'
+
         if len(lSessions)==0:
             # no history...
             sContent = sContent + 'Sorry, there is no surfing history yet. Please start surfing first :-)'
@@ -125,6 +128,10 @@ class cDefaultDataGrabber:
                 if iClickIndex > iMaxClicks:
                     # dont display too many clicks!
                     break
+
+
+        # add version and build
+        sContent = sContent + '<p align="right"><small>Version: %s, build %s</small></p>' % (pManager.manager.GetVersion(), pManager.manager.GetBuild())
 
         # Get second part of page
         sPart2 = self.cGui.GetEndPage()

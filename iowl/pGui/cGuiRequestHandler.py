@@ -1,9 +1,12 @@
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
-Revision 1.1  2001/03/24 19:22:56  i10614
-Initial revision
+Revision 1.2  2001/03/26 12:08:23  i10614
+added version and build date
+
+Revision 1.1.1.1  2001/03/24 19:22:56  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.10  2001/03/18 23:12:42  mbauer
 removed obsolete usage of cHistoryDataGrabber
@@ -57,7 +60,6 @@ class cGuiRequestHandler:
         self.cDefaultDataGrabber = cDefaultDataGrabber.cDefaultDataGrabber(self)
         self.cErrorDataGrabber = cErrorDataGrabber.cErrorDataGrabber(self)
         self.cHelpDataGrabber = cHelpDataGrabber.cHelpDataGrabber(self)
-        # self.cHistoryDataGrabber = cHistoryDataGrabber.cHistoryDataGrabber(self)
         self.cAboutDataGrabber = cAboutDataGrabber.cAboutDataGrabber(self)
         self.cSessionRecommendationDataGrabber = cSessionRecommendationDataGrabber.cSessionRecommendationDataGrabber(self)
         self.cLongtermRecommendationDataGrabber = cLongtermRecommendationDataGrabber.cLongtermRecommendationDataGrabber(self)
@@ -206,7 +208,7 @@ class cGuiRequestHandler:
                     <head>
                     <title>%s</title>
                     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-                    <base href="http://iowl/">
+                    <base href="http://my.iowl.net/">
                     </head>
                     <body bgcolor="#BBBBBB" text="#000000" link="#AA0000" vlink="#880000" alink="#AA0000" background="data/pix/back.gif">
                     """ %sTitle
@@ -231,19 +233,19 @@ class cGuiRequestHandler:
         # load from disc
         file = open(self.sActiveFilename, 'r')
 
-        # read aboutfile to string
+        # read activefile to string
         sContent = file.read()
 
         return sContent
 
 
     def GetInactivePage(self):
-        """Return first part of guipage with state = active """
+        """Return first part of guipage with state = inactive """
 
         # load from disc
         file = open(self.sInactiveFilename, 'r')
 
-        # read aboutfile to string
+        # read inactivefile to string
         sContent = file.read()
 
         return sContent
@@ -254,23 +256,11 @@ class cGuiRequestHandler:
         # load from disc
         file = open(self.sEndFilename, 'r')
 
-        # read aboutfile to string
+        # read endfile to string
         sContent = file.read()
 
         return sContent
 
-
-
-    ####### obsolete ##########
-    def GetFooter(self):
-        """return footer part for iOwl-pages"""
-        sData = """<hr>
-                   <p>copyright 2001 intelligent iOwl Network
-                   </p>
-                   </body>
-                   </html>
-                """
-        return sData
 
 
 

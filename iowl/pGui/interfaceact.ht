@@ -9,15 +9,15 @@
           <td width="10%" valign="top">
             <div align="center"><img src="../data/pix/active.gif" width="76" height="16" alt="active"><br>
               <img src="../data/pix/back_nav.gif" width="8" height="8" alt=""><br>
-              <a href="http://iowl/command?action=deactivate"><img src="../data/pix/deactivate.gif" width="98" height="16" alt="deactivate" border="0"></a><br>
+              <a href="http://my.iowl.net/command?action=deactivate"><img src="../data/pix/deactivate.gif" width="98" height="16" alt="deactivate" border="0"></a><br>
                 <img src="../data/pix/back_nav.gif" width="20" height="20" alt=""> </div>
           </td>
         </tr>
         <tr>
             <td valign="bottom" colspan="2"><img src="../data/pix/back_nav.gif" width="2" height="2" alt="">
-                <a href="http://iowl/command?action=showhistory"><img src="../data/pix/his.gif" width="129" height="22" alt="history" border="0"></a>
-                <a href="http://iowl/command?action=sessionrecommendation"><img src="../data/pix/rec.gif" width="129" height="22" alt="recommendation" border="0"></a>
-                <a href="http://iowl/command?action=showhelp"><img src="../data/pix/hel.gif" width="129" height="22" alt="help" border="0"></a>
+                <a href="http://my.iowl.net/command?action=showhistory"><img src="../data/pix/his.gif" width="129" height="22" alt="history" border="0"></a>
+                <a href="http://my.iowl.net/command?action=sessionrecommendation"><img src="../data/pix/rec.gif" width="129" height="22" alt="recommendation" border="0"></a>
+                <a href="http://my.iowl.net/command?action=showhelp"><img src="../data/pix/hel.gif" width="129" height="22" alt="help" border="0"></a>
             </td>
         </tr>
       </table>
