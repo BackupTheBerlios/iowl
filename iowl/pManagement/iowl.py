@@ -1,9 +1,12 @@
 #!/usr/local/bin/python
 
-__version__ = "$Revision: 1.11 $"
+__version__ = "$Revision: 1.12 $"
 
 """
 $Log: iowl.py,v $
+Revision 1.12  2001/07/15 10:17:32  i10614
+added doubleclick -> show iowl.net to trayicon
+
 Revision 1.11  2001/05/26 11:39:10  i10614
 changed win32-traymenu
 
@@ -150,8 +153,11 @@ if sys.platform[:3] == 'win':
         def OnTaskbarNotify(self, hwnd, msg, wparam, lparam):
             if lparam==win32con.WM_LBUTTONUP:
                 pass
+
             elif lparam==win32con.WM_LBUTTONDBLCLK:
-                pass
+                # Open Browser pointing to "http://my.iowl.net"
+                ShellExecute(0, "open", "http://my.iowl.net", None, None, win32con.SW_SHOWNORMAL);
+
             elif lparam==win32con.WM_RBUTTONUP:
                 menu = CreatePopupMenu()
                 if (pManager.manager.bIsRunning == 0):
@@ -170,7 +176,7 @@ if sys.platform[:3] == 'win':
                     else:
                         # recording
                         AppendMenu( menu, win32con.MF_STRING, 1024, "De-Activate")
-                        
+
                     AppendMenu( menu, win32con.MF_STRING, 1025, "Show iOwl.net")
                     AppendMenu( menu, win32con.MF_STRING, 1027, "Hide menu")
                     AppendMenu( menu, win32con.MF_SEPARATOR, 1027, "bar")
@@ -178,6 +184,7 @@ if sys.platform[:3] == 'win':
 
                 pos = GetCursorPos()
                 TrackPopupMenu(menu, win32con.TPM_LEFTALIGN, pos[0], pos[1], 0, self.hwnd, None)
+
             return 1
 
         def OnCommand(self, hwnd, msg, wparam, lparam):
@@ -297,7 +304,7 @@ def StartiOwl(tray):
     if tray!=None:
         # pManager needs the trayicon to update it...
         pManager.manager.SetTray(tray)
-        
+
     # start iOwl.net
     try:
         pManager.manager.StartOwl()
