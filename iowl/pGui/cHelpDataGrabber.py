@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cHelpDataGrabber.py,v $
+Revision 1.4  2002/02/10 22:46:05  aharth
+changed jscript stuff for session recommendation
+
 Revision 1.3  2001/05/26 13:00:49  i10614
 changed iowl version and formated it
 
@@ -73,7 +76,7 @@ class cHelpDataGrabber:
             sPart1 = self.cGui.GetActivePage()
 
         # add version and build
-        sContent = sContent + '<p align="center"><font face="Arial, Helvetica, sans-serif" color="#666666"><b>Version: %s alpha 3, build %s</b></font></p>' % (pManager.manager.GetVersion(), pManager.manager.GetBuild())
+        sContent = sContent + '<p class="message">Version: %s alpha 3, build %s</p>' % (pManager.manager.GetVersion(), pManager.manager.GetBuild())
 
        # Get second part of page
         sPart2 = self.cGui.GetEndPage()

@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cSessionRecommendationDataGrabber.py,v $
+Revision 1.4  2002/02/10 22:46:05  aharth
+changed jscript stuff for session recommendation
+
 Revision 1.3  2001/04/07 17:06:23  i10614
 many, many bugfixes for working network communication
 
@@ -28,7 +31,7 @@ initial release
 """
 import pManager
 import urlparse
-import cJavaScriptTimer
+import time
 
 class cSessionRecommendationDataGrabber:
     """Get recommendations for current session"""
@@ -54,20 +57,19 @@ class cSessionRecommendationDataGrabber:
 
         """
 
-        # time to wait till reload
-        iSeconds = 25
-
         # get pRecommendationInterface
         cRecommendationInterface = pManager.manager.GetRecommendationInterface()
 
         # start request for Recommendations
         iReqID = cRecommendationInterface.GenerateSessionRequest()
 
-        # build url to load after timer finished
-        sNewUrl = 'http://my.iowl.net/command?action=getrecommendations&id=%s&sUrl=%s' % (str(iReqID), 'current_session')
+        time.sleep(3)
 
-        # get javascript timer
-        sScript, sFunction, sForm = cJavaScriptTimer.cJavaScriptTimer().GetTimer(iSeconds, sNewUrl)
+        # get list of clicks
+        lClicks = cRecommendationInterface.GetRecommendations(iReqID)
+
+        # get header
+        sHeader = self.cGuiRequestHandler.GetHeader('Recommendations for Current Session')
 
         # Get recording Status of proxy
         bState = pManager.manager.GetProxyInterface().GetStatus()
@@ -83,23 +85,24 @@ class cSessionRecommendationDataGrabber:
             # get active page
             sPart1 = self.cGuiRequestHandler.GetActivePage()
 
-        # get Header including timerscript
-        sHeader = self.cGuiRequestHandler.GetHeader('iOwl.net - Waiting for Recommendations', sScript, sFunction)
-
-        # get content
-        sContent = """
-                   <h1><font face="Arial, Helvetica, sans-serif" size="5" color="#666666">Gathering recommendations</font></h1>
-                   <p>
-                   Please wait while iOwl.net gathers information for your request.
-                   Time left: %s
-                   seconds.
-                   """ %sForm
+        # get dynamic content
+        sContent = '<h2>Recommendations</h2>'
+        if lClicks == None:
+            sContent = sContent + '<p class="message">Sorry, i did not find any ressources i could recommend. :-(</p>'
+        else:
+            sContent = sContent + '<p class="message">Success :-). I would recommend you have a look at the following ressource(s):</p>'
+            iCounter = 0
+            for click in lClicks:
+                iCounter+=1
+                sContent = sContent +'<p><a href="%s" target="_new">%s</a></p>' % (str(urlparse.urlunparse(click.GetUrl())), str(click.GetTitle()))
+                if (iCounter > 15):
+                    break
 
         # Get second part of page
         sPart2 = self.cGuiRequestHandler.GetEndPage()
 
         # glue together
-        sPage = sPart1 + sHeader + sContent + sPart2
+        sPage = sHeader + sPart1 + sContent + sPart2
 
         # return page and content-type
         return sPage, 'text/html'

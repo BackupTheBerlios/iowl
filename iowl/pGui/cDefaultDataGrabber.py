@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.8 $"
+__version__ = "$Revision: 1.9 $"
 
 """
 $Log: cDefaultDataGrabber.py,v $
+Revision 1.9  2002/02/10 22:46:05  aharth
+changed jscript stuff for session recommendation
+
 Revision 1.8  2002/02/10 21:40:54  aharth
 added showrules feature, cleaned up ui
 
@@ -81,7 +84,7 @@ class cDefaultDataGrabber:
         """
 
         # Get Header
-        sHeader = self.cGui.GetHeader('iOwl.net')
+        sHeader = self.cGui.GetHeader('iOwl.net - History')
 
         # Get recording Status of proxy
         bState = pManager.manager.GetProxyInterface().GetStatus()
@@ -121,6 +124,7 @@ class cDefaultDataGrabber:
                 #     sContent = sContent + '<h4>Session No. '+ str(iSessionIndex)+'</h4>'
 
                 # session creation date
+                sContent = sContent + "<p>-</p>"
                 #sContent = sContent + '<h4>%s</h4>' % time.ctime(cSession.GetCreationTime())
                 # get copy of all clicks from session
                 lClicks = cSession.GetClicks()[:]
