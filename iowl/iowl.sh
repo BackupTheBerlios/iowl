@@ -3,71 +3,64 @@
 
 # the executable
 # PYTHON="python"
-
-# debian needs this:
 PYTHON="python2.2"
 
 # arguments:
 ARGUMENTS="pManagement/iowl.py"
 
-# check if iOwl is already running
-PIDLIST=$(/bin/pidof $PYTHON $ARGUMENTS)
+# var's for start - stop
+IOWLPS=`ps U $UID | egrep "$PYTHON $ARGUMENTS" | head -1 | tail -1` 
+PROG=`echo "$IOWLPS" | cut -c27-56`
+IOWLPID=`echo "$IOWLPS" | cut -c-5`
 
 # set Pythonpath so python can find all our modules and append original $PYTHONPATH.
 PYTHONPATH=./pAssoRules:./pClickstream:./pGui:./pManagement:./pMisc:./pNetwork:./pProxy:./pRecommendation:./pStatistics:$PYTHONPATH
 export PYTHONPATH
 
-# var's for stop
-BEFEHL="python2.2 pManagement/iowl.py"
-PSAUSGABE=`ps U $UID | egrep "$BEFEHL" | head -1 | tail -1` 
-PROG=`echo "$PSAUSGABE" | cut -c27-56`
-IOWLPID=`echo "$PSAUSGABE" | cut -c-5`
-
 # how start|stop|kill does work
 
 iowl_start () {
-	if [ ! -n "$PIDLIST" ]
-	then
-  	# no pids found. start iOwl.net
-	# start iOwl
-  	$PYTHON $ARGUMENTS &
-  	
-	else
-	# iOwl already running
-  	echo "iOwl.net already running!"
-  	echo "(PIDs: "$PIDLIST")"
+	case "$PROG" in
+
+		*"$PYTHON $ARGUMENTS" )
+			echo "iOwl.net already running!"
+		;;
+
+		* )
+			$PYTHON $ARGUMENTS &
+		;;
 	
-	fi
+	esac
 }
 
 iowl_stop () {
    	case "$PROG" in
 
-   	*"$BEFEHL"* )
-		kill -2 $IOWLPID
-		echo "iOwl.net processes stopped"
-	;;
+   		*"$PYTHON $ARGUMENTS" )
+			kill -2 $IOWLPID
+			echo "iOwl.net processes stopped!"
+		;;
 
-	* )		
-		echo "No iOwl.net running" 
-	;;
+		* )		
+			echo "iOwl.net is not running!" 
+		;;
 
-   esac
+   	esac
 }  
 
 iowl_kill () {
-   case "$PROG" in
+	case "$PROG" in
 
-   	*"$BEFEHL"* )
-		kill -9 $IOWLPID
-		echo "iOwl.net processes killed"
-	;;
+   		*"$PYTHON $ARGUMENTS" )
+			kill -9 $IOWLPID
+			echo "iOwl.net processes killed!"
+		;;
 
-	* )		
-		echo "No iOwl.net running" 
-	;;
+		* )		
+			echo "iOwl.net is not running!" 
+		;;
 
-   esac
+  	 	esac
 }
 
 # iOwl.net start|stop|restart|kill
