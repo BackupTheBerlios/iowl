@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.12 $"
+__version__ = "$Revision: 1.13 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.13  2001/07/19 19:44:15  i10614
+removed warning at initial setting of options
+
 Revision 1.12  2001/07/15 14:36:29  i10614
 implemented config-change from GUI
 
@@ -166,7 +169,8 @@ class pClickstreamInterface:
         elif (sParameter == 'restartsession'):
             self.iRestart = string.atoi(sValue)
             # XXX Update watchdog, otherwise new session timeout will only take effect for next session!
-            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning! Change of session timeout will currently only take effect for next session.')
+            if pManager.manager.IsRunning():
+                pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning: Change of session timeout will currently only take effect for next session.')
 
 
     def Shutdown(self):

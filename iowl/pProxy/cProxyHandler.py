@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.18 $"
+__version__ = "$Revision: 1.19 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.19  2001/07/19 19:46:52  i10614
+removed warning at initial setting of options
+
 Revision 1.18  2001/05/30 20:31:32  i10614
 shortened debug output
 
@@ -135,6 +138,9 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             if self.IsCommand(host):
                 # pass request to pGuiInterface
                 self.HandleCommand()
+                # close socket
+                # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Closing Socket (iOwl-Command).')
+                self.connection.close()
                 return
 
             # init title string
@@ -153,12 +159,20 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             try:
                 self.HandleResponse(server)
             except IOError:
+                self.connection.close()
                 return
 
         except socket.error:
             # request could not be fulfilled, most probably because user pressed interrupted his browser
+            # close socket
+            # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Closing Socket.')
+            self.connection.close()
             return
 
+
+        # close socket
+        # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Closing Socket.')
+        self.connection.close()
 
         # finished request
         # Now pass click to pClickstreamINterface, if it is an explicit one
