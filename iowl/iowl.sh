@@ -8,10 +8,8 @@ PYTHON="python2.2"
 # arguments:
 ARGUMENTS="pManagement/iowl.py"
 
-# var's for start - stop
-IOWLPS=`ps U $UID | egrep "$PYTHON $IOWL_DIR/$ARGUMENTS" | head -1 | tail -1` 
-PROG=`echo "$IOWLPS" | cut -c27-82`
-IOWLPID=`echo "$IOWLPS" | cut -c-5`
+# var's - PIDLIST
+PIDLIST=`pidof $PYTHON $IOWL_DIR/$ARGUMENTS`
 
 # set Pythonpath so python can find all our modules and append original $PYTHONPATH.
 PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
@@ -20,47 +18,45 @@ export PYTHONPATH
 # how start|stop|kill does work
 
 iowl_start () {
-	case "$PROG" in
+	if [ -n "$PIDLIST" ];
+        	then
+        	# iOwl.net already running
+        	echo "iOwl.net already running!  (PID's: "$PIDLIST")";
 
-		*"$PYTHON $IOWL_DIR/$ARGUMENTS" )
-			echo "iOwl.net already running!"
-		;;
-
-		* )
-			$PYTHON $IOWL_DIR/$ARGUMENTS &
-		;;
-	
-	esac
+		else
+		# iOwl.net isnt running
+		export PYTHONPATH
+		$PYTHON $IOWL_DIR/$ARGUMENTS 2>&1 &
+		# TODO: Check return value from iOwl;
+	fi
 }
 
 iowl_stop () {
-   	case "$PROG" in
+   	if [ -n "$PIDLIST" ];
+        	then 
+        	# iOwl.net is already running
+        	echo "iOwl.net is already running!  (PID's: "$PIDLIST")"
+        	kill -2 $PIDLIST
+        	echo "iOwl.net processes stopped!";
 
-   		*"$PYTHON $IOWL_DIR/$ARGUMENTS" )
-			kill -2 $IOWLPID
-			echo "iOwl.net processes stopped!"
-		;;
-
-		* )		
-			echo "iOwl.net is not running!" 
-		;;
-
-   	esac
+		else
+		# iOwl.net is not running
+		echo "iOwl.net is not running!";
+	fi
 }  
 
 iowl_kill () {
-	case "$PROG" in
+	if [ -n "$PIDLIST" ];
+        	then 
+        	# iOwl.net is already running
+        	echo "iOwl.net is already running!  (PID's: "$PIDLIST")"
+        	kill -9 $PIDLIST
+        	echo "iOwl.net processes killed!";
 
-   		*"$PYTHON $IOWL_DIR/$ARGUMENTS" )
-			kill -9 $IOWLPID
-			echo "iOwl.net processes killed!"
-		;;
-
-		* )		
-			echo "iOwl.net is not running!" 
-		;;
-
-  	 	esac
+		else
+		# iOwl.net is not running
+		echo "iOwl.net is not running!";
+	fi
 }
 
 # iOwl.net start|stop|restart|kill

@@ -12,29 +12,22 @@ ARGUMENTS="pManagement/iowl.py"
 PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
 
 # var's for start
-IOWLPS=`ps U $UID | egrep "$PYTHON $IOWL_DIR/$ARGUMENTS" | head -1 | tail -1`
-PROG=`echo "$IOWLPS" | cut -c27-82`
-IOWLPID=`echo "$IOWLPS" | cut -c-5`
+PIDLIST=`pidof $PYTHON $IOWL_DIR/$ARGUMENTS`
 
-case "$PROG" in
+# if already running do nothing  - else start
 
-	*"$PYTHON $IOWL_DIR/$ARGUMENTS" )
-		# iOwl.net already running
-		echo "iOwl.net already running!"
-	;;
+if [ -n "$PIDLIST" ];
+	then
+	# iOwl.net already running
+	echo "iOwl.net already running!  (PID's: "$PIDLIST")";
 
-	* )
-		# iOwl.net isnt running
-		export PYTHONPATH
-		$PYTHON $IOWL_DIR/$ARGUMENTS 2>&1 &
-		# TODO: Check return value from iOwl
-
-	;;
-	
-esac
+	else
+	# iOwl.net isnt running
+	export PYTHONPATH
+	$PYTHON $IOWL_DIR/$ARGUMENTS 2>&1 &
+	# TODO: Check return value from iOwl;
+fi
   
-##  echo "(PIDs: "$PIDLIST")"
-
 
 # thats it
 exit 0
