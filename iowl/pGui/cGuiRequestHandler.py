@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.12 $"
+__version__ = "$Revision: 1.13 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.13  2002/02/06 17:20:09  abiessmann
+changed image-path from pix/... to images/...
+
 Revision 1.12  2002/01/29 20:35:23  Saruman
 changed priority of debug output
 
@@ -254,7 +257,7 @@ class cGuiRequestHandler:
                     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
                     <base href="http://my.iowl.net/">
                     </head>
-                    <body bgcolor="#CCCCCC" text="#000000" link="#AA0000" vlink="#880000" alink="#AA0000" background="data/pix/back.gif">
+                    <body bgcolor="#CCCCCC" text="#000000" link="#AA0000" vlink="#880000" alink="#AA0000" background="data/images/back.gif">
                     """ %sTitle
         else:
             # need script in header and attribute onload="..."
@@ -265,7 +268,7 @@ class cGuiRequestHandler:
                     <base href="http://my.iowl.net/">
                     %s
                     </head>
-                    <body bgcolor="#BBBBBB" text="#000000" link="#AA0000" vlink="#880000" alink="#AA0000" background="data/pix/back.gif" onload ="%s">
+                    <body bgcolor="#BBBBBB" text="#000000" link="#AA0000" vlink="#880000" alink="#AA0000" background="data/images/back.gif" onload ="%s">
                     """ % (sTitle, sScript, sFunction)
 
         return sData
