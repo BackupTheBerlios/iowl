@@ -1,8 +1,15 @@
 
-__version__ = "$Revision: 1.22 $"
+__version__ = "$Revision: 1.23 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.23  2002/02/21 13:49:45  Saruman
+Fixed totally dumb bug for counting answers. Code was never executed.
+C0-Ueberdeckungstests anyone? ;-)
+
+Introduced mutex for modifying entries in Routing Table.
+PONGS circulating forever should be fixed now.
+
 Revision 1.22  2002/02/21 12:46:18  Saruman
 Added routingtable to statistics page
 
@@ -169,6 +176,9 @@ class cOwlManager:
         # mutex for adding/removing owls
         self.OwlLock = thread.allocate_lock()
 
+        # mutex for adding/removing routing entries
+        self.RouteLock = thread.allocate_lock()
+
         # total number of pongs received for myself
         self.iNumPongsReceived = 0
 
@@ -319,6 +329,9 @@ class cOwlManager:
 
         """
 
+        # lock routing table
+        self.RouteLock.acquire()
+
         # check package
         if not self.IsValidPackage(cNetPackage):
             return 'error'
@@ -332,8 +345,12 @@ class cOwlManager:
         lReqAttributes[self.iMaxAnswers] = 2*cNetPackage.GetTTL()   # number of allowed answers. Dependant on TTL
         lReqAttributes[self.iRecvdAnswers] = 0                      # not yet received any answer
         lReqAttributes[self.iTimeCreated] = time.time()             # timestamp when request was created
+
         # Add request to request-dictionary.
         self.dRequests[cNetPackage.GetID()] = lReqAttributes
+
+        # release routing table
+        self.RouteLock.release()
 
         # if TTL reached zero -> dont distribute request any further
         if cNetPackage.GetTTL() <= 0:
@@ -453,6 +470,8 @@ class cOwlManager:
                 pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received Pong for myself.', 3)
                 # count Pong
                 self.iNumPongsReceived += 1
+                # finish answer
+                self.FinishAnswer(reqAttributes)
                 return
             elif cNetPackage.GetType() == 'answer':
                 # Pass it to pRecommendationInterface
@@ -464,6 +483,8 @@ class cOwlManager:
                 pRecIntf.SetAnswer(elAnswer, cNetPackage.GetID())
                 # count Answer
                 self.iNumAnswersReceived += 1
+                # finish answer
+                self.FinishAnswer(reqAttributes)
                 return
             else:
                 pManager.manager.DebugStr('cOwlManager '+ __version__ +': domType Error! Should never get here!', 1)
@@ -485,16 +506,27 @@ class cOwlManager:
             pManager.manager.DebugStr('cOwlManager '+ __version__ +': Sending Pong to '+str(origOwl.GetIP())+':'+str(origOwl.GetPort())+'.', 4)
             # start new thread for RPC
             thread.start_new_thread(origOwl.Pong, (sObj,))
+            # finish answer
+            self.FinishAnswer(reqAttributes)
             return
         elif cNetPackage.GetType() == 'answer':
             # Pass answer to originating Owl and continue
             # start new thread for RPC
             pManager.manager.DebugStr('cOwlManager '+ __version__ +': Sending Answer to '+str(origOwl.GetIP())+':'+str(origOwl.GetPort())+'.', 4)
             thread.start_new_thread(origOwl.Answer, (sObj,))
+            # finish answer
+            self.FinishAnswer(reqAttributes)
             return
         else:
             pManager.manager.DebugStr('cOwlManager '+ __version__ +': domType Error! Should never get here!', 1)
             return
+
+
+    def FinishAnswer(self, reqAttributes):
+        """Finish handling of incoming answer
+
+        Main purpose: increment and check answercounters
+        """
 
         # increment answer counter for request
         tmp = reqAttributes[self.iRecvdAnswers]
@@ -505,7 +537,17 @@ class cOwlManager:
             # request reached max answer count.
             # delete it from request dictionary.
             pManager.manager.DebugStr('cOwlManager '+ __version__ +': MaxAnswers reached for request "'+cNetPackage.GetID()+'". Deleting it from dictionary.', 3)
-            del self.dRequests[cNetPackage.GetID()]
+
+            # lock Routing Table
+            self.RouteLock.acquire()
+            # request might be deleted while waiting for lock -> ignore failing deletion
+            try:
+                del self.dRequests[cNetPackage.GetID()]
+            except:
+                pass
+
+            # release Routing Table
+            self.RouteLock.release()
 
 
     def Start(self):
@@ -529,19 +571,24 @@ class cOwlManager:
 
         Get called by external timer-thread.
 
-        XXX - Check for possible multithread-problems -> do i need mutex?
-
         """
 
         # get current time
         fTime = time.time()
 
         iNumDeleted = 0
+
+        # lock routing table
+        self.RouteLock.acquire()
+
         for id in self.dRequests.keys():
             if (fTime - self.dRequests[id][self.iTimeCreated]) > self.iRequestLifeTime:
                 # this request is expired! Delete it
                 del self.dRequests[id]
                 iNumDeleted = iNumDeleted + 1
+
+        # release routing table
+        self.RouteLock.release()
 
         if iNumDeleted > 1:
             pManager.manager.DebugStr('cOwlManager '+ __version__ +': Cleaned Requeststable from expired entries. Deleted: '+str(iNumDeleted)+', remaining: '+str(len(self.dRequests.keys())), 3)
