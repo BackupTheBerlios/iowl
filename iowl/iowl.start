@@ -8,30 +8,34 @@ PYTHON="python2.2"
 # arguments:
 ARGUMENTS="pManagement/iowl.py"
 
-# check if iOwl is already running
-PIDLIST=$(/bin/pidof $PYTHON $ARGUMENTS)
+# set Pythonpath so python can find all our modules and keep original $PYTHONPATH.
+PYTHONPATH=./pAssoRules:./pClickstream:./pGui:./pManagement:./pMisc:./pNetwork:./pProxy:./pRecommendation:./pStatistics:$PYTHONPATH
 
-if [ ! -n "$PIDLIST" ]
-then
-  # no pids found. start iOwl.
+# var's for start
+IOWLPS=`ps U $UID | egrep "$PYTHON $ARGUMENTS" | head -1 | tail -1`
+PROG=`echo "$IOWLPS" | cut -c27-56`
+IOWLPID=`echo "$IOWLPS" | cut -c-5`
 
-  # set Pythonpath so python can find all our modules and keep original $PYTHONPATH.
-  PYTHONPATH=./pAssoRules:./pClickstream:./pGui:./pManagement:./pMisc:./pNetwork:./pProxy:./pRecommendation:./pStatistics:$PYTHONPATH
-  export PYTHONPATH
 
-  # start iOwl
-  $PYTHON $ARGUMENTS &
+case "$PROG" in
+
+	*"$PYTHON $ARGUMENTS" )
+		# iOwl.net already running
+		echo "iOwl.net already running!"
+	;;
+
+	* )
+		# iOwl.net isnt running
+		export PYTHONPATH
+		$PYTHON $ARGUMENTS 2>&1 &
+		# TODO: Check return value from iOwl
+
+	;;
+	
+esac
   
-  # TODO: Check return value from iOwl
-  exit 0
-
-else
-
-  # iOwl already running
-  echo "iOwl.net already running!"
-  echo "(PIDs: "$PIDLIST")"
-  exit 0 
-
-fi
+##  echo "(PIDs: "$PIDLIST")"
 
 
+# thats it
+exit 0
