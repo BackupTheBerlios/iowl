@@ -1,8 +1,12 @@
 
-__version__ = "$Revision: 1.15 $"
+__version__ = "$Revision: 1.16 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.16  2002/01/16 18:44:38  aharth
+
+cleaned up data directory
+
 Revision 1.15  2001/08/10 18:31:07  i10614
 added debuglevel to all messages.
 
@@ -130,7 +134,7 @@ class pClickstreamInterface:
     def __init__(self):
         """Constructor."""
         # clickstream is stored in clickstream2001-93-435.xml
-        self.sClickstreamPathName = 'data/sessions/'
+        self.sClickstreamPathName = '../data/sessions/'
         self.iWatchdogID = 0
         self.iRestart = 1200
         self.lSessions = []
