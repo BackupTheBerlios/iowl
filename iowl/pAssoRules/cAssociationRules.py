@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cAssociationRules.py,v $
+Revision 1.3  2001/07/15 10:09:29  i10614
+changed supportThreshold to 0.005 to improve rule computation time
+
 Revision 1.2  2001/04/07 17:06:23  i10614
 many, many bugfixes for working network communication
 
@@ -100,7 +103,8 @@ class cAssociationRules:
 
         # prune itemsets
         # XXX is that a good value??
-        supportThreshold = 1.5 #.005*iOverallCount
+        # supportThreshold = 1.5 #.005*iOverallCount
+        supportThreshold = .005*iOverallCount
         oneItemsets.Prune(supportThreshold)
 
         # Mike - removed debug output
