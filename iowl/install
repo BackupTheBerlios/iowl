@@ -1,24 +1,46 @@
 #!/bin/sh
 # iOwl.net - install
 
-DIR=`pwd`
+echo ""
+echo "			!! Read README first !!"
+echo ""
+echo "This script changes your .bash_profile and .bashrc for some environment"
+echo "variables and to start iOwl.net at every console-login (if it does not run)"
+echo ""
+echo "You don't have to do this. You can also start iOwl.net using iowl.sh start."
+echo "If this doesn't work, install can NOT correct this -> contact iowl-users@lists.berlios.de"
+echo ""
+echo -n "DO YOU AGREE THIS CHANGES? (y|N):"
 
-if [ ! "`cat ~/.bash_profile | grep iowl.sh`" ]; then
-echo "" >> ~/.bash_profile;
-echo IOWL_DIR="$DIR" >> ~/.bash_profile;
-echo export IOWL_DIR >> ~/.bash_profile;
-echo exec "$DIR"/iowl.sh start \& >> ~/.bash_profile;
-echo "Adding iowl.start to ~/.bash_profile to start iOwl.net on every console login";
-else echo "iowl.start is part of your ~/.bash_profile and starts iOwl.net on every console login";
-fi
+read gvINPUT
 
-if [ ! "`cat ~/.bashrc | grep iowl.sh`" ];then
-echo "" >> ~/.bashrc;
-echo IOWL_DIR="$DIR" >> ~/.bashrc;
-echo export IOWL_DIR >> ~/.bashrc;
-echo exec "$DIR"/iowl.sh start\& >> ~/.bashrc;
-echo "Adding iowl.sh start to ~/.bashrc to start iOwl.net on every X login";
-else echo "iowl.sh start is part of your ~/.bashrc and starts iOwl.net on every X login";
-fi
+case "$gvINPUT" in
+"y" | "Y" ) 	echo ""
+		DIR=`pwd`
 
-exit 0
+		if [ ! "`cat ~/.bash_profile | grep iowl.sh`" ]; then
+		echo "" >> ~/.bash_profile;
+		echo IOWL_DIR="$DIR" >> ~/.bash_profile;
+		echo export IOWL_DIR >> ~/.bash_profile;
+		echo exec "$DIR"/iowl.sh start \& >> ~/.bash_profile;
+		echo "Adding iowl.start to ~/.bash_profile to start iOwl.net on every console login";
+		else echo "iowl.start is part of your ~/.bash_profile and starts iOwl.net on every console login";
+		fi
+
+		if [ ! "`cat ~/.bashrc | grep iowl.sh`" ];then
+		echo "" >> ~/.bashrc;
+		echo IOWL_DIR="$DIR" >> ~/.bashrc;
+		echo export IOWL_DIR >> ~/.bashrc;
+		echo exec "$DIR"/iowl.sh start\& >> ~/.bashrc;
+		echo "Adding iowl.sh start to ~/.bashrc to start iOwl.net on every X login";
+		else echo "iowl.sh start is part of your ~/.bashrc and starts iOwl.net on every X login";
+		fi
+
+		exit 0
+		;;
+
+* )		exit 1
+		;;
+
+esac		
+
