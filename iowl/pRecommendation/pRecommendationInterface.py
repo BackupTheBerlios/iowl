@@ -1,10 +1,10 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: pRecommendationInterface.py,v $
-Revision 1.2  2001/03/24 23:28:58  i10614
-ShowTime! Activated network communication for requests and answers.
+Revision 1.3  2001/03/24 23:40:35  i10614
+various bugfixes
 
 Revision 1.1.1.1  2001/03/24 19:22:50  i10614
 Initial import to stio1 from my cvs-tree
@@ -119,12 +119,12 @@ class pRecommendationInterface:
         pNetIntf = pManager.manager.GetNetworkInterface()
 
         # Send request to iOwl-net
-        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Now sending single request to network. Id: '+str(sId))
-        sId = pNetInf.SendRequest(el)
+        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Now sending single request to network.')
+        sId = pNetIntf.SendRequest(el)
         pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Finished sending single request to network. Id: '+str(sId))
 
         # Generate empty list for answers
-        self.dRules[sID] = []
+        self.dRules[sId] = []
 
         # return id to gui
         return sId
@@ -160,12 +160,12 @@ class pRecommendationInterface:
         pNetIntf = pManager.manager.GetNetworkInterface()
 
         # Send request to iOwl-net
-        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Now sending session request to network. Id: '+str(sId))
-        sId = pNetInf.SendRequest(el)
+        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Now sending session request to network.')
+        sId = pNetIntf.SendRequest(el)
         pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Finished sending session request to network. Id: '+str(sId))
 
         # Generate empty list for answers
-        self.dRules[sID] = []
+        self.dRules[sId] = []
 
         # return id to gui
         return sId
@@ -184,7 +184,7 @@ class pRecommendationInterface:
         # Look if request exists in my list
         if self.dRules.has_key(sId):
             # Look if i received answers from other owls
-            if len(seld.dRules[sId]) > 0:
+            if len(self.dRules[sId]) > 0:
                 lClicks = self.RecBuilder.BuildRecommendation(self.dRules[sId])
                 # okay, now delete id from list to disable new answers coming in.
                 del self.dRules[sId]
