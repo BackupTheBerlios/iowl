@@ -76,13 +76,13 @@ if [ -z $PYTHON ]; then
 	fi
 fi
 
-if [ -z $IOWL_DIR ]; then
+if [ -d $IOWL_DIR ]; then
 	# If $IOWL_DIR is not set in global profile, bashrc or users 
 	# own profile, bashrc -> set to working directory
-	IOWL_DIR=`pwd`
 	export IOWL_DIR
 else
 	# otherwise export it
+	IOWL_DIR=`pwd`
 	export IOWL_DIR	
 fi
 
