@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.20 $"
+__version__ = "$Revision: 1.21 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.21  2002/03/01 14:39:14  aharth
+minor bugfix for activate/deactivate
+
 Revision 1.20  2002/02/27 11:03:55  Saruman
 minor html mods
 
@@ -298,10 +301,11 @@ class cGuiRequestHandler:
         dParams ={}
         if len(dQuery.keys()) == 0:
             # No request. Display default iOwl page
-            return self.cDefaultDataGrabber.GetHtml(dParams)
-
-        # parse query
-        sCommand, dParams = self.cCommandValidator.ValidateQuery(dQuery)
+            sCommand = 'showhistory'
+            dParams = None
+        else:
+            # parse query
+            sCommand, dParams = self.cCommandValidator.ValidateQuery(dQuery)
 
         return self.ExecuteCommand(sCommand, dParams)
         

@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 
 """
 $Log: cSingleRecommendationDataGrabber.py,v $
+Revision 1.7  2002/03/01 14:39:14  aharth
+minor bugfix for activate/deactivate
+
 Revision 1.6  2002/02/18 13:39:42  Saruman
 Made waittime for recommendations configurable.
 Setting default waittime to 15 seconds instead of 5.
@@ -81,7 +84,7 @@ class cSingleRecommendationDataGrabber:
         lClicks = cRecommendationInterface.GetRecommendations(iReqID)
 
         # get header
-        sHeader = self.cGuiRequestHandler.GetHeader('Recommendations for Current Session')
+        sHeader = self.cGuiRequestHandler.GetHeader('Recommendation')
 
         # Get recording Status of proxy
         bState = pManager.manager.GetProxyInterface().GetStatus()
