@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.23 $"
+__version__ = "$Revision: 1.24 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.24  2002/01/28 18:49:41  Saruman
+removed debug output
+
 Revision 1.23  2002/01/25 15:19:35  aharth
 fixed typo in cDOM that caused error message in pAssocRulesInterface
 
@@ -428,8 +431,8 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         sTitle = u''
         print 'iStart = ' + str(iStart)
         print 'iEnd = ' + str(iEnd)
-        print sData
-        
+        # print sData
+
         if (iStart >= 0) and (iEnd > iStart):
             # okay, we have a complete title-tag
             sTitle = sData[iStart+len('<title>'):iEnd]
