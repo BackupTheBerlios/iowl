@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.10 $"
+__version__ = "$Revision: 1.11 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.11  2001/04/22 17:53:27  i10614
+removed debug output
+
 Revision 1.10  2001/04/22 16:20:48  i10614
 Implemented changes for Python 2.1. Dont run with older versions of python\!
 
@@ -103,8 +106,6 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
     def handle(self):
         """Get called by cProxyCore for each request"""
 
-        pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Handle()')
-
         try:
             # Parse request
             host, port, request = self.ParseRequest()
@@ -135,8 +136,6 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
 
         except socket.error:
             # request could not be fulfilled, most probably because user pressed interrupted his browser
-            # log socket error and forget.
-            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Ignoring Socketerror...')
             return
 
 
