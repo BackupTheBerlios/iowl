@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.19 $"
+__version__ = "$Revision: 1.20 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.20  2002/02/11 15:09:08  Saruman
+setting default value for own ip to 127.0.0.1
+
 Revision 1.19  2002/01/24 09:41:53  Saruman
 adapted to new directory-structure
 
@@ -168,6 +171,9 @@ class cManager:
 
         # create timer
         self.timer = watchdog.timer()
+
+        # own IP
+        self.sOwnIP = '127.0.0.1'
 
         # my state
         self.m_bIsRunning = 0
