@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: pAssocRulesInterface.py,v $
+Revision 1.5  2001/04/15 20:14:06  i10614
+minor changes
+
 Revision 1.4  2001/04/14 15:02:29  i10614
 minor change
 
@@ -48,7 +51,6 @@ class pAssocRulesInterface:
 
     def Start(self):
         """Kind of constructor."""
-        return
         csi = pManager.manager.GetClickstreamInterface()
         lSessions = csi.GetSessions()
         iCount = csi.GetItemCount()

@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 
 """
 $Log: pRecommendationInterface.py,v $
+Revision 1.7  2001/04/15 20:14:07  i10614
+minor changes
+
 Revision 1.6  2001/04/15 19:14:01  i10614
 minor changes
 
@@ -92,7 +95,7 @@ class pRecommendationInterface:
 
     def Start(self):
         """Kind of constructor."""
-        print "start"
+        pass
 
 
     def SetParam(self, sParameter, sValue):

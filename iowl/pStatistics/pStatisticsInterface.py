@@ -1,10 +1,13 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: pStatisticsInterface.py,v $
-Revision 1.1  2001/03/24 19:23:05  i10614
-Initial revision
+Revision 1.2  2001/04/15 20:14:07  i10614
+minor changes
+
+Revision 1.1.1.1  2001/03/24 19:23:05  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.10  2001/02/22 12:30:32  a
 minor changes
@@ -70,6 +73,7 @@ class pStatisticsInterface:
         # we don't save Itemsets and Rules any more
         #self.Itemsets.OpenFile(self.sItemsetsFileName)
         #self.Rules.OpenFile(self.sRulesFileName)
+        pass
 
 
     def SetParam(self, sParameter, sValue):
@@ -89,6 +93,7 @@ class pStatisticsInterface:
         """Kind of destructor."""
         #self.Rules.CloseFile()
         #self.Itemsets.CloseFile()
+        pass
 
 
     def DeleteURL(self, sUrl):
