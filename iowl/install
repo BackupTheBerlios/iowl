@@ -11,7 +11,7 @@ echo "You don't have to do this. You can also start iOwl.net using iowl.sh start
 echo "If this doesn't work, install can NOT correct this -> contact iowl-users@lists.berlios.de"
 echo "After ./install there are problems with scp!"
 echo ""
-echo -n "DO YOU AGREE THIS CHANGES? (y|N):"
+echo -n "DO YOU AGREE THIS CHANGES? (y|N): "
 
 read gvINPUT
 
@@ -21,18 +21,22 @@ case "$gvINPUT" in
 
 		if [ ! "`cat ~/.bash_profile | grep iowl.sh`" ]; then
 		echo "" >> ~/.bash_profile;
+		echo "# changes for iowl" >> ~/.bash_profile;
 		echo IOWL_DIR="$DIR" >> ~/.bash_profile;
 		echo export IOWL_DIR >> ~/.bash_profile;
-		echo exec "$DIR"/iowl.sh start \& >> ~/.bash_profile;
+		echo exec '$IOWL_DIR'/iowl.sh start \& >> ~/.bash_profile;
+		echo cd '$HOME' >> ~/.bash_profile;
 		echo "Adding iowl.start to ~/.bash_profile to start iOwl.net on every console login";
 		else echo "iowl.start is part of your ~/.bash_profile and starts iOwl.net on every console login";
 		fi
 
 		if [ ! "`cat ~/.bashrc | grep iowl.sh`" ];then
 		echo "" >> ~/.bashrc;
+		echo "# changes for iowl" >> ~/.bashrc;
 		echo IOWL_DIR="$DIR" >> ~/.bashrc;
 		echo export IOWL_DIR >> ~/.bashrc;
-		echo exec "$DIR"/iowl.sh start\& >> ~/.bashrc;
+		echo exec '$IOWL_DIR'/iowl.sh start\& >> ~/.bashrc;
+		echo cd '$HOME' >> ~/.bashrc;
 		echo "Adding iowl.sh start to ~/.bashrc to start iOwl.net on every X login";
 		else echo "iowl.sh start is part of your ~/.bashrc and starts iOwl.net on every X login";
 		fi
