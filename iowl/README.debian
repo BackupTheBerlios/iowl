@@ -1,0 +1,37 @@
+Table of contents
+	
+	1. You need
+	2. Usage
+	3. Tips
+
+###############################################################################
+1. You need
+
+python2.2 		-> apt-get install python2.2
+python2.2-xmlbase	-> apt-get install python2.2-xmlbase
+
+iOwl.net - sources	-> http://iowl.berlios.de/nightly/
+
+
+###############################################################################
+2. Usage
+
+tar -xzvf iowl-????????.tar.gz
+
+cd iowl
+
+./iowl.sh start
+
+changing http-proxy in your favorite browser to localhost:3228
+
+browsing http://my.iowl.net/ -> does it work? great iOwl.net is running!
+
+
+###############################################################################
+3. Tips
+
+maybe subscribe to iowl-users@lists.berlios.de at
+http://developer.berlios.de/mail/?group_id=250
+
+if there some bugs submit them at
+http://developer.berlios.de/bugs/?func=addbug&group_id=250
