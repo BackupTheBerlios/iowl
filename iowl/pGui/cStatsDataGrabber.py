@@ -1,9 +1,9 @@
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cStatsDataGrabber.py,v $
-Revision 1.1  2002/02/13 10:47:14  Saruman
-initial release
+Revision 1.2  2002/02/13 10:50:48  Saruman
+changed output
 
 
 
@@ -69,7 +69,7 @@ class cStatsDataGrabber:
         sContent = sContent + "<p>\n"
         sContent = sContent + "Total number of pongs received for myself: "+str(iNumPongs)+"\n</p>"
         sContent = sContent + "<p>\n"
-        sContent = sContent + "Total number of request answers received for myself: "+str(iNumAnswers)+"\n</p>"
+        sContent = sContent + "Total number of recommendations received for myself: "+str(iNumAnswers)+"\n</p>"
 
         sContent = sContent + '<h2>Recommendation Statistics</h2>\n'
         sContent = sContent + "<p>\n"
