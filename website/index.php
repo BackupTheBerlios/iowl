@@ -21,6 +21,9 @@ documents:
 
 <ul>
 <li>
+<a href="documentation/iowl-paper.pdf">Collaborative Filtering In A Distributed
+Environment: An Agent-Based Approach (pdf)</a> 
+<li>
 <a href="documentation/overview/executive_summary_v1.3.html">
 Executive Summary
 </a>
