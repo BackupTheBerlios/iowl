@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.19 $"
+__version__ = "$Revision: 1.20 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.20  2001/08/07 18:47:54  i10614
+some changes
+
 Revision 1.19  2001/07/19 19:46:52  i10614
 removed warning at initial setting of options
 
