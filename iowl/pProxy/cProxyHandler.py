@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.27 $"
+__version__ = "$Revision: 1.28 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.28  2002/02/11 10:58:15  Saruman
+Fixed Bug #119 -> remove explicit port from url, if it is default port 80.
+
 Revision 1.27  2002/02/07 15:22:12  aharth
 fixed address already in use exception
 
@@ -128,6 +131,7 @@ import cClick
 import htmlentitydefs
 import sys
 import cgi
+import thread
 
 class cProxyHandler(SocketServer.StreamRequestHandler):
     """The handler hook-in for the proxyServer
@@ -218,6 +222,10 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             self.error(400, "Empty URL")
         if method not in ['GET', 'HEAD', 'POST']:
             self.error(501, "Unknown request method (%s)" % method)
+
+        # This is a fix for Konqueror (#bug 119): remove explicit portnumber from url
+        # (at least if it's port 80)
+        url = string.replace(url, ":80/", "/", 1)
 
         # store url for clickstream
         self.ClickUrl = url
@@ -493,7 +501,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             pass
 
         # Exit thread
-        raise SystemExit
+        thread.exit()
 
 
     def try_del(self, dict, key):
