@@ -1,10 +1,13 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cRules.py,v $
-Revision 1.1  2001/03/24 19:23:06  i10614
-Initial revision
+Revision 1.2  2001/04/15 21:16:22  i10614
+fixed for recommendations and answers
+
+Revision 1.1.1.1  2001/03/24 19:23:06  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.3  2001/02/21 16:03:16  a
 minor changes
@@ -55,6 +58,7 @@ import string
 import cFile
 import cData
 import cRule
+import pManager
 
 
 class cRules(cData.cData):
@@ -104,6 +108,13 @@ class cRules(cData.cData):
         
         """
         lRules = []
+
+        # get pClickstreamInterface
+        pAssocRulesInterface = pManager.manager.GetAssocRulesInterface()
+
+        if not pAssocRulesInterface.GotRules():
+            # there are no rules...
+            return None
 
         for rule in self.lData:
             if rule.HasUrls(lUrls):

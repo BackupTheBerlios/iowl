@@ -1,10 +1,10 @@
 
-__version__ = "$Revision: 1.8 $"
+__version__ = "$Revision: 1.9 $"
 
 """
 $Log: cNetManager.py,v $
-Revision 1.8  2001/04/15 19:58:48  i10614
-fixes for recomendations
+Revision 1.9  2001/04/15 21:16:21  i10614
+fixed for recommendations and answers
 
 Revision 1.6  2001/04/15 19:10:59  i10614
 Ping<->Pong works again.
@@ -202,10 +202,10 @@ class cNetManager:
             cPing.ParseDOM(domPing)
 
             # log incoming ping
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Ping from %s:%s.' %(str(cPing.GetOriginator()[0]), str(cPing.GetOriginator()[1])))
+            # pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Ping from %s:%s.' %(str(cPing.GetOriginator()[0]), str(cPing.GetOriginator()[1])))
 
             # pass ping to cOwlManager. If cOwlManager accepts ping, answer with pong
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': Distributing Ping.')
+            # pManager.manager.DebugStr('cNetManager '+ __version__ +': Distributing Ping.')
             if self.cOwlManager.Distribute(cPing) == 'okay':
                 # generate Pong
                 try:
@@ -215,11 +215,11 @@ class cNetManager:
                     pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not generate Pong.')
                     return
                 # pass Pong to cOlwManager
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': Answering with Pong.')
+                # pManager.manager.DebugStr('cNetManager '+ __version__ +': Answering with Pong.')
                 self.cOwlManager.Answer(cPong)
             else:
                 # something was wrong with that Ping...
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': cOwlManager did not accept ping. Probably a vicious circle or corrupt cDOM')
+                # pManager.manager.DebugStr('cNetManager '+ __version__ +': cOwlManager did not accept ping. Probably a vicious circle or corrupt cDOM')
                 pass
         except:
             # unknown error. log and forget.
@@ -257,13 +257,13 @@ class cNetManager:
             cPong.ParseDOM(domPong)
 
             # log incoming pong
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Pong from %s:%s' % (str(cPong.GetAnswerer()[0]), str(cPong.GetAnswerer()[1])))
+            # pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Pong from %s:%s' % (str(cPong.GetAnswerer()[0]), str(cPong.GetAnswerer()[1])))
 
             # extract PONG-source and add to own list of owls
             self.ExtractPongSource(cPong)
 
             # pass to cOwlManager
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': Passing Pong to cOwlManager.Answer()')
+            # pManager.manager.DebugStr('cNetManager '+ __version__ +': Passing Pong to cOwlManager.Answer()')
             self.cOwlManager.Answer(cPong)
         except:
             # unknown error. log and forget.
@@ -389,9 +389,11 @@ class cNetManager:
         """
 
         # Build network package containing answer
+        pManager.manager.DebugStr('pNetwork '+ __version__ +': Generating Answer.')
         cAnswer = self.GenerateAnswer(elAnswer, id)
 
         # pass Answer to cOwlManager
+        pManager.manager.DebugStr('pNetwork '+ __version__ +': Passing answer to cOwlManager.Answer().')
         self.cOwlManager.Answer(cAnswer)
 
 
@@ -502,7 +504,7 @@ class cNetManager:
         # store elRequest
         cAnswer.StorePayload(elAnswer)
 
-        return Answer
+        return cAnswer
 
 
     def ExtractPongSource(self, cPong):

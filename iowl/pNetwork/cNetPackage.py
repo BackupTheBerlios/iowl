@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cNetPackage.py,v $
+Revision 1.3  2001/04/15 21:16:21  i10614
+fixed for recommendations and answers
+
 Revision 1.2  2001/04/15 19:10:59  i10614
 Ping<->Pong works again.
 
@@ -400,7 +403,7 @@ class cRecPackage(cNetPackage):
         lElements = cDom.MatchingElementsByName('payload')
 
         # store Payload
-        self.payload = lElements[0]
+        self.payload = lElements[0].childNodes[0]
 
 
     def Print(self):

@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: pAssocRulesInterface.py,v $
+Revision 1.6  2001/04/15 21:16:21  i10614
+fixed for recommendations and answers
+
 Revision 1.5  2001/04/15 20:14:06  i10614
 minor changes
 
@@ -47,6 +50,7 @@ class pAssocRulesInterface:
     def __init__(self):
         """Constructor."""
         self.AssocRules = cAssociationRules.cAssociationRules()
+        self.bGotRules = 0
 
 
     def Start(self):
@@ -100,6 +104,12 @@ class pAssocRulesInterface:
             pManager.manager.DebugStr('pAssocRules '+ __version__ +': Trying to continue...')
 
         pManager.manager.DebugStr('pAssocRulesInterface '+ __version__ +': Finished Computing Rules.')
+        self.bGotRules = 1
+
+
+    def GotRules(self):
+        """true if we finished computing rules"""
+        return self.bGotRules
 
 
 

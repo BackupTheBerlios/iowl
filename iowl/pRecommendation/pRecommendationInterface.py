@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.7 $"
+__version__ = "$Revision: 1.8 $"
 
 """
 $Log: pRecommendationInterface.py,v $
+Revision 1.8  2001/04/15 21:16:22  i10614
+fixed for recommendations and answers
+
 Revision 1.7  2001/04/15 20:14:07  i10614
 minor changes
 
@@ -71,7 +74,7 @@ import cRecommendationBuilder
 import cRequestBuilder
 import cRequest
 import cAnswer
-
+import sys
 
 class pRecommendationInterface:
 
@@ -122,10 +125,6 @@ class pRecommendationInterface:
         """
         tUrl = urlparse.urlparse(sUrl)
         el = self.ReqBuilder.DoRequest([tUrl,])
-
-        # old stuff for asking myself
-        # sId = '4711'
-        # self.SetRequest(el, sId)
 
         # Get NetworkInterface
         pNetIntf = pManager.manager.GetNetworkInterface()
