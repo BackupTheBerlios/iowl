@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cGetRecommendationsDataGrabber.py,v $
+Revision 1.4  2002/02/10 21:40:54  aharth
+added showrules feature, cleaned up ui
+
 Revision 1.3  2001/05/26 14:44:03  i10614
 only display a maximum of 15 recommendations
 
@@ -75,11 +78,11 @@ class cGetRecommendationsDataGrabber:
             sPart1 = self.cGuiRequestHandler.GetActivePage()
 
         # get dynamic content
-        sContent = '<h1><b><font face="Arial, Helvetica, sans-serif" size="5" color="#666666">Recommendations</font></b></h1>'
+        sContent = '<h2>Recommendations</h2>'
         if lClicks == None:
-            sContent = sContent + '<h4>Sorry, i did not find any ressources i could recommend. :-(</h4>'
+            sContent = sContent + '<p class="message">Sorry, i did not find any ressources i could recommend. :-(</p>'
         else:
-            sContent = sContent + '<h4>Success :-)<br>I would recommend you have a look at the following ressource(s):</h4>'
+            sContent = sContent + '<p class="message">Success :-). I would recommend you have a look at the following ressource(s):</p>'
             iCounter = 0
             for click in lClicks:
                 iCounter+=1

@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.14 $"
+__version__ = "$Revision: 1.15 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.15  2002/02/10 21:40:54  aharth
+added showrules feature, cleaned up ui
+
 Revision 1.14  2002/02/10 19:42:21  aharth
 added stylesheet support
 
@@ -81,6 +84,7 @@ import cBinaryDataGrabber
 import cCommandValidator
 import cLogfileGrabber
 import cConfigureGrabber
+import cRulesGrabber
 
 
 class cGuiRequestHandler:
@@ -106,6 +110,7 @@ class cGuiRequestHandler:
         self.cBinaryDataGrabber = cBinaryDataGrabber.cBinaryDataGrabber(self)
         self.cLogfileGrabber = cLogfileGrabber.cLogfileGrabber(self)
         self.cConfigureGrabber = cConfigureGrabber.cConfigureGrabber(self)
+        self.cRulesGrabber = cRulesGrabber.cRulesGrabber(self)
 
         # create cCommandValidator
         self.cCommandValidator = cCommandValidator.cCommandValidator()
@@ -235,7 +240,8 @@ class cGuiRequestHandler:
         elif sCommand == 'error':
             # return error page
             return self.cErrorDataGrabber.GetHtml(dParams)
-
+        elif sCommand == 'showrules':
+            return self.cRulesGrabber.GetHtml(dParams)
 
 
 

@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.7 $"
+__version__ = "$Revision: 1.8 $"
 
 """
 $Log: cDefaultDataGrabber.py,v $
+Revision 1.8  2002/02/10 21:40:54  aharth
+added showrules feature, cleaned up ui
+
 Revision 1.7  2002/02/10 19:42:21  aharth
 added stylesheet support
 
@@ -129,13 +132,14 @@ class cDefaultDataGrabber:
                     sUrl = urlparse.urlunparse(click.GetUrl())
                     # build link
                     sLink = '\t\t<div class="title"><a href="%s">%s</a></div>\n' % (sUrl, click.GetTitle())
+                    sDisplayUrl = '\t\t<div class="url">%s</div>\n' % sUrl
                     sDate = '\t\t<div class="surftime">%s</div>\n' % time.ctime(click.GetTimestamp())
                     sRemove = '\t\t<div class="action"><a href="http://my.iowl.net/command?action=remove&url=%s">remove</a> from history</div>\n' % sUrl
                     sSingleRec = '\t\t<div class="action">get <a href="http://my.iowl.net/command?action=singlerecommendation&sUrl=%s">recommendations</a> for this link</div>\n' % sUrl
                     # add to complete string
                     try:
                         # XXX: sometimes i get an UnicodeError: ASCII decoding error: ordinal not in range(128)
-                        sContent = sContent + '\t<p class="click">\n' + sLink + sDate + sRemove + sSingleRec + '\t</p>\n'
+                        sContent = sContent + '\t<p class="click">\n' + sLink + sDisplayUrl + sDate + sRemove + sSingleRec + '\t</p>\n'
                     except:
                         # skip this click...
                         pass

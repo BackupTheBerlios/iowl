@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cCommandValidator.py,v $
+Revision 1.4  2002/02/10 21:40:54  aharth
+added showrules feature, cleaned up ui
+
 Revision 1.3  2001/07/15 14:37:55  i10614
 updated configuration GUI
 
@@ -81,6 +84,12 @@ class cCommandValidator:
                 dParams['message'] = 'command showconfig does not accept any parameter!'
                 return 'error', dParams
             return 'showconfig', dParams
+
+        if dQuery['action'][0] == 'showrules':
+            if len(dQuery.keys()) != 1:
+                dParams['message'] = 'command showrules does not accept any parameter!'
+                return 'error', dParams
+            return 'showrules', dParams
 
         if dQuery['action'][0] == 'showlog':
             if not ((len(dQuery.keys()) == 2) and ('inumlines' in dQuery.keys())):
