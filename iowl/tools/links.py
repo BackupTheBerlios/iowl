@@ -1,5 +1,40 @@
 import re
 import sys
+import htmllib
+import formatter
+
+class seekUrl(htmllib.HTMLParser):
+    def __init__(self):
+        self.start = 0
+        self.c_data = ''
+        self.alist = []
+        htmllib.HTMLParser.__init__(self, formatter.NullFormatter())
+
+    def anchor_bgn(self,href,name,type):
+        #print "start_a href:", href, "\nname:", name, "\ntype:", type
+        self.href = href
+        self.c_data = ""
+
+    def anchor_end(self):
+        # check wheter anchor has href attribute
+        if len(self.href) != 0:
+            self.alist.append([self.href, self.c_data])
+
+    def start_title(self, attrs):
+        self.c_data = ""
+
+    def end_title(self):
+        self.title = self.c_data
+
+    def handle_data(self, data):
+        self.c_data = self.c_data+data
+
+    def getTitle(self):
+        return self.title
+    
+    def getLinkList(self):
+        return self.alist
+
 
 # check parameters
 if len(sys.argv) != 2:
@@ -11,32 +46,22 @@ filename = sys.argv[1]
 print 'Opening file ' + filename
 file = open(filename, "r")
 
-# read file to string
+parser = seekUrl()
+
 str = file.read()
 
-# close file
-file.close()
-
-# remove newlines
+# strip out newlines and MSDOS chars
 str = str.replace('\n', '')
+str = str.replace('^M', '')
 
-# regular expression magic
-# ? is not greedy, matching the shortest possible string
-# fixme iowl html code uses also ' as "
-# I means match lowercase
-proghref = re.compile('<a.*?href=[\",\'](.*?)[\",\'].*?>(.*?)</a>', re.IGNORECASE|re.DOTALL)
+# feed to parser
+parser.feed(str)
 
-list = proghref.findall(str)
+linklist = parser.getLinkList()
 
-for m in list:
-    url = m[0]
-    text = m[1]
+print parser.getTitle()
 
-    # maybe in text there's a img tag so extract the alt= value
-    progalt = re.compile('<img.*?alt=[\",\'](.*?)[\",\'].*?>', re.IGNORECASE|re.DOTALL)
-    alt = progalt.findall(text)
-    # found image with alt string?
-    if len(alt) > 0:
-        text = alt[0]
-
-    print text + ': ' + url
+for l in linklist:
+    url = l[1]
+    text = l[0]
+    print text + ": " + url
