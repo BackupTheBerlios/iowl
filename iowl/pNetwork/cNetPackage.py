@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: cNetPackage.py,v $
+Revision 1.6  2002/02/22 12:30:38  Saruman
+Fixed major bug causing broken routing entries.
+
 Revision 1.5  2002/02/22 12:04:46  Saruman
 initiate answerer IP of pong to localhost.
 
@@ -275,8 +278,8 @@ class cPong(cNetPackage):
                                         )
         # create core element: answerer, containing ip and port as attributes
         elAnswerer = dom.CreateElement('answerer',
-                                       {'ip':self.sOrigIP,
-                                        'port':str(self.iOrigPort)
+                                       {'ip':self.sAnswIP,
+                                        'port':str(self.iAnswPort)
                                        },''
                                       )
 
