@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.8 $"
+__version__ = "$Revision: 1.9 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.9  2001/05/07 07:37:52  i10614
+added mutex for addClick(). Should solve problem with two sessions in one .xml-file.
+
 Revision 1.8  2001/04/15 19:10:22  i10614
 Forgot to sort sessions which resulted in old sessions displayed in history. Fixed.
 
@@ -96,6 +99,7 @@ import os
 import time
 import string
 import pManager
+import thread
 
 class pClickstreamInterface:
 
@@ -114,6 +118,8 @@ class pClickstreamInterface:
         self.lSessions = []
         self.SetFileName()
         self.Session = None
+        # mutex
+        self.ClickLock = thread.allocate_lock()
 
 
     def SetFileName(self):
@@ -328,6 +334,9 @@ class pClickstreamInterface:
 
         """
 
+        # acquire lock
+        self.ClickLock.acquire()
+
         if self.Session == None:
             # First start a session
             self.StartNewSession()
@@ -342,6 +351,9 @@ class pClickstreamInterface:
 
         # reset watchdog regardless wether click is recorded or not
         pManager.manager.ResetWatchdog(self.iWatchdogID)
+
+        # release lock
+        self.ClickLock.release()
 
 
     def ClickIsValid(self, click):
