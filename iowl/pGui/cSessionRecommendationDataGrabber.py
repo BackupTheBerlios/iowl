@@ -1,9 +1,12 @@
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cSessionRecommendationDataGrabber.py,v $
-Revision 1.1  2001/03/24 19:22:59  i10614
-Initial revision
+Revision 1.2  2001/03/28 19:53:07  i10614
+replaced http://iowl with http://my.iowl.net
+
+Revision 1.1.1.1  2001/03/24 19:22:59  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.4  2001/02/25 12:32:42  mpopp
 *** empty log message ***
@@ -58,7 +61,7 @@ class cSessionRecommendationDataGrabber:
         iReqID = cRecommendationInterface.GenerateSessionRequest()
 
         # build url to load after timer finished
-        sNewUrl = 'http://iowl/command?action=getrecommendations&id=%s&sUrl=%s' % (str(iReqID), 'current_session')
+        sNewUrl = 'http://my.iowl.net/command?action=getrecommendations&id=%s&sUrl=%s' % (str(iReqID), 'current_session')
 
         # get javascript timer
         sScript, sFunction, sForm = cJavaScriptTimer.cJavaScriptTimer().GetTimer(iSeconds, sNewUrl)

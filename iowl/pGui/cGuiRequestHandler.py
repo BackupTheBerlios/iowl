@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.3  2001/03/28 19:53:07  i10614
+replaced http://iowl with http://my.iowl.net
+
 Revision 1.2  2001/03/26 12:08:23  i10614
 added version and build date
 
@@ -218,7 +221,7 @@ class cGuiRequestHandler:
                     <head>
                     <title>%s</title>
                     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-                    <base href="http://iowl/">
+                    <base href="http://my.iowl.net/">
                     %s
                     </head>
                     <body bgcolor="#BBBBBB" text="#000000" link="#AA0000" vlink="#880000" alink="#AA0000" background="data/pix/back.gif" onload ="%s">
@@ -269,10 +272,10 @@ class cGuiRequestHandler:
 
 def test():
     # url to test
-    sUrl = 'http://iowl/command?action=saveconfig&proxyip=1.2.3.4&proxyport=4096'
-    sEmpty = 'http://iowl'
-    sEmpty2 = 'http://iowl/'
-    sEmpty3 = 'http://iowl/index.html'
+    sUrl = 'http://my.iowl.net/command?action=saveconfig&proxyip=1.2.3.4&proxyport=4096'
+    sEmpty = 'http://my.iowl.net'
+    sEmpty2 = 'http://my.iowl.net/'
+    sEmpty3 = 'http://my.iowl.net/index.html'
 
 
     """

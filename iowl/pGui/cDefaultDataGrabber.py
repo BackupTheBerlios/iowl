@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cDefaultDataGrabber.py,v $
+Revision 1.4  2001/03/28 19:53:07  i10614
+replaced http://iowl with http://my.iowl.net
+
 Revision 1.3  2001/03/27 18:23:10  i10614
 added session creation date to history
 
@@ -119,8 +122,8 @@ class cDefaultDataGrabber:
                     # build link
                     sLink = '<a href="%s">%s</a><br>' % (sUrl, click.GetTitle())
                     sDate = '<small>Surfed at: %s</small><br>' % time.ctime(click.GetTimestamp())
-                    sRemove = '<a href="http://iowl/command?action=remove&url=%s">Remove</a> from History.<br>' % sUrl
-                    sSingleRec = 'Get <a href="http://iowl/command?action=singlerecommendation&sUrl=%s">Recommendation</a> for this link.' % sUrl
+                    sRemove = '<a href="http://my.iowl.net/command?action=remove&url=%s">Remove</a> from History.<br>' % sUrl
+                    sSingleRec = 'Get <a href="http://my.iowl.net/command?action=singlerecommendation&sUrl=%s">Recommendation</a> for this link.' % sUrl
                     # add to complete string
                     try:
                         # XXX: sometimes i get an UnicodeError: ASCII decoding error: ordinal not in range(128)
