@@ -7,7 +7,7 @@ include 'header.html';
 <p>
 Ever been curious what web pages other people visit? Want to share your
 knowledge about your favorite web resources? iOwl.net uses a peer-to-peer
-network to faciliate the flow of information between its users. Join
+network to facilitate the flow of information between its users. Join
 the iOwl.net and <a href="nightly/current-iowl.tar.gz">download the tar.gz</a>!
 </p>
 
