@@ -1,9 +1,12 @@
 #!/usr/local/bin/python
 
-__version__ = "$Revision: 1.14 $"
+__version__ = "$Revision: 1.15 $"
 
 """
 $Log: iowl.py,v $
+Revision 1.15  2002/02/27 13:45:37  Saruman
+catch SystemExit exception for clean shutdown.
+
 Revision 1.14  2002/02/25 16:46:43  Saruman
 modified exit code(s).
 
@@ -332,12 +335,14 @@ def StartiOwl(tray):
     # start iOwl.net
     try:
         pManager.manager.StartOwl()
+    except SystemExit:
+        # caused by normal shutdown through SIGUSR1
+        pass
     except KeyboardInterrupt:
-        # shutdown owl
+        # Ctrl-C or SIGINT -> shutdown owl
         pManager.manager.DebugStr('pManager '+ __version__ +': Received Keyboard-interrupt. Starting shutdown.')
         pManager.manager.ShutDown()
         sys.exit(0)
-
     except socket.error:
         # socket error while trying to start proxy -> Adress in use
         # get exception
@@ -346,7 +351,6 @@ def StartiOwl(tray):
         pManager.manager.DebugStr('pManager '+ __version__ +': Now shutting down.')
         pManager.manager.ShutDown()
         sys.exit(2)
-
     except:
         # unknown error. log and try to shutdown
 
