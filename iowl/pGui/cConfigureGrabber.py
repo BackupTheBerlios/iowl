@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cConfigureGrabber.py,v $
+Revision 1.5  2002/03/02 14:32:49  Saruman
+Fix bug #132: Configuration now works without javascript.
+
 Revision 1.4  2002/02/19 18:53:57  aharth
 tried to unify UI
 
@@ -80,25 +83,9 @@ class cConfigureGrabber:
         # get configfile from manager
         Config = pManager.manager.GetConfHandle()
 
-        # generate script
-        script ="""
-        <script language="JavaScript">
-        <!-- Hide from older browsers
-            function changeconfig(section, option, document)
-            {
-                var loc = "http://my.iowl.net/command?action=updateconfig&section=" + section + "&option=" + option
-                var value = document.form.Wert.value
-                loc = loc + "&value=" + value
-                window.location.href = loc;
-            }
-        // -->
-        </script>
-        """
-
-        sContent = script
+        sContent = ""
 
         for sect in Config.sections():
-            pManager.manager.DebugStr('cConfigureGrabber '+ __version__ +': reading section "'+sect+'".', 4)
             # start table
             sContent = sContent + '\n<p>\n    <table border>\n'
             # header
@@ -106,17 +93,19 @@ class cConfigureGrabber:
             # iterate over available options for this section
             for opt in Config.options(sect):
                 value = Config.get(sect,opt)
-                pManager.manager.DebugStr('cConfigureGrabber '+ __version__ +': Option "'+opt+'", value "'+ value, 4)
                 # start formular
                 sFormName = sect+opt
                 sForm = """
         <tr>
-            <form name="%s">
+            <form name="%s" method="get" action="http://my.iowl.net/command?">
             <td>%s</td>
-            <td><input name="Wert" size=20 maxlength=40 value="%s"></td>
-            <td><input type="button" name="change" value="change" onClick="javascript:changeconfig(\'%s\', \'%s\', this)"></td>
+            <input type="hidden" name="action" value="updateconfig">
+            <input type="hidden" name="section" value="%s">
+            <input type="hidden" name="option" value="%s">
+            <td><input name="value" size=20 maxlength=40 value="%s"></td>
+            <td><input type="submit" value=" Absenden "></td>
             </form>
-        </tr>""" %(sFormName, opt, value, sect, opt)
+        </tr>""" %(sFormName, opt, sect, opt, value)
 
                 sContent = sContent + sForm
 
