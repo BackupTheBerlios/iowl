@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: cFile.py,v $
+Revision 1.6  2002/01/30 17:09:21  aharth
+changed test method
+
 Revision 1.5  2001/08/07 18:52:22  i10614
 bugfix by Andi: delete empty sessions from disk
 
@@ -202,11 +205,18 @@ def test():
 
     file.Save()
 
+def test2():
+    file = cFile('demo', '0.1')
+    file.Open('/tmp/foo.xml')
+    file.Print()
+
+    print file.Print()
+
 
 if __name__ == '__main__':
     #try:
     #pManager.manager = pManager.cManager('/tmp/foo')
-    test()
+    test2()
     #except:
     #import sys
     #print 'debug:', sys.exc_type, sys.exc_value
