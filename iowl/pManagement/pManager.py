@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.21 $"
+__version__ = "$Revision: 1.22 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.22  2002/02/19 15:35:14  Saruman
+Fixed newline bug (#128)
+
 Revision 1.21  2002/02/11 19:53:05  aharth
 modified build stuff
 
@@ -238,12 +241,12 @@ class cManager:
             print(message)
         elif self.sDebugMode == 'logfile':
             # write message to logfile only
-            self.LogFileHandle.write(message+'\n')
+            self.LogFileHandle.write(message + os.linesep)
             self.LogFileHandle.flush()
         elif self.sDebugMode == 'both':
             # Write message to logfile and print on console
             print(message)
-            self.LogFileHandle.write(message+'\n')
+            self.LogFileHandle.write(message + os.linesep)
             self.LogFileHandle.flush()
 
         # now its safe to release Lock
