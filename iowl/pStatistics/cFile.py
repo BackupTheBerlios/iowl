@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cFile.py,v $
+Revision 1.5  2001/08/07 18:52:22  i10614
+bugfix by Andi: delete empty sessions from disk
+
 Revision 1.4  2001/07/15 10:22:32  i10614
 added bugfix for removing of urls (andi)
 
@@ -77,6 +80,7 @@ import xml.dom.minidom
 import cDOM
 import time
 import pManager
+import os
 
 
 class cFile(cDOM.cDOM):
@@ -163,6 +167,14 @@ class cFile(cDOM.cDOM):
             # self.Document.documentElement = None
 
         self.SetRootElement(el)
+
+
+    def DeleteFile(self):
+        try:
+            os.remove(self.sFileName)
+        # XXX should work without OSError catch
+        except OSError:
+            pass
 
 
 ####################################################################
