@@ -1,11 +1,14 @@
 #!/usr/local/bin/python
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: iowl.py,v $
-Revision 1.1  2001/03/24 19:22:36  i10614
-Initial revision
+Revision 1.2  2001/04/16 13:06:21  i10614
+experimental GUI added
+
+Revision 1.1.1.1  2001/03/24 19:22:36  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.11  2001/03/18 23:02:03  mbauer
 added missing import socket
@@ -62,9 +65,24 @@ import sys
 import pManager
 import traceback
 import socket
+import Tkinter
+import thread
 
 def usage():
     print("Usage: python iowl.py -c configfile")
+
+
+def DisplayGui():
+    root = Tkinter.Tk()
+    root.title("iOwl.net")
+    root.protocol('WM_DELETE_WINDOW', StopiOwl)
+    # frame = Tkinter.Frame()
+    # frame.pack()
+    Tkinter.Label(root, text="Intelligent Owl Network").pack(side=Tkinter.TOP)
+    Tkinter.Button(root, text="start iOwl", command=Start).pack(side=Tkinter.LEFT)
+    Tkinter.Button(root, text="stop iOwl", command=StopiOwl).pack(side=Tkinter.RIGHT)
+    root.mainloop()
+
 
 def main():
     try:
@@ -88,6 +106,14 @@ def main():
     # modul pManager
     pManager.manager = pManager.cManager(configfile)
 
+    # start gui
+    DisplayGui()
+    # StartiOwl()
+
+def Start():
+    thread.start_new(StartiOwl, ())
+
+def StartiOwl():
     # start iOwl.net
     try:
         pManager.manager.StartOwl()
@@ -118,6 +144,8 @@ def main():
         pManager.manager.DebugStr('pManager '+ __version__ +': Now shutting down.')
         pManager.manager.ShutDown()
 
+def StopiOwl():
+    pManager.manager.ShutDown()
 
 
 

@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.7  2001/04/16 13:06:21  i10614
+experimental GUI added
+
 Revision 1.6  2001/04/14 14:56:51  i10614
 cosmetic changes
 
@@ -403,6 +406,9 @@ class cManager:
 
         # close logfile
         self.LogFileHandle.close()
+
+        # TEST
+        time.sleep(5)
 
         # exit
         sys.exit()
