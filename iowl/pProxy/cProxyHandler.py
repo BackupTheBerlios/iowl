@@ -1,7 +1,12 @@
-__version__ = "$Revision: 1.24 $"
+__version__ = "$Revision: 1.25 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.25  2002/01/29 20:40:21  Saruman
+Updated inline docu. Changed behaviour of title extraction - Now only try to find
+title in html-files.
+Fixed bug in Explicit Click detection -> Should be way more relaible now!
+
 Revision 1.24  2002/01/28 18:49:41  Saruman
 removed debug output
 
@@ -154,7 +159,6 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
                 # pass request to pGuiInterface
                 self.HandleCommand()
                 # close socket
-                pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Closing Socket (iOwl-Command).', 4)
                 self.connection.close()
                 return
 
@@ -179,21 +183,19 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
                 return
 
         except socket.error:
-            # request could not be fulfilled, most probably because user pressed interrupted his browser
+            # request could not be fulfilled, most probably because user interrupted his browser
             # close socket
-            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Closing Socket.', 4)
             self.connection.close()
             return
 
 
         # close socket
-        pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Closing Socket.', 4)
         self.connection.close()
 
         # finished request
         # Now pass click to pClickstreamINterface, if it is an explicit one
 
-        # check if this is an explicit click
+        # check if this was an explicit click
         bIsExplicit = self.IsExplicit()
 
         if bIsExplicit:
@@ -386,7 +388,14 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             self.wfile.write(self.JoinHeaders(dHeaders))
             self.wfile.write('\r\n')
 
-            bChecked = 0
+            # XXX Title Extraction is an EVIL HACK - Remove as soon as
+            # possible and find a proper solution!
+            # only look for title in html files
+            if self.ClickContent == 'text/html':
+                bChecked = 0
+            else:
+                bChecked = 1
+
             iBufferSize = 1024
             iCount = 0;
             # transfer actual document by chunks of iBufferSize
@@ -395,9 +404,13 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
                 # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Getting Chunk '+str(iCount))
                 data = server.read(iBufferSize)
                 if bChecked==0:
-                    # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Extracting Title!', 5)
+                    pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Extracting Title.', 3)
                     # need to look inside first buffer to determine if there is a <title></title> tag.
-                    self.ClickTitle = self.ExtractTitle(str(data[:]))
+                    # Explicitly pass a copy of data! (Call by value)
+
+                    # XXX Title extraction is an EVIL HACK - Remove as soon as
+                    # possible and find a proper solution!
+                    self.ClickTitle = self.ExtractTitle(data[:])
                     bChecked = 1
                 if not data:
                     break
@@ -429,9 +442,6 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         iEnd = sLowData.find('</title>')
 
         sTitle = u''
-        print 'iStart = ' + str(iStart)
-        print 'iEnd = ' + str(iEnd)
-        # print sData
 
         if (iStart >= 0) and (iEnd > iStart):
             # okay, we have a complete title-tag
@@ -446,10 +456,6 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             if len(sTitle) > 55:
                 # cut off too long title
                 sTitle = sTitle[:55] + '...'
-
-            # replace html entities
-            # for ent in htmlentitydefs.entitydefs.keys():
-            #     string.replace(sTitle, '&'+ent+';', htmlentitydefs.entitydefs[ent])
 
             return sTitle
 
@@ -516,7 +522,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             return 0
 
         if self.ClickContent != 'text/html':
-            # only type text/html is allowed!
+            # currently only type "text/html" is allowed!
             return 0
 
         # dont record invalid or temporary urls
@@ -543,7 +549,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         """true if this request is a command for iOwl
 
         commands have a url of type http://my.iowl.net
-        -> if host == iowl i received a command.
+        -> if host == my.iowl.net i received a command.
 
         """
 
