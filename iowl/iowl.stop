@@ -1,0 +1,18 @@
+#!/bin/sh
+# iOwl.net - iowl.stop
+
+BEFEHL="python2.2 iowl.py"
+AUSGABE=`ps U $UID | egrep "$BEFEHL" | head -1 | tail -1` 
+PROG=`echo "$AUSGABE" | cut -c27-45`
+IOWLPID=`echo "$AUSGABE" | cut -c-5`
+
+case "$PROG" in
+
+	*"$BEFEHL"* )	kill -9 $IOWLPID
+			echo "iOwl.net processes killed" ;;
+
+	* )		echo "No iOwl.net running" ;;
+
+esac
+
+exit 0
