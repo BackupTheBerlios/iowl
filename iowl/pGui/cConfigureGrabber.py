@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cConfigureGrabber.py,v $
+Revision 1.3  2002/01/29 20:35:23  Saruman
+changed priority of debug output
+
 Revision 1.2  2001/08/10 18:31:48  i10614
 minor cleanups
 
@@ -89,7 +92,7 @@ class cConfigureGrabber:
         sContent = script
 
         for sect in Config.sections():
-            pManager.manager.DebugStr('confgrabber '+ __version__ +': reading section "'+sect+'".', 3)
+            pManager.manager.DebugStr('cConfigureGrabber '+ __version__ +': reading section "'+sect+'".', 4)
             # start table
             sContent = sContent + '\n<p>\n    <table border>\n'
             # header
@@ -97,7 +100,7 @@ class cConfigureGrabber:
             # iterate over available options for this section
             for opt in Config.options(sect):
                 value = Config.get(sect,opt)
-                pManager.manager.DebugStr('confgrabber  '+ __version__ +': Option "'+opt+'", value "'+ value, 3)
+                pManager.manager.DebugStr('cConfigureGrabber '+ __version__ +': Option "'+opt+'", value "'+ value, 4)
                 # start formular
                 sFormName = sect+opt
                 sForm = """

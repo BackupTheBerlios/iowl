@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.11 $"
+__version__ = "$Revision: 1.12 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.12  2002/01/29 20:35:23  Saruman
+changed priority of debug output
+
 Revision 1.11  2002/01/24 09:41:53  Saruman
 adapted to new directory-structure
 
@@ -150,11 +153,11 @@ class cGuiRequestHandler:
 
         # detect file requests
         if sPath.endswith('.gif') or sPath.endswith('.jpg') or sPath.endswith('.png'):
-            pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Query for gif "'+str(sPath)+'"', 3)
+            pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Query for gif "'+str(sPath)+'"', 4)
             # return gif
             return self.cBinaryDataGrabber.GetData(sPath)
         if sPath.endswith('.html'):
-            pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Query for html "'+str(sPath)+'"', 3)
+            pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Query for html "'+str(sPath)+'"', 4)
             # return html
             return self.cBinaryDataGrabber.GetData(sPath)
 
