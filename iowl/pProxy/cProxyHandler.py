@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.30 $"
+__version__ = "$Revision: 1.31 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.31  2002/03/16 11:04:11  aharth
+migrated title extraction to pclickstream
+
 Revision 1.30  2002/03/10 10:13:47  Saruman
 changed debug levels
 
@@ -167,7 +170,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
                 return
 
             # init title string
-            self.ClickTitle = 'Unknown Title'
+            self.ClickContent = ''
 
             # Build Timestamp for click
             self.ClickTimestamp = time.time()
@@ -201,16 +204,16 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         if self.m_bIsExplicit:
             # Add Click to Clickstream
             ClickstreamInterface = pManager.manager.GetClickstreamInterface()
-            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click. Title: '+str(self.ClickTitle)+' Status: '+str(self.ClickStatus), 3)
+            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click. Url: '+str(self.ClickUrl)+' Status: '+str(self.ClickStatus), 3)
 
             click = cClick.cClick()
 
             click.SetClick(urlparse.urlparse(self.ClickUrl), \
                            self.ClickContent, self.ClickStatus, \
-                           self.ClickTimestamp, self.ClickTitle, \
+                           self.ClickTimestamp, '', \
                            urlparse.urlparse(self.ClickReferer))
 
-            ClickstreamInterface.AddClick(click)
+            ClickstreamInterface.AddClick(click, self.ClickContent)
 
 
     def ParseRequest(self):
@@ -399,14 +402,6 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             self.wfile.write(self.JoinHeaders(dHeaders))
             self.wfile.write('\r\n')
 
-            # XXX Title Extraction is an EVIL HACK - Remove as soon as
-            # possible and find a proper solution!
-            # only look for title in html files
-            if string.find(self.ClickContent, 'text/html') < 0:
-                bChecked = 1
-            else:
-                bChecked = 0
-
             iBufferSize = 2048
             iCount = 0;
             # transfer actual document by chunks of iBufferSize
@@ -414,17 +409,12 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
                 iCount+=1
                 # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Getting Chunk '+str(iCount))
                 data = server.read(iBufferSize)
-                if bChecked==0:
-                    pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Extracting Title.', 5)
-                    # need to look inside first buffer to determine if there is a <title></title> tag.
-                    # Explicitly pass a copy of data! (Call by value)
 
-                    # XXX Title extraction is an EVIL HACK - Remove as soon as
-                    # possible and find a proper solution!
-                    self.ClickTitle = self.ExtractTitle(data[:])
-                    bChecked = 1
                 if not data:
                     break
+
+                # Explicitly pass a copy of data! (Call by value)
+                self.ClickContent = self.ClickContent + data[:]
                 self.wfile.write(data)
 
             self.wfile.flush()
@@ -433,55 +423,6 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             # cant write to socket. probably user hit the stop-button of browser
             # ignore error
             pass
-
-
-    def ExtractTitle(self, data):
-        """look if there's a title tag inside data
-
-        data    -- data as read from server
-        return  -- string containing title
-
-        """
-
-        # be sure to have a string
-        sData = str(data)
-
-        # get a lowercase copy of string
-        sLowData = sData.lower()
-
-        iStart = sLowData.find('<title>')
-        iEnd = sLowData.find('</title>')
-
-        sTitle = u''
-
-        if (iStart >= 0) and (iEnd > iStart):
-            # okay, we have a complete title-tag
-            sTitle = sData[iStart+len('<title>'):iEnd]
-
-            # remove leading / trailing whitespaces
-            sTitle = string.strip(sTitle)
-
-            # be sure to get rid of umlauts etc
-            sTitle = self.FilterUmlauts(sTitle)
-
-            if len(sTitle) > 55:
-                # cut off too long title
-                sTitle = sTitle[:55] + '...'
-
-            return sTitle
-
-        return 'Unknown Title'
-
-
-
-    def FilterUmlauts(self, s):
-        """a quick hack to get rid of umlauts..."""
-
-        dict={'ä':'ae', 'ö':'oe', 'ü':'ue', 'ß':'ss'}
-        for key in dict.keys():
-            s = s.replace(key, dict[key])
-        return s
-
 
 
     def error(self, code, body):
