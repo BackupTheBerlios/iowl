@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.22 $"
+__version__ = "$Revision: 1.23 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.23  2001/07/19 19:46:11  i10614
+fixed bug for closing sockets
+
 Revision 1.22  2001/07/15 14:38:59  i10614
 implemented config-change from GUI
 
@@ -145,6 +148,9 @@ class cNetManager:
         # use webowls
         self.bGetWebOwls = 1
 
+        # use smart IP detection
+        self.bSmartIP = 1
+
         # mimimun number of owls
         self.iMinOwls = 15
 
@@ -173,6 +179,8 @@ class cNetManager:
                             after which a PING is generated
         maxowlstokeep   -- maximum number of owls to keep in list
         maxanswers      -- maximum number of answers allowed for request
+        smartipdetection-- 1 -> try to connect socket to get own ip
+                           0 -> just use gethostbyname()
 
         """
 
@@ -193,7 +201,8 @@ class cNetManager:
         elif sOption == 'listenport':
             # XXX Need to restart listener for changes to take effect!
             self.cNetServer.SetListenPort(int(sValue))
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': Warnig: change of listenport currently only takes effect after restart of iOwl.')
+            if pManager.manager.IsRunning():
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Warnig: change of listenport currently only takes effect after restart of iOwl.')
         elif sOption == 'ttl':
             self.iTTL = int(sValue)
         elif sOption == 'interval':
@@ -201,6 +210,8 @@ class cNetManager:
         elif sOption == 'requestlifetime':
             self.cOwlManager.SetRequestLifeTime(int(sValue))
         elif sOption == 'getwebowls':
+            self.bGetWebOwls = int(sValue)
+        elif sOption == 'smartipdetection':
             self.bGetWebOwls = int(sValue)
         else:
             pManager.manager.DebugStr('cNetManager '+ __version__ +': Warning: unknown option %s' %(sOption, ))
@@ -666,18 +677,26 @@ class cNetManager:
         # Own ip adress
         sOwnIP = ''
 
-        # create socket
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            # connect to entryOwl
-            s.connect(('www.iowl.net', 80))
-            # get hostname and port
-            sOwnIP, iPort = s.getsockname()
-            # close socket
-            s.close()
-        except:
-            # socket-connect failed :-(
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not connect socket to determine own IP. Reverting to "gethostbyname()"...')
+        if self.bSmartIP == 1:
+            # create socket
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            try:
+                # connect to entryOwl
+                s.connect(('www.iowl.net', 80))
+                # get hostname and port
+                sOwnIP, iPort = s.getsockname()
+                # close socket
+                s.close()
+            except:
+                # socket-connect failed :-(
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not connect socket to determine own IP. Reverting to "gethostbyname()"...')
+                try:
+                    sOwnIP = socket.gethostbyname(socket.gethostname())
+                except:
+                    pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not determine own IP!')
+                    raise socket.error
+        else:
+            # dont use smart IP detection
             try:
                 sOwnIP = socket.gethostbyname(socket.gethostname())
             except:
