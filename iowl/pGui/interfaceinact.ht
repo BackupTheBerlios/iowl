@@ -13,7 +13,7 @@
             </td>
           </tr>
           <tr> 
-            <td colspan="2" valign="bottom"><a href="http://my.iowl.net/command?action=showhistory"><img src="data/pix/his.gif" width="129" height="22" border="0" alt="show history"></a><img src="data/pix/back_nav.gif" width="8" height="8" alt=""><a href="http://my.iowl.net/command?action=sessionrecommendation" alt="get session recommendation"><img src="data/pix/rec.gif" width="129" height="22" border="0"></a><img src="data/pix/back_nav.gif" width="8" height="8" alt=""><a href="http://my.iowl.net/command?action=showhelp"><img src="data/pix/hel.gif" width="129" height="22" border="0" alt="show help"></a></td>
+            <td colspan="2" valign="bottom"><a href="http://my.iowl.net/command?action=showhistory"><img src="data/pix/his.gif" width="129" height="22" border="0" alt="show history"></a><img src="data/pix/back_nav.gif" width="8" height="8" alt=""><a href="http://my.iowl.net/command?action=sessionrecommendation"><img src="data/pix/rec.gif" width="129" height="22" border="0" alt="get session recommendation"></a><img src="data/pix/back_nav.gif" width="8" height="8" alt=""><a href="http://my.iowl.net/command?action=showhelp"><img src="data/pix/hel.gif" width="129" height="22" border="0" alt="show help"></a></td>
           </tr>
         </table>
       </td>
