@@ -1,7 +1,11 @@
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cSessionRecommendationDataGrabber.py,v $
+Revision 1.5  2002/02/18 13:39:42  Saruman
+Made waittime for recommendations configurable.
+Setting default waittime to 15 seconds instead of 5.
+
 Revision 1.4  2002/02/10 22:46:05  aharth
 changed jscript stuff for session recommendation
 
@@ -63,7 +67,8 @@ class cSessionRecommendationDataGrabber:
         # start request for Recommendations
         iReqID = cRecommendationInterface.GenerateSessionRequest()
 
-        time.sleep(3)
+        # wait for recommendations to come in
+        time.sleep(cRecommendationInterface.GetWaitTime())
 
         # get list of clicks
         lClicks = cRecommendationInterface.GetRecommendations(iReqID)

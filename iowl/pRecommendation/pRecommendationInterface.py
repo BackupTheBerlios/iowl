@@ -1,8 +1,12 @@
 
-__version__ = "$Revision: 1.9 $"
+__version__ = "$Revision: 1.10 $"
 
 """
 $Log: pRecommendationInterface.py,v $
+Revision 1.10  2002/02/18 13:39:42  Saruman
+Made waittime for recommendations configurable.
+Setting default waittime to 15 seconds instead of 5.
+
 Revision 1.9  2001/08/10 18:38:11  i10614
 added debuglevel to all messages.
 
@@ -97,6 +101,8 @@ class pRecommendationInterface:
         self.ReqBuilder = cRequestBuilder.cRequestBuilder()
         # returned rules from network, key is id
         self.dRules = {}
+        # time in seconds to wait for incoming recommendations
+        self.iWaitTime = 10
 
 
     def Start(self):
@@ -113,6 +119,13 @@ class pRecommendationInterface:
         """
         if (sParameter == 'toplist'):
             self.iTopList = sValue
+        elif (sParameter == 'waittime'):
+            self.iWaitTime = int(sValue)
+
+
+    def GetWaitTime(self):
+        """return time to wait for incoming recommendations"""
+        return self.iWaitTime
 
 
     def Shutdown(self):

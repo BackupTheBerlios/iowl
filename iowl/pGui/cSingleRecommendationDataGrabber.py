@@ -1,7 +1,11 @@
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: cSingleRecommendationDataGrabber.py,v $
+Revision 1.6  2002/02/18 13:39:42  Saruman
+Made waittime for recommendations configurable.
+Setting default waittime to 15 seconds instead of 5.
+
 Revision 1.5  2002/02/11 16:22:46  aharth
 changed jscript stuff for singlerecommendation
 
@@ -70,7 +74,8 @@ class cSingleRecommendationDataGrabber:
         # start request for Recommendations
         iReqID = cRecommendationInterface.GenerateSingleRequest(str(dParams['sUrl']))
 
-        time.sleep(3)
+        # wait for recommendations to come in
+        time.sleep(cRecommendationInterface.GetWaitTime())
 
         # get list of clicks
         lClicks = cRecommendationInterface.GetRecommendations(iReqID)
