@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cStatsDataGrabber.py,v $
+Revision 1.5  2002/03/02 14:31:59  Saruman
+minor mods for network statistics
+
 Revision 1.4  2002/02/21 13:56:39  Saruman
 clarified routing table
 
@@ -77,37 +80,36 @@ class cStatsDataGrabber:
 
         sContent = '<h2>Network Statistics</h2>\n'
         sContent = sContent + "<p>\n"
-        sContent = sContent + "Known active owls: "+str(iNumKnownOwls)+"\n</p>"
+        sContent = sContent + "  Known active owls besides myself: "+str(iNumKnownOwls)+"\n</p>\n"
         sContent = sContent + "<p>\n"
-        sContent = sContent + "Currently active routing entries: "+str(iNumActiveRoutings)+"\n</p>"
+        sContent = sContent + "  Currently active routing entries: "+str(iNumActiveRoutings)+"\n</p>\n"
         sContent = sContent + "<p>\n"
-        sContent = sContent + "Total number of pongs received for myself: "+str(iNumPongs)+"\n</p>"
+        sContent = sContent + "  Total number of pongs received for myself: "+str(iNumPongs)+"\n</p>\n"
         sContent = sContent + "<p>\n"
-        sContent = sContent + "Total number of recommendations received for myself: "+str(iNumAnswers)+"\n</p>"
-        sContent = sContent + "<h3>Routing Table</h3>\n"
+        sContent = sContent + "  Total number of recommendations received for myself: "+str(iNumAnswers)+"\n</p>\n"
+        sContent = sContent + "\n<h3>Routing Table</h3>\n"
 
+        # build table containing routing info
         # Head row
         sTable = "<table border=\"1\">\n"
-        sTable = sTable + """<tr>
-  <th>ID</th>
-  <th>Routing to</th>
-  <th>MaxAnswers</th>
-  <th>ReceivedAnswers</th>
-  <th>Time Created</th>
-</tr>
+        sTable = sTable + """  <tr>
+    <th>ID</th>
+    <th>Routing to</th>
+    <th>MaxAnswers</th>
+    <th>ReceivedAnswers</th>
+    <th>Time Created</th>
+  </tr>
 """
         # subsequent rows
 
         for id in dRoutingTable.keys():
-            sTable = sTable + "<tr>\n"
+            sTable = sTable + "  <tr>"
             sTable = sTable + """
-  <td>%s</td>\n  <td>%s</td>\n  <td>%s</td>\n  <td>%s</td>\n  <td>%s</td>
-            """ %(str(id), (str(dRoutingTable[id][iSourceOwl].GetIP()) + ":" + str(dRoutingTable[id][iSourceOwl].GetPort())), str(dRoutingTable[id][iMaxAnswers]), str(dRoutingTable[id][iRecvdAnswers]), str(dRoutingTable[id][iTimeCreated]))
-
-            sTable = sTable + "</tr>\n"
+    <td>%s</td>\n    <td>%s</td>\n    <td>%s</td>\n    <td>%s</td>\n    <td>%s</td>
+""" %(str(id), (str(dRoutingTable[id][iSourceOwl].GetIP()) + ":" + str(dRoutingTable[id][iSourceOwl].GetPort())), str(dRoutingTable[id][iMaxAnswers]), str(dRoutingTable[id][iRecvdAnswers]), str(dRoutingTable[id][iTimeCreated]))
+            sTable = sTable + "  </tr>\n"
 
         sTable = sTable + "</table>\n\n"
-
         sContent = sContent + sTable
 
         sContent = sContent + '<h2>Recommendation Statistics</h2>\n'
