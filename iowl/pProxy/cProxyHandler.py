@@ -1,9 +1,9 @@
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cProxyHandler.py,v $
-Revision 1.2  2001/03/26 17:49:35  i10614
-changed http://iowl to http://my.iowl.net. Improved title extraction.
+Revision 1.3  2001/03/26 17:57:54  i10614
+removed url from debug output to prevent logging of passwords
 
 Revision 1.1.1.1  2001/03/24 19:23:03  i10614
 Initial import to stio1 from my cvs-tree
@@ -110,7 +110,8 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         if bIsExplicit:
             # Add Click to Clickstream
             ClickstreamInterface = pManager.manager.GetClickstreamInterface()
-            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click for '+str(self.ClickUrl)+', Title: '+str(self.ClickTitle))
+            # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click for '+str(self.ClickUrl)+', Title: '+str(self.ClickTitle))
+            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click. Title: '+str(self.ClickTitle))
 
             click = cClick.cClick()
 
