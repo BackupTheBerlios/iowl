@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.7  2001/05/26 16:27:43  i10614
+changed default path
+
 Revision 1.6  2001/05/26 14:00:06  i10614
 changed default params
 
@@ -82,11 +85,11 @@ class cGuiRequestHandler:
         self.cCommandValidator = cCommandValidator.cCommandValidator()
 
         # set default filenames
-        self.cHelpDataGrabber.SetHelpFileName('data/help.ht')
-        self.cAboutDataGrabber.SetAboutFileName('data/about.ht')
-        self.sActiveFilename = 'data/interfaceact.ht'
-        self.sInactiveFilename = 'data/interfaceinact.ht'
-        self.sEndFilename = 'data/interfacefooter.ht'
+        self.cHelpDataGrabber.SetHelpFileName('data/gui/help.ht')
+        self.cAboutDataGrabber.SetAboutFileName('data/gui/about.ht')
+        self.sActiveFilename = 'data/gui/interfaceact.ht'
+        self.sInactiveFilename = 'data/gui/interfaceinact.ht'
+        self.sEndFilename = 'data/gui/interfacefooter.ht'
 
 
     def SetParam(self, sOption, sValue):

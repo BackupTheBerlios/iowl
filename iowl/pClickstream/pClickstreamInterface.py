@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.10 $"
+__version__ = "$Revision: 1.11 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.11  2001/05/26 16:27:20  i10614
+changed default path
+
 Revision 1.10  2001/05/26 14:11:16  i10614
 changed default path to "sessions"
 
@@ -115,7 +118,7 @@ class pClickstreamInterface:
     def __init__(self):
         """Constructor."""
         # clickstream is stored in clickstream2001-93-435.xml
-        self.sClickstreamPathName = 'sessions/'
+        self.sClickstreamPathName = 'data/sessions/'
         self.iWatchdogID = 0
         self.iRestart = 1200
         self.lSessions = []
