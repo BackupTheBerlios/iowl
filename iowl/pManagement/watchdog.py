@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: watchdog.py,v $
+Revision 1.2  2001/03/28 19:35:22  i10614
+removed debug-output
+
 Revision 1.1  2001/03/28 15:30:13  i10614
 renamed timer to watchdog to prevent collisions with win32 extensions
 
@@ -96,7 +99,7 @@ class sleeper:
 
     def reset(self):
         """Reset thread"""
-        pManager.manager.DebugStr('timer '+ __version__ +': Watchdog '+ str(self.id)+' resetted.')
+        # pManager.manager.DebugStr('timer '+ __version__ +': Watchdog '+ str(self.id)+' resetted.')
         self.starttime = time.time()
 
 
