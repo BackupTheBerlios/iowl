@@ -57,8 +57,25 @@ if [ -z $PIDOF ]; then
 	PIDOF=/usr/sbin/pidof;
 	fi
 
+	if [ -z $PIDOF ]; then
+	echo "There is no pidof executable found on default path. Edit iowl.sh and change PIDOF variable at line 24."
+	exit 1
+	fi
 fi
 
+###############################################################################
+# detect network status
+###############################################################################
+
+network () {
+	proxy=`netstat -n | grep -e 3228 | tail -1 | cut -b -10`
+	iowl=`netstat -n | grep -e 2828 | tail -1 | cut -b -10`
+	# are there open ports?
+	if [ $proxy $iowl ]; then
+			echo "There are open ports! Wait a short time and to start again."
+			exit 1;
+	fi
+}
 ###############################################################################
 # how start|stop|status|kill does work
 ###############################################################################
@@ -73,21 +90,10 @@ iowl_start () {
         	echo "iOwl.net already running!  (PID's: "$PIDLIST")";
 
 		else
-		# iOwl.net isnt running
-		export PYTHONPATH
-		$PYTHON $IOWL_DIR/$ARGUMENTS &
-
-		# checking return-value of iOwl.net
-		case $? in
-			
-			2)	echo "ERROR: There are no PIDs of iOwl.net but the socket-address is already in use!"
-				echo "Wait a short time and start iOwl.net again"
-				exit 1
-			;;
-
-			*)	echo "iOwl.net successfully startet"	
-			;;
-		esac
+			network
+		
+			export PYTHONPATH
+			$PYTHON $IOWL_DIR/$ARGUMENTS &
 	fi
 }
 
@@ -100,7 +106,9 @@ iowl_stop () {
         	# iOwl.net is already running
         	echo "iOwl.net is already running!  (PID's: "$PIDLIST")"
         	kill -SIGUSR1 $PIDLIST
-        	echo "iOwl.net processes stopped!";
+        	echo "iOwl.net processes stopped!"
+		sleep 1
+		network
 
 		else
 		# iOwl.net is not running
@@ -119,7 +127,8 @@ iowl_status () {
 
 		else
 		# iOwl.net is not running
-		echo "iOwl.net is not running!";
+		echo "iOwl.net is not running!"
+		network
 	fi
 }
 
