@@ -107,12 +107,12 @@ network () {
 	iowl=`netstat -n | grep -e tcp | sed -n -e '/\<2323/ p'`
 	# are there open ports?
 	if [ -n "$proxy"  ]; then
-			echo "There are open ports for iOwl.net-Proxy! Wait a short time and to start again."
+			echo "There are open ports for iOwl.net-Proxy! Wait a short time and start again."
 			exit 1;
 	fi
 	
 	if [ -n "$iowl" ]; then
-			echo "There are open ports for iOwl.net-Recommendation! Wait a short time and to start again."
+			echo "There are open ports for iOwl.net-Recommendation! Wait a short time and start again."
 			exit 1;
 	fi
 }
