@@ -74,7 +74,7 @@ case "$1" in
 	;;
    restart)
 	iowl_stop	
-	sleep 3
+	sleep 5
 	iowl_start	
 	;;
    kill)
