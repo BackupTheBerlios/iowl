@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: watchdog.py,v $
+Revision 1.3  2002/01/21 15:33:30  Saruman
+added comments
+
 Revision 1.2  2001/03/28 19:35:22  i10614
 removed debug-output
 
@@ -156,6 +159,7 @@ class timer:
 
 #########################################################
 ### TEST FUNCTIONS ######################################
+#########################################################
 
 def prnt():
     print('WakeUp!')
