@@ -5,8 +5,9 @@ und enthaelt nur die wichtigsten Angaben
 
 1. Benoetigt wird
 
-python2.2
-python2.2-xmlbase
+ * python2.2
+ * python2.2-xmlbase
+ * und natuerlich einen cvs-snapshot von iOwl.net
 
 2. ToDo
 
