@@ -41,7 +41,7 @@ include '/home/groups/iowl/htdocs/header.html';
 	<li>Download current cvs-snapshot <a href="http://www.iowl.net/files/daily/current-iowl.tar.gz">current-iowl.tar.gz</a> 
       and extract -&gt; <span class="kursiv">tar -xzvf current-iowl.tar.gz</span></li>
 	<li>Change to iowl directory -&gt; <span class="kursiv">cd iowl</span></li>
-	<li>Check if necessary software is installed -&gt; See <a href="http://www.iowl.net/wiki/index.php/Distributionen">tested distributions</a>. Cvs-snapshot contains an installation-guide for debian woody.</li> 
+	<li>Check if necessary software is installed -&gt; See <a href="http://www.iowl.net/wiki/index.php/Distributionen">tested distributions</a>. Cvs-snapshot contains an installation-guide for debian woody and suse7.3.</li> 
 	<li>Start iOwl.net -&gt; <span class="kursiv">./iowl.sh start</span></li>
 	<li>Test if iOwl.net runs -&gt; <span class="kursiv">telnet localhost 3228</span></li>
 <p>&nbsp;</p>
