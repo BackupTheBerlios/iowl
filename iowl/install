@@ -9,6 +9,7 @@ echo "variables and to start iOwl.net at every console-login (if it does not run
 echo ""
 echo "You don't have to do this. You can also start iOwl.net using iowl.sh start."
 echo "If this doesn't work, install can NOT correct this -> contact iowl-users@lists.berlios.de"
+echo "After ./install there are problems with spc!"
 echo ""
 echo -n "DO YOU AGREE THIS CHANGES? (y|N):"
 
