@@ -3,11 +3,11 @@
 
 ##vars: $PYTHON -> should python2.2 but works also with python
 ##	$PIDOF -> path to pidof normally /bin or /sbin (autodetected)
-##
-##	 the path to python and pidof normally autodetected; if it doesn't run   
-##	 check out the path for yourself and set below.
-##
 ##	$IOWL_DIR -> maybe $HOME/iowl/ or something
+##
+##	 the path to python, pidof and iowl-dir normally autodetected; 
+##	 if it doesn't run check out the path for yourself and set below.
+##
 ## 	$ARGUMENTS -> path to iowl.py in $IOWL_DIR
 ##	$PYTHONPATH -> path to the modules of iOwl.net + original $PYTHONPATH
 ###############################################################################
@@ -75,19 +75,17 @@ if [ -z $PYTHON ]; then
 		export PYTHON
 	fi
 fi
-echo $IOWL_DIR
+
 if [ -d "$IOWL_DIR" ]; then
 	# If $IOWL_DIR is not set in global profile, bashrc or users 
 	# own profile, bashrc -> set to working directory
 	export IOWL_DIR
-	echo $IOWL_DIR
 else
 	# otherwise export it
 	IOWL_DIR=`pwd`
 	export IOWL_DIR	
-	echo $IOWL_DIR
 fi
-echo $IOWL_DIR
+
 ###############################################################################
 # some tests
 ###############################################################################
