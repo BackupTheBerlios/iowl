@@ -1,7 +1,7 @@
 <?php
 include '/home/groups/iowl/htdocs/header.html';
 ?>
-<h1>TEST 123 Download</h1>
+<h1>Download</h1>
 <h2>Important restrictions concerning the early access version of iOwl.net software</h2>
 <p>iOwl.net software is at an early stage of development. Nevertheless we would like to
    share it with all the people around the world in order to give every beta tester the chance
