@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.4  2001/04/09 13:16:30  i10614
+implemented simple caching of neighbourowls
+
 Revision 1.3  2001/04/09 12:22:16  i10614
 Implemented protocol version check, more fixes for network communication
 
@@ -91,6 +94,9 @@ class cOwlManager:
         # init list of owls
         self.lKnownOwls = []
 
+        # name for owlfile
+        self.sOwlFilename="owls.txt"
+
         # init dictionary of requests
         self.dRequests = {}
 
@@ -148,7 +154,7 @@ class cOwlManager:
 
         # okay, this is a new owl.
         # generate owl-object
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': AddOwl: New Owl at '+str(ip)+':'+str(port)+'.')
+        # pManager.manager.DebugStr('cOwlManager '+ __version__ +': AddOwl: New Owl at '+str(ip)+':'+str(port)+'.')
         newOwl = cNeighbourOwl.cNeighbourOwl(ip, port, self)
 
         # Add to list and return new owl
@@ -646,9 +652,53 @@ class cOwlManager:
     def Start(self):
         """Start operation of cOwlManager.
 
-        Sole purpose: register CleanOldRequest-Function with pManager.
+        purpose: register CleanOldRequest-Function with pManager.
+                 read list of known owls from file
         """
+
         pManager.manager.RegisterWatchdog(self.CleanOldRequests, 600)
+
+        try:
+            # open file
+            owlfile = open(self.sOwlFilename, "r")
+        except:
+            # cant open file.
+            return
+
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Reading cached neighbourowls.')
+        iOwls=0
+        # read line by line
+        line = owlfile.readline()
+        while line:
+            iOwls += 1
+            line = line.strip()
+            ip, port = line.split(':');
+            owl = self.AddOwl(ip, port);
+            line = owlfile.readline()
+
+        owlfile.close()
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Read %s neigbourowls from cache.' % str(iOwls))
+
+
+    def Shutdown(self):
+        """Stop working.
+
+        Save all known neighbourowls to file.
+        """
+
+        try:
+            owlfile = open(self.sOwlFilename, "w");
+        except:
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Cant open owlfile for writing.')
+            return
+
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Caching neighbourowls.')
+        iOwls=0
+        for owl in self.lKnownOwls:
+            iOwls += 1
+            owlfile.write("%s:%s\n" % (owl.GetIP(), owl.GetPort()))
+        owlfile.close()
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Saved %s neighbourowls in cache.' % str(iOwls))
 
 
     def CleanOldRequests(self):
@@ -672,3 +722,23 @@ class cOwlManager:
 
         pManager.manager.DebugStr('cOwlManager '+ __version__ +': Cleaned Requeststable from expired entries. Deleted: '+str(iNumDeleted)+', remaining: '+str(len(self.dRequests.keys())))
         return
+
+
+
+#######################################
+### Test Functions
+
+def test():
+    x="x"
+    om = cOwlManager(x)
+    # Add three owls
+    o1 = om.AddOwl('1.2.3.4', 4096);
+    o2 = om.AddOwl('1.2.3.5', 4096);
+    o3 = om.AddOwl('1.2.3.6', 4096);
+    om.Start()
+
+    om.Shutdown()
+
+
+if __name__=="__main__":
+    test()

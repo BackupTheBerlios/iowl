@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.4  2001/04/09 13:16:30  i10614
+implemented simple caching of neighbourowls
+
 Revision 1.3  2001/04/09 12:22:16  i10614
 Implemented protocol version check, more fixes for network communication
 
@@ -155,10 +158,12 @@ class cNetManager:
         """Stop the network
 
         Stop cNetServer (cNetServer.StopListen())
+        Stop cOwlManager
 
         """
 
         self.cNetServer.StopListen()
+        self.cOwlManager.Shutdown()
 
 
     def HandlePing(self, sPing):

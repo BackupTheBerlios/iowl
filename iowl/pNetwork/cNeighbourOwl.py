@@ -1,10 +1,13 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cNeighbourOwl.py,v $
-Revision 1.1  2001/03/24 19:22:44  i10614
-Initial revision
+Revision 1.2  2001/04/09 13:16:30  i10614
+implemented simple caching of neighbourowls
+
+Revision 1.1.1.1  2001/03/24 19:22:44  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.10  2001/03/18 22:25:56  mbauer
 removed debug output
@@ -50,6 +53,15 @@ class cNeighbourOwl:
 
         return xmlrpclib.Server('http://'+str(self.IP)+':'+str(self.iPort))
 
+
+    def GetIP(self):
+        """return string containing my IP"""
+        return self.IP
+
+
+    def GetPort(self):
+        """return integer containing my port"""
+        return self.iPort
 
 
     def Ping(self, sPing):
