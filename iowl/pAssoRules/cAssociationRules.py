@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: cAssociationRules.py,v $
+Revision 1.6  2002/01/25 13:19:31  aharth
+added itemsets stuff
+
 Revision 1.5  2002/01/24 14:32:59  aharth
 Computation of rules should be much faster
 
@@ -46,6 +49,7 @@ import cSession
 import pManager
 import cRule
 import time
+import os
 
 
 class cAssociationRules:
@@ -92,17 +96,18 @@ class cAssociationRules:
             itemsets.CountUrl(lUrls)
 
 
-    def ComputeRules(self, lSessions, iOverallCount):
+    def ComputeRules(self, lSessions, iOverallCount, sItemsetPathName):
         """Compute association rules.
 
         lSessions -- list of sessions
         iOverallCount -- number of urls in clickstream
+        sItemsetPathName -- path name for temporary itemsets
 
         """
         oneItemsets = self.ComputeCandidateOneItemsets(lSessions)
         #print '*************One Itemsets'
         #oneItemsets.Print()
-        oneItemsets.OpenFile('/tmp/candidate1_'+str(time.time())+'.xml')
+        oneItemsets.OpenFile(os.path.join(sItemsetPathName, 'itemset1.xml'))
         oneItemsets.CloseFile()
         #print '*************'
         # store large itemsets here
@@ -151,7 +156,7 @@ class cAssociationRules:
             # candidate.Print()
             # print '**************'
 
-            candidateItemset.OpenFile('/tmp/candidate'+str(k)+'_'+str(time.time())+'.xml')
+            candidateItemset.OpenFile(os.path.join(sItemsetPathName, 'itemset'+str(k)+'.xml'))
             candidateItemset.CloseFile()
 
             largeItemsets.append(candidateItemset)

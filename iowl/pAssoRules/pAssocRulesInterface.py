@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.8 $"
+__version__ = "$Revision: 1.9 $"
 
 """
 $Log: pAssocRulesInterface.py,v $
+Revision 1.9  2002/01/25 13:19:31  aharth
+added itemsets stuff
+
 Revision 1.8  2002/01/24 14:32:59  aharth
 Computation of rules should be much faster
 
@@ -50,6 +53,8 @@ import pManager
 import thread
 import sys
 import traceback
+import os
+import re
 
 class pAssocRulesInterface:
 
@@ -57,13 +62,15 @@ class pAssocRulesInterface:
         """Constructor."""
         self.AssocRules = cAssociationRules.cAssociationRules()
         self.bGotRules = 0
-
+        self.sItemsetPathName='data/itemsets/'
 
     def Start(self):
         """Kind of constructor."""
         csi = pManager.manager.GetClickstreamInterface()
         lSessions = csi.GetSessions()
         iCount = csi.GetItemCount()
+
+        self.DeleteItemsets()
 
         pManager.manager.DebugStr('pAssocRulesInterface '+ __version__ +': Starting new thread to compute rules.', 3)
         thread.start_new(self.ComputeRules, (lSessions, iCount))
@@ -76,13 +83,28 @@ class pAssocRulesInterface:
         sValue -- value
 
         """
-        pass
+        if (sParameter == 'itemsetpathname'):
+            self.sItemsetPathName = sValue
 
 
     def Shutdown(self):
         """Kind of destructor."""
         pManager.manager.DebugStr('pAssocRulesInterface '+ __version__ +': Shutting down.', 1)
 
+
+    def DeleteItemsets(self):
+        """ For now, delete previous itemsets."""
+        # normalize path: no change on unix, lowercase and forward slashes on win32
+        self.sItemsetPathName = os.path.normcase(self.sItemsetPathName)
+
+        # create list of files
+        lFiles = os.listdir(self.sItemsetPathName)
+        # prepare list of sessions
+        for sFileName in lFiles:
+            match = re.compile("""itemset*xml$""")
+            if match.match(sFileName):
+                # remove this itemsets file
+                os.remove(sFileName)
 
     def ComputeRules(self, lSessions, iCount):
         """Compute association rules.
@@ -91,7 +113,7 @@ class pAssocRulesInterface:
         iCount -- overall count of urls in clickstream
 
         """
-        self.AssocRules.ComputeRules(lSessions, iCount)
+        self.AssocRules.ComputeRules(lSessions, iCount, self.sItemsetPathName)
         try:
             pass
         except:
