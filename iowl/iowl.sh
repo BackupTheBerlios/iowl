@@ -9,8 +9,8 @@ PYTHON="python2.2"
 ARGUMENTS="pManagement/iowl.py"
 
 # var's for start - stop
-IOWLPS=`ps U $UID | egrep "$PYTHON $ARGUMENTS" | head -1 | tail -1` 
-PROG=`echo "$IOWLPS" | cut -c27-56`
+IOWLPS=`ps U $UID | egrep "$PYTHON $IOWL_DIR/$ARGUMENTS" | head -1 | tail -1` 
+PROG=`echo "$IOWLPS" | cut -c27-90`
 IOWLPID=`echo "$IOWLPS" | cut -c-5`
 
 # set Pythonpath so python can find all our modules and append original $PYTHONPATH.
@@ -22,12 +22,12 @@ export PYTHONPATH
 iowl_start () {
 	case "$PROG" in
 
-		*"$PYTHON $ARGUMENTS" )
+		*"$PYTHON $IOWL_DIR/$ARGUMENTS" )
 			echo "iOwl.net already running!"
 		;;
 
 		* )
-			$PYTHON $ARGUMENTS &
+			$PYTHON $IOWL_DIR/$ARGUMENTS &
 		;;
 	
 	esac
@@ -36,7 +36,7 @@ iowl_start () {
 iowl_stop () {
    	case "$PROG" in
 
-   		*"$PYTHON $ARGUMENTS" )
+   		*"$PYTHON $IOWL_DIR/$ARGUMENTS" )
 			kill -2 $IOWLPID
 			echo "iOwl.net processes stopped!"
 		;;
@@ -51,7 +51,7 @@ iowl_stop () {
 iowl_kill () {
 	case "$PROG" in
 
-   		*"$PYTHON $ARGUMENTS" )
+   		*"$PYTHON $IOWL_DIR/$ARGUMENTS" )
 			kill -9 $IOWLPID
 			echo "iOwl.net processes killed!"
 		;;
