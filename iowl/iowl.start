@@ -1,11 +1,12 @@
 #!/bin/sh
-# Iowl.net - iowl.start
+# iOwl.net - iowl.start
 
-PYTHONPATH=/usr/local/iowl/pAssoRules:/usr/local/iowl/pClickstream:/usr/local/iowl/pGui:/usr/local/iowl/pManagement:/usr/local/iowl/pMisc:/usr/local/iowl/pNetwork:/usr/local/iowl/pProxy:/usr/local/iowl/pRecommendation:/usr/local/iowl/pStatisticsPYTHONPATH=/usr/local/iowl/pAssoRules:/usr/local/iowl/pClickstream:/usr/local/iowl/pGui:/usr/local/iowl/pManagement:/usr/local/iowl/pMisc:/usr/local/iowl/pNetwork:/usr/local/iowl/pProxy:/usr/local/iowl/pRecommendation:/usr/local/iowl/pStatistics
+PYTHONPATH=../pAssoRules:../pClickstream:../pGui:../pManagement:../pMisc:../pNetwork:../pProxy:../pRecommendation:../pStatistics
+#PYTHONPATH=/usr/local/iowl/pAssoRules:/usr/local/iowl/pClickstream:/usr/local/iowl/pGui:/usr/local/iowl/pManagement:/usr/local/iowl/pMisc:/usr/local/iowl/pNetwork:/usr/local/iowl/pProxy:/usr/local/iowl/pRecommendation:/usr/local/iowl/pStatistics
 
 export PYTHONPATH
 
-cd /usr/local/iowl/pManagement
+cd ./pManagement
 
 python2.2 iowl.py
 
