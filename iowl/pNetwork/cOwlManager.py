@@ -1,8 +1,12 @@
 
-__version__ = "$Revision: 1.24 $"
+__version__ = "$Revision: 1.25 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.25  2002/02/21 15:48:59  Saruman
+Bugfix for routing-mutex.
+Temporary disabled ValidateOwl().
+
 Revision 1.24  2002/02/21 13:57:14  Saruman
 Of course, never executed code never gets tested.
 Fixed.
@@ -338,6 +342,7 @@ class cOwlManager:
 
         # check package
         if not self.IsValidPackage(cNetPackage):
+            self.RouteLock.release()
             return 'error'
 
         # Get cNeighbourOwl Object that sent me this request
@@ -548,6 +553,8 @@ class cOwlManager:
             try:
                 del self.dRequests[cNetPackage.GetID()]
             except:
+                # release Routing Table
+                self.RouteLock.release()
                 pass
 
             # release Routing Table
@@ -607,16 +614,20 @@ class cOwlManager:
 
         """
 
-        for owl in self.lKnownOwls:
-            try:
-                # create socket
-                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.connect((owl.GetIP(), int(owl.GetPort())))
-                pManager.manager.DebugStr('cOwlManager '+ __version__ +': validated owl %s:%s.' %(str(owl.GetIP()), str(owl.GetPort())), 3)
-                s.close()
-            except:
-                pManager.manager.DebugStr('cOwlManager '+ __version__ +': Removing unreachable owl %s:%s.' %(str(owl.GetIP()), str(owl.GetPort())), 3)
-                self.DeleteOwl(self.lKnownOwls, (owl.GetIP(), owl.GetPort()))
+        # XXX Does not work that way. Deleting list while iterating it??
+        # Fix later...
+        return
+
+        #for owl in self.lKnownOwls:
+        #    try:
+        #        # create socket
+        #        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        #        s.connect((owl.GetIP(), int(owl.GetPort())))
+        #        pManager.manager.DebugStr('cOwlManager '+ __version__ +': validated owl %s:%s.' %(str(owl.GetIP()), str(owl.GetPort())), 3)
+        #        s.close()
+        #    except:
+        #        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Removing unreachable owl %s:%s.' %(str(owl.GetIP()), str(owl.GetPort())), 3)
+        #        self.DeleteOwl(self.lKnownOwls, (owl.GetIP(), owl.GetPort()))
 
 
 
