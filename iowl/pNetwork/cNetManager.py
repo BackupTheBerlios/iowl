@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.25 $"
+__version__ = "$Revision: 1.26 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.26  2001/08/10 18:41:46  i10614
+changed debug output.
+
 Revision 1.25  2001/08/10 18:34:54  i10614
 added debuglevel to all messages.
 
@@ -237,7 +240,7 @@ class cNetManager:
 
         """
 
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': Starting connection.', 0)
+        pManager.manager.DebugStr('cNetManager '+ __version__ +': Starting connection.', 1)
 
         # start watchdog
         self.WatchDogID = pManager.manager.RegisterWatchdog(self.TimerTick, self.iInterval)
@@ -303,7 +306,7 @@ class cNetManager:
             pManager.manager.DebugStr('cNetManager '+ __version__ +': Can\'t open owlfile.', 1)
             return
 
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': Reading cached neighbourowls.', 0)
+        pManager.manager.DebugStr('cNetManager '+ __version__ +': Reading cached neighbourowls.', 1)
         iOwls=0
         # read line by line
         line = owlfile.readline()

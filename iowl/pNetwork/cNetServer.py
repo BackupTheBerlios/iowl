@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cNetServer.py,v $
+Revision 1.3  2001/08/10 18:41:46  i10614
+changed debug output.
+
 Revision 1.2  2001/05/26 14:01:19  i10614
 changed default params
 
@@ -46,7 +49,7 @@ class cNetServer:
     def StartListen(self):
         """Start TCPserver"""
 
-        pManager.manager.DebugStr('cNetServer '+ __version__ +': Starting thread for NetServer')
+        pManager.manager.DebugStr('cNetServer '+ __version__ +': Starting thread for NetServer', 2)
         self.server = SocketServer.TCPServer(('', self.iListenPort), cRPCRequestHandler.cRPCRequestHandler)
 
         # for testing only - start listen without new thread:
