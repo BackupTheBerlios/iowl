@@ -1,10 +1,13 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: pAssocRulesInterface.py,v $
-Revision 1.1  2001/03/24 19:22:53  i10614
-Initial revision
+Revision 1.2  2001/03/27 18:19:34  i10614
+added notification when shutting down
+
+Revision 1.1.1.1  2001/03/24 19:22:53  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.5  2001/03/18 18:32:45  mbauer
 Added try-except for ComputeRules-Thread. Errors now get logged, too.
@@ -27,7 +30,8 @@ added pAssocRulesInterface
 import cAssociationRules
 import pManager
 import thread
-
+import sys
+import traceback
 
 class pAssocRulesInterface:
 
@@ -59,6 +63,8 @@ class pAssocRulesInterface:
 
     def Shutdown(self):
         """Kind of destructor."""
+
+        pManager.manager.DebugStr('pAssocRules '+ __version__ +': Shutting down.')
         pass
 
 
