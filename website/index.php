@@ -8,7 +8,7 @@ include 'header.html';
 Ever been curious what web pages other people visit? Want to share your
 knowledge about your favorite web resources? iOwl.net uses a peer-to-peer
 network to faciliate the flow of information between its users. Join
-the iOwl.net and <a href="nightly/current-iowl.tar.gz>download the tar.gz</a>!
+the iOwl.net and <a href="nightly/current-iowl.tar.gz">download the tar.gz</a>!
 </p>
 
 <p>
@@ -34,7 +34,7 @@ Requirements Specification
 <a href="documentation/descriptions/overall_design/overall_design_v0_2.html">
 Overall Design
 </a></li>
-<a href="documentation/packages/pManager/pmanager.html">
+<li><a href="documentation/packages/pManager/pmanager.html">
 Main Package Overview
 </a></li>
 </ul>
