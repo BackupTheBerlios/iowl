@@ -9,7 +9,8 @@ PYTHON="python2.2"
 ARGUMENTS="pManagement/iowl.py"
 
 # var's for stop
-PIDLIST=`pidof $PYTHON $IOWL_DIR/$ARGUMENTS`
+PIDOF=`which pidof`
+PIDLIST=`$PIDOF $PYTHON $IOWL_DIR/$ARGUMENTS`
 
 # if running stop - if not do nothing
 

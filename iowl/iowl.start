@@ -12,7 +12,14 @@ ARGUMENTS="pManagement/iowl.py"
 PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
 
 # var's for start
-PIDLIST=`pidof $PYTHON $IOWL_DIR/$ARGUMENTS`
+
+PIDOF=`which pidof`	
+# the path to pidof normally autodetected; if it
+# doesn't run check out the path for yourself and uncomment the first PIDOF
+# with a # and use your own 
+# PIDOF=path_to_your_pidof
+
+PIDLIST=`$PIDOF $PYTHON $IOWL_DIR/$ARGUMENTS`
 
 # if already running do nothing  - else start
 
