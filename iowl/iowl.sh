@@ -1,8 +1,6 @@
 #!/bin/sh
 # iOwl.net - iowl.sh: start|stop|restart|status|kill
 
-# !! Important look for the Variable IOWL_DIR and change it !!
-
 ##vars: $PYTHON -> should python2.2 but works also with python
 ## 	$ARGUMENTS -> path to iowl.py in $IOWL_DIR
 ##	$PIDOF -> path to pidof normally /bin or /sbin (autodetected)
@@ -35,25 +33,28 @@ fi
 PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
 
 ###############################################################################
-# special for pidof on non Debian Systems
+# autodetect pidof
 ###############################################################################
 
-if [ -x /bin/pidof ]; then
-PIDOF=/bin/pidof;
-fi
+if [ -z $PIDOF ]; then
 
-if [ -x /sbin/pidof ]; then 
-PIDOF=/sbin/pidof;
-fi
+	if [ -x /bin/pidof ]; then
+	PIDOF=/bin/pidof;
+	fi
 
-if [ -x /usr/bin/pidof ]; then 
-PIDOF=/usr/bin/pidof;
-fi
+	if [ -x /sbin/pidof ]; then 
+	PIDOF=/sbin/pidof;
+	fi
 
-if [ -x /usr/sbin/pidof ]; then
-PIDOF=/usr/sbin/pidof;
-fi
+	if [ -x /usr/bin/pidof ]; then 
+	PIDOF=/usr/bin/pidof;
+	fi
 
+	if [ -x /usr/sbin/pidof ]; then
+	PIDOF=/usr/sbin/pidof;
+	fi
+
+fi
 
 ###############################################################################
 # how start|stop|status|kill does work
@@ -128,6 +129,7 @@ iowl_kill () {
 ###############################################################################
 # iOwl.net start|stop|restart|kill|status
 ###############################################################################
+
 case "$1" in
 
    start)
