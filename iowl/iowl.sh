@@ -26,8 +26,9 @@ IOWL_DIR=`pwd`
 
 # a little test if $IOWL_DIR is true
 
-if [ ! -d $IOWL_DIR ]; 
-then echo $IOWL_DIR "does not exist .. please change iowl.sh"
+if [ ! -f $IOWL_DIR/$ARGUMENTS ]; then 
+echo ./$ARGUMENTS "does not exist!"
+echo "Your are not in the right directory to start iOwl.net"
 exit 1;
 fi
 
