@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.13 $"
+__version__ = "$Revision: 1.14 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.14  2002/02/10 19:42:21  aharth
+added stylesheet support
+
 Revision 1.13  2002/02/06 17:20:09  abiessmann
 changed image-path from pix/... to images/...
 
@@ -155,7 +158,7 @@ class cGuiRequestHandler:
         sScheme, iHostport, sPath, lParams, sQuery, fragment = urlparse.urlparse(sUrl)
 
         # detect file requests
-        if sPath.endswith('.gif') or sPath.endswith('.jpg') or sPath.endswith('.png'):
+        if sPath.endswith('.gif') or sPath.endswith('.jpg') or sPath.endswith('.png') or sPath.endswith('.css'):
             pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Query for gif "'+str(sPath)+'"', 4)
             # return gif
             return self.cBinaryDataGrabber.GetData(sPath)
@@ -254,10 +257,11 @@ class cGuiRequestHandler:
             sData = """<html>
                     <head>
                     <title>%s</title>
+                    <link rel="stylesheet" href="data/ui/style.css" type="text/css">
                     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
                     <base href="http://my.iowl.net/">
                     </head>
-                    <body bgcolor="#CCCCCC" text="#000000" link="#AA0000" vlink="#880000" alink="#AA0000" background="data/images/back.gif">
+                    <body>
                     """ %sTitle
         else:
             # need script in header and attribute onload="..."

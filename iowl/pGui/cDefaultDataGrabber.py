@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 
 """
 $Log: cDefaultDataGrabber.py,v $
+Revision 1.7  2002/02/10 19:42:21  aharth
+added stylesheet support
+
 Revision 1.6  2001/04/14 14:56:00  i10614
 interface changes
 
@@ -98,7 +101,7 @@ class cDefaultDataGrabber:
         lSessions = cClickstreamInterface.GetSessions()
 
         # generate dynamic content
-        sContent = '<h2><font face="Arial, Helvetica, sans-serif" color="#666666">history</font></h2>'
+        sContent = '<h2>History</h2>\n'
         if len(lSessions)==0:
             # no history...
             sContent = sContent + 'Sorry, there is no surfing history yet. Please start surfing first :-)'
@@ -115,7 +118,7 @@ class cDefaultDataGrabber:
                 #     sContent = sContent + '<h4>Session No. '+ str(iSessionIndex)+'</h4>'
 
                 # session creation date
-                sContent = sContent + '<h4><font color="#666666" face="Arial, Helvetica, sans-serif">%s</font></h4>' % time.ctime(cSession.GetCreationTime())
+                #sContent = sContent + '<h4>%s</h4>' % time.ctime(cSession.GetCreationTime())
                 # get copy of all clicks from session
                 lClicks = cSession.GetClicks()[:]
                 # reverse order of clicks
@@ -125,14 +128,14 @@ class cDefaultDataGrabber:
                     # get url as string
                     sUrl = urlparse.urlunparse(click.GetUrl())
                     # build link
-                    sLink = '<a href="%s"><font face="Arial, Helvetica, sans-serif">%s</font></a>' % (sUrl, click.GetTitle())
-                    sDate = '<small><font size="-1">&nbsp; surfed at: %s</font></small><br>' % time.ctime(click.GetTimestamp())
-                    sRemove = '- <a href="http://my.iowl.net/command?action=remove&url=%s">remove</a> from history.<br>' % sUrl
-                    sSingleRec = '- get <a href="http://my.iowl.net/command?action=singlerecommendation&sUrl=%s">recommendations</a> for this link' % sUrl
+                    sLink = '\t\t<div class="title"><a href="%s">%s</a></div>\n' % (sUrl, click.GetTitle())
+                    sDate = '\t\t<div class="surftime">%s</div>\n' % time.ctime(click.GetTimestamp())
+                    sRemove = '\t\t<div class="action"><a href="http://my.iowl.net/command?action=remove&url=%s">remove</a> from history</div>\n' % sUrl
+                    sSingleRec = '\t\t<div class="action">get <a href="http://my.iowl.net/command?action=singlerecommendation&sUrl=%s">recommendations</a> for this link</div>\n' % sUrl
                     # add to complete string
                     try:
                         # XXX: sometimes i get an UnicodeError: ASCII decoding error: ordinal not in range(128)
-                        sContent = sContent + '<p>' + sLink + sDate + sRemove + sSingleRec + '</p>'
+                        sContent = sContent + '\t<p class="click">\n' + sLink + sDate + sRemove + sSingleRec + '\t</p>\n'
                     except:
                         # skip this click...
                         pass

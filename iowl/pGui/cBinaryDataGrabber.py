@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cBinaryDataGrabber.py,v $
+Revision 1.4  2002/02/10 19:42:21  aharth
+added stylesheet support
+
 Revision 1.3  2001/04/07 17:06:23  i10614
 many, many bugfixes for working network communication
 
@@ -57,6 +60,8 @@ class cBinaryDataGrabber:
 
         if sPath.endswith('.gif'):
             return data, 'image/gif'
+        if sPath.endswith('.css'):
+            return data, 'text/css'
         if sPath.endswith('.html'):
             return data, 'text/html'
 
