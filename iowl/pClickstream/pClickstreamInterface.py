@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.20 $"
+__version__ = "$Revision: 1.21 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.21  2002/01/25 13:19:07  aharth
+added = to exlusion for recording bug#103
+
 Revision 1.20  2002/01/24 14:33:00  aharth
 Computation of rules should be much faster
 
@@ -430,10 +433,11 @@ class pClickstreamInterface:
         # tuple of strings that are not allowed in clicks:
         # ? -> cgi-bins
         # @ -> user/password
-        tKillUrls = '?', '@'
+        # = -> doubleclick stuff
+        tKillUrls = '?', '@', '='
 
         # tuple of endings that are not allowed:
-        tKillTypes = '.jpg', '.gif'
+        tKillTypes = '.jpg', '.gif', '.css'
 
         # get click data - lowercase
         sUrl = string.lower(urlparse.urlunparse(click.GetUrl()))
