@@ -1,10 +1,13 @@
   
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cRule.py,v $
-Revision 1.1  2001/03/24 19:22:53  i10614
-Initial revision
+Revision 1.2  2002/02/10 21:39:09  aharth
+added showrules feature
+
+Revision 1.1.1.1  2001/03/24 19:22:53  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.3  2001/03/17 15:19:35  mbauer
 removed lots of debug output
@@ -99,13 +102,14 @@ class cRule:
 
 
     def GetRule(self):
-        """Return rule."""
-        l = []
-        l.append(consequent)
-        for url in self.antecedents:
-            l.append(url)
+        """Return rule for displaying purposes."""
+        consequent = urlparse.urlunparse(self.consequent)
+        lants = []
 
-        return tuple(l), iSupport, iConfidence
+        for ant in self.antecedents:
+            lants.append(urlparse.urlunparse(ant))
+
+        return consequent, lants, self.iSupport, self.iConfidence
 
 
     def SetAntecedents(self, lUrls):

@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: pStatisticsInterface.py,v $
+Revision 1.4  2002/02/10 21:39:56  aharth
+added showrules feature
+
 Revision 1.3  2002/01/24 09:41:53  Saruman
 adapted to new directory-structure
 
@@ -118,6 +121,14 @@ class pStatisticsInterface:
         """
         return self.Rules.GetMatches(lUrls)
 
+
+    def GetRules(self):
+        """Get all rules.
+
+        return -- lRules, list with rules
+        """
+        return self.Rules
+    
 
     def GetTopNList(self, n):
         """Return top n list.
