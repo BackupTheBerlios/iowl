@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.7 $"
+__version__ = "$Revision: 1.8 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.8  2001/04/15 19:10:22  i10614
+Forgot to sort sessions which resulted in old sessions displayed in history. Fixed.
+
 Revision 1.7  2001/04/14 14:59:45  i10614
 changed session-handling
 
@@ -156,6 +159,7 @@ class pClickstreamInterface:
 
         # Close session
         if self.Session != None:
+            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Closing current session.')
             self.Session.CloseFile()
 
 
@@ -223,7 +227,8 @@ class pClickstreamInterface:
                 # add session to sessionlist
                 lSessionFiles.append(sFileName)
 
-        # XXX - Todo: Sort list by timestamp in filename
+        # Sort list by timestamp in filename
+        lSessionFiles.sort()
 
         # Open Sessions
         for sSession in lSessionFiles:
@@ -266,12 +271,13 @@ class pClickstreamInterface:
         pManager.manager.StopWatchdog(self.iWatchdogID)
         self.iWatchdogID = 0
 
+        pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': CloseSession() called.')
+
         if self.Session == None:
             # no active session
             pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning: Trying to close non-existant session.')
             return
 
-        pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Closing current session.')
         # append old session to list of all available sessions
         if self.Session.GetClicksCount() > 0:
             self.lSessions.append(self.Session)
