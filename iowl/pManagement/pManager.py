@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.4  2001/03/29 23:31:41  i10614
+now takes care of path (data/pix/pixc.gif)
+
 Revision 1.3  2001/03/28 15:29:37  i10614
 renamed timer to watchdog to prevent collisions with win32 extensions
 
@@ -109,6 +112,15 @@ class cManager:
         # build date
         self.sBuild = '25.03.2001 23:02'
 
+        # default logfile
+        self.sLogFileName = "iowl.log"
+
+        # open logfile in append mode
+        try:
+            self.LogFileHandle = open(self.sLogFileName, 'a')
+        except:
+            print('pManager v.'+ __version__ +': Can\'t open Logfile "'+self.sLogFileName+'"')
+
         # create timer
         self.timer = watchdog.timer()
 
@@ -121,19 +133,10 @@ class cManager:
         #                      2 -> both
         self.iDebugLevel = 0
 
-        # set own ip
-        # XXX What to do if adress changes while owl is running?
-        #     What to do if machine has more than one interface?
-        #self.sOwnIP = socket.gethostbyname(socket.gethostname())
 
-        # default logfile
-        self.sLogFileName = "iowl.log"
-
-        # open logfile in append mode
-        try:
-            self.LogFileHandle = open(self.sLogFileName, 'a')
-        except:
-            print('pManager v.'+ __version__ +': Can\'t open Logfile "'+self.sLogFileName+'"')
+        # get basedir
+        self.sBaseDir=os.getcwd()
+        self.DebugStr('pManager '+ __version__ +': Basedir is "'+self.sBaseDir+'".')
 
 
     def DebugStr(self, sDebugInfo):
@@ -392,6 +395,8 @@ class cManager:
         self.intfStatistics.Shutdown()
         self.intfProxy.ShutDown()
 
+        # close logfile
+        self.LogFileHandle.close()
 
     def GetVersion(self):
         """return version of iOwl"""
@@ -406,6 +411,11 @@ class cManager:
     def GetOwnIP(self):
         """return own ip-number"""
         return self.sOwnIP
+
+
+    def GetBaseDir(self):
+        """return string containing base iOwl directory"""
+        return self.sBaseDir
 
 
     def SetDebugLevel(self, iLevel):
