@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: cSession.py,v $
+Revision 1.6  2001/07/15 10:12:31  i10614
+bugfix for url removing (andi)
+
 Revision 1.5  2001/04/14 14:59:45  i10614
 changed session-handling
 
@@ -167,6 +170,7 @@ class cSession(cData.cData):
             if click.GetUrl() == tUrl:
                 iIndex = self.lData.index(click)
                 del self.lData[iIndex]
+                self.CloseFile()
 
 
     def GetElements(self):
