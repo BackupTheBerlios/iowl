@@ -42,7 +42,7 @@ Main Package Overview
 <p>
 Some hints for installing iOwl.net on Linux (in German) can be found on
 our <a href="http://www.iowl.net/wiki/">Wiki</a>. You can also have a look
-at our <a href="http://developer.berlios.de/project/iowl/">berlios project
+at our <a href="http://developer.berlios.de/projects/iowl/">berlios project
 page</a>.
 </p>
 
