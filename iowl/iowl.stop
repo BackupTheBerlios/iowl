@@ -1,17 +1,29 @@
 #!/bin/sh
 # iOwl.net - iowl.stop
 
-BEFEHL="python2.2 pManagement/iowl.py"
-AUSGABE=`ps U $UID | egrep "$BEFEHL" | head -1 | tail -1` 
-PROG=`echo "$AUSGABE" | cut -c27-56`
-IOWLPID=`echo "$AUSGABE" | cut -c-5`
+# the executable
+# PYTHON="python"
+PYTHON="python2.2"
 
+# arguments:
+ARGUMENTS="pManagement/iowl.py"
+
+# var's for stop
+IOWLPS=`ps U $UID | egrep "$PYTHON $IOWL_DIR/$ARGUMENTS" | head -1 | tail -1`
+PROG=`echo "$IOWLPS" | cut -c27-90`
+IOWLPID=`echo "$IOWLPS" | cut -c-5`
+
+# if running stop - if not do nothing
 case "$PROG" in
 
-	*"$BEFEHL"* )	kill -2 $IOWLPID
-			echo "iOwl.net processes stopped" ;;
+	*"$PYTHON $IOWL_DIR/$ARGUMENTS" )
+		kill -2 $IOWLPID
+		echo "iOwl.net processes stopped!"
+	;;
 
-	* )		echo "No iOwl.net running" ;;
+	* )
+		echo "iOwl.net is not running!"
+	;;
 
 esac
 
