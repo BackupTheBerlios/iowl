@@ -1,9 +1,12 @@
 #!/usr/local/bin/python
 
-__version__ = "$Revision: 1.15 $"
+__version__ = "$Revision: 1.16 $"
 
 """
 $Log: iowl.py,v $
+Revision 1.16  2002/02/27 14:10:52  Saruman
+Dump message to stderr for "adress already in use" - error.
+
 Revision 1.15  2002/02/27 13:45:37  Saruman
 catch SystemExit exception for clean shutdown.
 
@@ -96,6 +99,7 @@ Initial creation
 
 import getopt
 import sys
+import os
 import pManager
 import traceback
 import socket
@@ -350,6 +354,8 @@ def StartiOwl(tray):
         pManager.manager.DebugStr('pManager '+ __version__ +': Exception: Type: '+str(eType)+', value: '+str(eValue))
         pManager.manager.DebugStr('pManager '+ __version__ +': Now shutting down.')
         pManager.manager.ShutDown()
+        # print info to stderr
+        sys.stderr.write(os.linesep + os.linesep + "ERROR: Could not start iOwl - Adress already in use!" + os.linesep)
         sys.exit(2)
     except:
         # unknown error. log and try to shutdown
