@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.15 $"
+__version__ = "$Revision: 1.16 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.16  2002/02/13 10:47:34  Saruman
+added statistics gui
+
 Revision 1.15  2002/02/10 21:40:54  aharth
 added showrules feature, cleaned up ui
 
@@ -85,6 +88,7 @@ import cCommandValidator
 import cLogfileGrabber
 import cConfigureGrabber
 import cRulesGrabber
+import cStatsDataGrabber
 
 
 class cGuiRequestHandler:
@@ -111,6 +115,7 @@ class cGuiRequestHandler:
         self.cLogfileGrabber = cLogfileGrabber.cLogfileGrabber(self)
         self.cConfigureGrabber = cConfigureGrabber.cConfigureGrabber(self)
         self.cRulesGrabber = cRulesGrabber.cRulesGrabber(self)
+        self.cStatsDataGrabber = cStatsDataGrabber.cStatsDataGrabber(self)
 
         # create cCommandValidator
         self.cCommandValidator = cCommandValidator.cCommandValidator()
@@ -164,8 +169,8 @@ class cGuiRequestHandler:
 
         # detect file requests
         if sPath.endswith('.gif') or sPath.endswith('.jpg') or sPath.endswith('.png') or sPath.endswith('.css'):
-            pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Query for gif "'+str(sPath)+'"', 4)
-            # return gif
+            pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Query for file "'+str(sPath)+'"', 4)
+            # return file
             return self.cBinaryDataGrabber.GetData(sPath)
         if sPath.endswith('.html'):
             pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Query for html "'+str(sPath)+'"', 4)
@@ -237,11 +242,13 @@ class cGuiRequestHandler:
             pManager.manager.UpdateConfig(dParams['section'], dParams['option'], dParams['value'])
             # return updated config dialog
             return self.cConfigureGrabber.GetHtml(dParams)
+        elif sCommand == 'showrules':
+            return self.cRulesGrabber.GetHtml(dParams)
+        elif sCommand == 'showstats':
+            return self.cStatsDataGrabber.GetHtml(dParams)
         elif sCommand == 'error':
             # return error page
             return self.cErrorDataGrabber.GetHtml(dParams)
-        elif sCommand == 'showrules':
-            return self.cRulesGrabber.GetHtml(dParams)
 
 
 

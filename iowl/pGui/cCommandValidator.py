@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cCommandValidator.py,v $
+Revision 1.5  2002/02/13 10:47:34  Saruman
+added statistics gui
+
 Revision 1.4  2002/02/10 21:40:54  aharth
 added showrules feature, cleaned up ui
 
@@ -142,6 +145,12 @@ class cCommandValidator:
             dParams['option'] = dQuery['option'][0]
             dParams['value'] = dQuery['value'][0]
             return 'updateconfig', dParams
+
+        if dQuery['action'][0] == 'showstats':
+            if len(dQuery.keys()) != 1:
+                dParams['message'] = 'command showstats does not accept any parameter!'
+                return 'error', dParams
+            return 'showstats', dParams
 
         # default
         dParams['message']='unknown command "'+str(dQuery['action'])+'".'

@@ -8,7 +8,8 @@
 <a href="http://my.iowl.net/command?action=showrules">Show Rules</a> |
 <a href="http://my.iowl.net/command?action=sessionrecommendation">Session Recommendation</a> |
 <a href="http://my.iowl.net/command?action=showconfig">Configuration</a> |
-<a href="http://my.iowl.net/command?action=showlog&inumlines=100">Show last logfile entries</a>
+<a href="http://my.iowl.net/command?action=showlog&inumlines=100">Show last logfile entries</a> |
+<a href="http://my.iowl.net/command?action=showstats">Statistics</a>
 ]
 </p>
 <p>
