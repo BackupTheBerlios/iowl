@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.14 $"
+__version__ = "$Revision: 1.15 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.15  2001/06/10 15:56:08  i10614
+debug output fixes
+
 Revision 1.14  2001/06/05 18:22:42  i10614
 removed irritating debug output.
 
@@ -343,10 +346,12 @@ class cOwlManager:
         # now replace originator of netpackage with myself
         cNetPackage.SetOriginator(pManager.manager.GetOwnIP(), self.cNetManager.cNetServer.GetListenPort())
 
+        # just for debug purposes...
         distri = []
         for i in lNeighbours:
             distri.append(str(i.IP) +':'+ str(i.iPort))
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Distributing to: '+str(distri)+'.')
+        # pManager.manager.DebugStr('cOwlManager '+ __version__ +': Distributing to: '+str(distri)+'.')
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Distributing to '+str(len(distri))+' owls.')
 
         # if len(lNeighbours) == 0:
             # empty list!
