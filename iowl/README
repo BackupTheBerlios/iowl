@@ -1,6 +1,11 @@
-#  README iOwl.net
+TABLE OF CONTENTS
 
-Introduction
+	1. INTRODUCTION
+	2. INSATLLATION
+	3. USAGE
+
+###############################################################################
+1. INTRODUCTION
 
 iOwl.net is a recommendation service for the web. The iOwl web browsing
 agent provides hints on interesting web sites, depending on your personal
@@ -8,60 +13,60 @@ preferences and interests. The completely distributed peer-to-peer network
 architecture of iOwl.net guarantees personalized search results, ease of use
 and a maximum of privacy.
 
-Installation
+2. INSATLLATION
 
-On a Debian system, you need the packages
+	On a Debian system, you need the packages
 
-    * python2.2
-    * python2.2-xmlbase
+	    * python2.2
+	    * python2.2-xmlbase
 
-On a Suse system, you need the packages
+	On a Suse system, you need the packages
 
-    * python-2.1.1
-    * pyxml-0.6.6
+	    * python-2.1.1
+	    * pyxml-0.6.6
 
-If you would like to compile your own python2.2
+	If you would like to compile your own python2.2
 
-    * first install expat from http://expat.sourceforge.net
-    * then adding the path to expat-source in Python2.2/Modules/Setup
-    * Setup (I think ./configure)
-    * make
-    * make install (root)
+	    * first install expat from http://expat.sourceforge.net
+	    * then adding the path to expat-source in Python2.2/Modules/Setup
+	    * Setup (I think ./configure)
+	    * make
+	    * make install (root)
 
 And of course a cvs-snapshot of the iOwl.net software.
 It is available at http://iowl.berlios.de/nightly/ or using cvs diretly.
 
-This README is for iowl.sh
+3. USAGE
 
-iowl.sh is a little script that start|stop iOwl.net.
-Restart is understood too. There is a iowl.sh status to give the PID's of 
-running iOwl.net and a iowl.sh kill if stop does not work.
+	iowl.sh is a little script that start|stop iOwl.net.
+	Restart is understood too. There is a iowl.sh status to give the PID's of 
+	running iOwl.net and a iowl.sh kill if stop does not work.
 
-Using your agent
+	Using your agent
 
-    * ./iowl.sh start to start iOwl.net
-    * change the proxy in your browser to localhost:3228
-    * checkout the link http://my.iowl.net
+	    * ./iowl.sh start to start iOwl.net
+	    * change the proxy in your browser to localhost:3228
+	    * checkout the link http://my.iowl.net
 
 The link http://my.iowl.net/ is local on your pc and gives the database of your 
 visited sites. From this page you can also get recommendations.
 
-You want recommendations? - test this
+	You want recommendations? - test this
 
-    * edit iowl.cfg (in the root of iowl) and add
+    	* edit iowl.cfg (in the root of iowl) and add
     
-    [pNetwork]
-    entryip = kingfisher.berlios.de # a modified owl; gives recommendation for google.de
-    entryport = 2323
+    	[pNetwork]
+    	entryip = kingfisher.berlios.de # a modified owl; gives recommendation for google.de
+    	entryport = 2323
 
-    * restart the owl ./iowl.sh restart
-    * http://my.iowl.net/ -> click recommendation
-	or use the link
-      http://my.iowlnet/command?action=sessionrecommandation
+    	* restart the owl ./iowl.sh restart
+    	* http://my.iowl.net/ -> click recommendation
+		or use the link
+      	http://my.iowlnet/command?action=sessionrecommandation
 
-Stopping the agent
+	Stopping the agent
 
-    * ./iowl.sh stop to stop iOwl.net
+	    * ./iowl.sh stop to stop iOwl.net
 
 more follows 
 Andreas Biessmann
