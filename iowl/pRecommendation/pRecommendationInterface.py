@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: pRecommendationInterface.py,v $
+Revision 1.6  2001/04/15 19:14:01  i10614
+minor changes
+
 Revision 1.5  2001/04/07 17:06:24  i10614
 many, many bugfixes for working network communication
 
@@ -156,12 +159,6 @@ class pRecommendationInterface:
         # generate request from list of clicks
         el = self.ReqBuilder.DoRequest(lUrls)
 
-        # old stuff for asking myself
-        # is only here to test recommendation of own owl w/o network
-        # should be executed on other owls
-        # sId = '4711'
-        # self.SetRequest(el, sId)
-
         # Get NetworkInterface
         pNetIntf = pManager.manager.GetNetworkInterface()
 
@@ -187,23 +184,26 @@ class pRecommendationInterface:
 
         """
 
+        # prepare list to answer
+        lClicks = None
+
         # Look if request exists in my list
         if self.dRules.has_key(sId):
             # Look if i received answers from other owls
             if len(self.dRules[sId]) > 0:
                 lClicks = self.RecBuilder.BuildRecommendation(self.dRules[sId])
-                # okay, now delete id from list to disable new answers coming in.
-                del self.dRules[sId]
-                return lClicks
             else:
-                # request is active but got no answers
+                # request is there but got no answers
                 pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Dont have any answers for request id: '+str(sId))
-                # okay, now delete id from list to disable new answers coming in.
-                del self.dRules[sId]
-                return None
+
+            # delete id from list to disable new answers coming in.
+            del self.dRules[sId]
+
         else:
             pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Serious Error! Id '+str(sId)+' does not exist!')
-            return None
+
+        # return recommendation
+        return lClicks
 
 
     def SetRequest(self, reqEl, sId):
@@ -224,26 +224,16 @@ class pRecommendationInterface:
         psi = pManager.manager.GetStatisticsInterface()
         lMatchingRules = psi.GetMatches(request.GetUrls())
 
-        # XXX if lMatchingRules = NULL
-        # don't send request
-
         if lMatchingRules:
             answer = cAnswer.cAnswer()
             answer.SetRules(lMatchingRules)
-
             answerEl = answer.GetElement()
-
             # Get NetworkInterface
             pNetIntf = pManager.manager.GetNetworkInterface()
-
             # send answer
             pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Now sending answer to network. Id: '+str(sId))
             pNetIntf.SendAnswer(answerEl, sId)
             pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Finished sending answer to network. Id: '+str(sId))
-
-            # old stuff
-            # XXX SetAnswer just for the show
-            # self.SetAnswer(answerEl, sId)
         else:
             pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Dont have answers for request. Id: '+str(sId))
 
@@ -289,9 +279,9 @@ class pRecommendationInterface:
 
 def test():
     """Built-in test method for this class."""
-    
+
     print "none"
-    
+
 
 if __name__ == '__main__':
     test()
