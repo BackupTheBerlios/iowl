@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.7  2001/04/14 14:59:45  i10614
+changed session-handling
+
 Revision 1.6  2001/03/29 22:45:42  i10614
 Catch self.Session == None in GetHistory()
 
@@ -151,13 +154,9 @@ class pClickstreamInterface:
 
         pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Shutting down.')
 
-        # Mike
-        try:
+        # Close session
+        if self.Session != None:
             self.Session.CloseFile()
-        except:
-            # could not close file, probably because Session is not yet created
-            # Happens when start of iOwl fails (mostly common "adress in use" - Error)
-            pass
 
 
     def RemoveUrl(self, sUrl):
@@ -214,31 +213,44 @@ class pClickstreamInterface:
         # normalize path: no change on unix, lowercase and forward slashes on win32
         self.sClickstreamPathName = os.path.normcase(self.sClickstreamPathName)
 
-        list = os.listdir(self.sClickstreamPathName)
-        for file in list:
+        # create list of files
+        lFiles = os.listdir(self.sClickstreamPathName)
+        # prepare list of sessions
+        lSessionFiles=[]
+        for sFileName in lFiles:
             match = re.compile("""clickstream.*xml$""")
-            if match.match(file):
-                session = cSession.cSession()
-                fullname = os.path.join(self.sClickstreamPathName, file)
+            if match.match(sFileName):
+                # add session to sessionlist
+                lSessionFiles.append(sFileName)
+
+        # XXX - Todo: Sort list by timestamp in filename
+
+        # Open Sessions
+        for sSession in lSessionFiles:
+            # build complete filename
+            sFullName = os.path.join(self.sClickstreamPathName, sSession)
+            # create new instance
+            session = cSession.cSession()
+            try:
+                # read file into session
+                session.OpenFile(sFullName)
+                # add session to list
+                pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Appending "'+str(sSession)+'" with '+str(session.GetClicksCount())+' Clicks.')
+                self.lSessions.append(session)
+            except:
+                # Probably corrupt xml-file on disk.
+                # Log error and continue
+                pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning: Could not read/parse clickstream file "'+str(sFullName)+'"')
+                # rename file to prevent further read/write attempts
+                sNewName = sFullName + '_broken'
+                pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Renaming file "'+str(sFullName)+'" to "'+sNewName+'".')
                 try:
-                    session.OpenFile(fullname)
-                    self.lSessions.append(session)
+                    os.rename(sFullName, sNewName)
                 except:
-                    # Probably corrupt xml-file on disk.
-                    # Log error and continue
-                    pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning: Could not read/parse clickstream file "'+str(fullname)+'"')
-                    # try to close file
-                    try:
-                        session.CloseFile()
-                    except:
-                        pass
-                    # rename file to prevent further read/write attempts
-                    sNewName = fullname + '_broken'
-                    pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Renaming file "'+str(fullname)+'" to "'+sNewName+'".')
-                    try:
-                        os.rename(fullname, sNewName)
-                    except:
-                        pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Could not rename file "'+str(fullname)+'". Please move/delete it yourself.')
+                    pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Could not rename file "'+str(sFullName)+'". Please move/delete it yourself.')
+
+            # delete instance
+            del session
 
 
     def CloseSession(self):
@@ -258,7 +270,6 @@ class pClickstreamInterface:
             # no active session
             pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning: Trying to close non-existant session.')
             return
-
 
         pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Closing current session.')
         # append old session to list of all available sessions

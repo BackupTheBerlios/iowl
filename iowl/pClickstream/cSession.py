@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cSession.py,v $
+Revision 1.5  2001/04/14 14:59:45  i10614
+changed session-handling
+
 Revision 1.4  2001/03/27 18:22:12  i10614
 Changed Session handling. A new session is created inside AddClick(). Whith
 each new Session a new watchdog is registered.
@@ -90,16 +93,23 @@ class cSession(cData.cData):
         # remember creation time
         self.iCreationTime = time.time()
 
+
     def GetCreationTime(self):
-        """returns creationtime of underlying file"""
+        """returns creationtime of session
+
+        just take the timestamp of the first click of a session
+
+        return -- timestamp of session creation. To transform
+                  to human readable format, call time.ctime(timestamp)
+
+        """
 
         try:
-            time = os.stat(self.GetFileName())[stat.ST_MTIME]
+            click = self.lData[0]
+            return click.GetTimestamp()
         except:
-            time = self.iCreationTime
-
-        return time
-
+            # maybe no click yet in session
+            return self.iCreationTime
 
 
     def AddClick(self, click):
@@ -147,6 +157,9 @@ class cSession(cData.cData):
 
         XXX referer is not deleted! url can survive in referer!
 
+        XXX if this is an old session, the remove only takes place in
+            memory, not on disc!
+
         """
         # for deleting
         foo = self.lData[:]
@@ -175,7 +188,7 @@ class cSession(cData.cData):
         """Read elements into internal representation.
 
         lEls -- elements
-        
+
         <click content_type="text/html" referer="http://harth.org/" status="200" timestamp="11:49:34" title="das ist eine html seite">http://slashdot.org/</click></session>
 
         """

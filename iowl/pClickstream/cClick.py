@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cClick.py,v $
+Revision 1.4  2001/04/14 14:59:45  i10614
+changed session-handling
+
 Revision 1.3  2001/03/26 17:48:01  i10614
 activated filtering of invalid urls
 
@@ -166,9 +169,7 @@ class cClick:
         """
         foo = cDOM.cDOM()
 
-        sName, dAttrs, sUrl = foo.GetElementContent \
-                              (el, ['content_type','referer', \
-                                    'status','timestamp','title'])
+        sName, dAttrs, sUrl = foo.GetElementContent(el, ['content_type','referer','status','timestamp','title'])
         # only one url
         self.tUrl = urlparse.urlparse(sUrl)
         self.sTitle = dAttrs['title']
