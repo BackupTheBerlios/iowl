@@ -85,7 +85,7 @@ iowl_stop () {
         	then 
         	# iOwl.net is already running
         	echo "iOwl.net is already running!  (PID's: "$PIDLIST")"
-        	kill -2 $PIDLIST
+        	kill -SIGUSR1 $PIDLIST
         	echo "iOwl.net processes stopped!";
 
 		else
