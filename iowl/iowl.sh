@@ -1,10 +1,19 @@
 #!/bin/sh
 # iOwl.net - iowl.sh: start|stop|restart|status|kill
 
-#var's: $PYTHON -> should python2.2 but works also with python
-# 	$ARGUMENTS -> path to iowl.py in $IOWL_DIR
-#	$PIDOF -> path to pidof normally /bin or /sbin (autodetected)
-#	$PYTHONPATH -> path to the modules of iOwl.net
+# !! Important look for the Variable IOWL_DIR and change it !!
+
+##vars: $PYTHON -> should python2.2 but works also with python
+## 	$ARGUMENTS -> path to iowl.py in $IOWL_DIR
+##	$PIDOF -> path to pidof normally /bin or /sbin (autodetected)
+##
+##	 the path to pidof normally autodetected; if it doesn't run   
+##	 check out the path for yourself and uncomment the first PIDOF
+##	 with a # and use your own
+##
+##	$PYTHONPATH -> path to the modules of iOwl.net + original $PYTHONPATH
+##	$IOWL_DIR -> maybe $HOME/iowl/ or something
+#########################################################################
 
 # PYTHON="python"
 PYTHON="python2.2"
@@ -12,15 +21,17 @@ PYTHON="python2.2"
 ARGUMENTS="pManagement/iowl.py"
 
 PIDOF=`which pidof`
-# the path to pidof normally autodetected; if it doesn't run
-# check out the path for yourself and uncomment the first PIDOF
-# with a # and use your own
 # PIDOF=path_to_your_pidof
 
-# set Pythonpath so python can find all our modules and append original $PYTHONPATH.
 PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
-export PYTHONPATH
 
+IOWL_DIR=$HOME/source/iowl
+
+# a little test if $IOWL_DIR is true
+
+if [ ! -d $IOWL_DIR ]; then echo $IOWL_DIR "does not exist .. please change iowl.sh"; fi
+
+##########################################################################
 # how start|stop|status|kill does work
 
 iowl_start () {
@@ -35,7 +46,7 @@ iowl_start () {
 		else
 		# iOwl.net isnt running
 		export PYTHONPATH
-		$PYTHON $IOWL_DIR/$ARGUMENTS 2>&1 &
+		$PYTHON $IOWL_DIR/$ARGUMENTS &
 		# TODO: Check return value from iOwl;
 	fi
 }
