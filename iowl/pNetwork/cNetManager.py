@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.31 $"
+__version__ = "$Revision: 1.32 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.32  2002/02/21 12:46:18  Saruman
+Added routingtable to statistics page
+
 Revision 1.31  2002/02/14 08:30:35  Saruman
 Removed smart ip detection code.
 Some cleanups
@@ -252,6 +255,11 @@ class cNetManager:
         return self.cOwlManager.GetNumActiveRoutings()
 
 
+    def GetRoutingTable(self):
+        """return routing table"""
+        return self.cOwlManager.GetRoutingTable()
+
+
     def GetNumPongsReceived(self):
         """return total number of Pongs received"""
         return self.cOwlManager.GetNumPongsReceived()
@@ -445,9 +453,9 @@ class cNetManager:
             cPong = cNetPackage.cPong()
             cPong.ParseDOM(domPong)
 
-            # check if i am the first hop of this pong (originator set to 127.0.0.1)
+            # check if i am the first hop of this pong (answerer ip set to 127.0.0.1)
             # -> set answerer ip!
-            if cPong.GetOriginator()[0]=='127.0.0.1':
+            if cPong.GetAnswerer()[0]=='127.0.0.1':
                 pManager.manager.DebugStr('cNetManager '+ __version__ +': First hop. Setting Answerer IP to %s' % (sOrigin), 3)
                 cPong.SetAnswererIP(sOrigin)
 

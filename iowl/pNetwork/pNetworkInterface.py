@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: pNetworkInterface.py,v $
+Revision 1.6  2002/02/21 12:46:18  Saruman
+Added routingtable to statistics page
+
 Revision 1.5  2002/02/13 10:46:22  Saruman
 introduced counters and functions for gathering network stats.
 
@@ -121,6 +124,11 @@ class pNetworkInterface:
     def GetNumActiveRoutings(self):
         """return number of active routing entries"""
         return self.cNetManager.GetNumActiveRoutings()
+
+
+    def GetRoutingTable(self):
+        """return routing table"""
+        return self.cNetManager.GetRoutingTable()
 
 
     def GetNumPongsReceived(self):

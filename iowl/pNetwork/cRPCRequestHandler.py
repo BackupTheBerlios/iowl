@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cRPCRequestHandler.py,v $
+Revision 1.4  2002/02/21 12:46:18  Saruman
+Added routingtable to statistics page
+
 Revision 1.3  2002/02/11 15:12:38  Saruman
 Major network changes.
 Network protocol now 0.3, incompatible to older versions!
@@ -75,6 +78,8 @@ class cRPCRequestHandler(xmlrpcserver.RequestHandler):
         # add host to params
         params = params + (host,)
 
+        pManager.manager.DebugStr('cRPCReqHandler '+ __version__ +': ping from ' + str(host) + ':' + str(port), 4)
+
         # start new thread
         thread.start_new_thread(cNetManager.HandlePing, params)
         # without new thread:
@@ -101,6 +106,8 @@ class cRPCRequestHandler(xmlrpcserver.RequestHandler):
 
         # add host to params
         params = params + (host,)
+
+        pManager.manager.DebugStr('cRPCReqHandler '+ __version__ +': pong from ' + str(host) + ':' + str(port), 4)
 
         # start new thread
         thread.start_new_thread(cNetManager.HandlePong, params)
@@ -129,6 +136,8 @@ class cRPCRequestHandler(xmlrpcserver.RequestHandler):
         # add host to params
         params = params + (host,)
 
+        pManager.manager.DebugStr('cRPCReqHandler '+ __version__ +': request from ' + str(host) + ':' + str(port), 4)
+
         # start new thread
         thread.start_new_thread(cNetManager.HandleRequest, params)
         # without new thread:
@@ -155,6 +164,8 @@ class cRPCRequestHandler(xmlrpcserver.RequestHandler):
 
         # add host to params
         params = params + (host,)
+
+        pManager.manager.DebugStr('cRPCReqHandler '+ __version__ +': answer from ' + str(host) + ':' + str(port), 4)
 
         # start new thread
         thread.start_new_thread(cNetManager.HandleAnswer, params)

@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.21 $"
+__version__ = "$Revision: 1.22 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.22  2002/02/21 12:46:18  Saruman
+Added routingtable to statistics page
+
 Revision 1.21  2002/02/14 08:31:49  Saruman
 cleanups, comments etc.
 
@@ -479,12 +482,14 @@ class cOwlManager:
         if cNetPackage.GetType() == 'pong':
             # Pong info already extracted inside cNetManager.HandlePong().
             # just pass Pong on to originating Owl and continue
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Sending Pong to '+str(origOwl.GetIP())+':'+str(origOwl.GetPort())+'.', 4)
             # start new thread for RPC
             thread.start_new_thread(origOwl.Pong, (sObj,))
             return
         elif cNetPackage.GetType() == 'answer':
             # Pass answer to originating Owl and continue
             # start new thread for RPC
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Sending Answer to '+str(origOwl.GetIP())+':'+str(origOwl.GetPort())+'.', 4)
             thread.start_new_thread(origOwl.Answer, (sObj,))
             return
         else:
@@ -571,9 +576,12 @@ class cOwlManager:
 
     def GetNumActiveRoutings(self):
         """return number of active routing entries"""
-        # return len(self.dRequests.keys)
         return len(self.dRequests)
 
+
+    def GetRoutingTable(self):
+        """return routing table"""
+        return self.dRequests
 
 
 
