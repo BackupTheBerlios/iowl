@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cContent.py,v $
+Revision 1.2  2002/03/16 13:30:35  aharth
+bugfixes for #104 and #139
+
 Revision 1.1  2002/03/16 11:03:25  aharth
 added title extraction to pclickstream
 
@@ -22,6 +25,7 @@ class SearchContent(htmllib.HTMLParser):
     def __init__(self):
         self.start = 0
         self.c_data = ''
+        self.title = ''
         self.alist = []
         htmllib.HTMLParser.__init__(self, formatter.NullFormatter())
 
@@ -39,6 +43,7 @@ class SearchContent(htmllib.HTMLParser):
         self.c_data = ""
 
     def end_title(self):
+        # return a copy of the data variable
         self.title = self.c_data
 
     def handle_data(self, data):
@@ -68,7 +73,18 @@ class cContent:
         """ Extract title from html string. """
         parser = SearchContent()
         parser.feed(self.htmlstr)
-        return parser.getTitle()
+        sTitle = parser.getTitle()
+
+        if len(sTitle) == 0:
+            sTitle = '(Untitled)'
+
+        # strip leading and trailing whitespace
+        sTitle = string.strip(sTitle)
+            
+        # be sure to get rid of umlauts etc
+        sTitle = self.FilterUmlauts(sTitle)
+            
+        return sTitle
 
 
     def ClickIsValid(self, click):

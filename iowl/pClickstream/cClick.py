@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: cClick.py,v $
+Revision 1.6  2002/03/16 13:30:35  aharth
+bugfixes for #104 and #139
+
 Revision 1.5  2002/03/16 11:03:25  aharth
 added title extraction to pclickstream
 
@@ -195,4 +198,5 @@ class cClick:
         print self.sContentType
         print self.iStatus
         print self.iTimestamp
+        print self.sTitle
         print self.tReferer

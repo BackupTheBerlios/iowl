@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.31 $"
+__version__ = "$Revision: 1.32 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.32  2002/03/16 13:30:35  aharth
+bugfixes for #104 and #139
+
 Revision 1.31  2002/03/16 11:04:11  aharth
 migrated title extraction to pclickstream
 
@@ -170,7 +173,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
                 return
 
             # init title string
-            self.ClickContent = ''
+            self.ClickHtml = ''
 
             # Build Timestamp for click
             self.ClickTimestamp = time.time()
@@ -213,7 +216,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
                            self.ClickTimestamp, '', \
                            urlparse.urlparse(self.ClickReferer))
 
-            ClickstreamInterface.AddClick(click, self.ClickContent)
+            ClickstreamInterface.AddClick(click, self.ClickHtml)
 
 
     def ParseRequest(self):
@@ -414,7 +417,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
                     break
 
                 # Explicitly pass a copy of data! (Call by value)
-                self.ClickContent = self.ClickContent + data[:]
+                self.ClickHtml = self.ClickHtml + data[:]
                 self.wfile.write(data)
 
             self.wfile.flush()

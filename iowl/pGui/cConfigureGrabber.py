@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 
 """
 $Log: cConfigureGrabber.py,v $
+Revision 1.7  2002/03/16 13:30:35  aharth
+bugfixes for #104 and #139
+
 Revision 1.6  2002/03/04 19:49:06  aharth
 submit instead of Absenden :)
 
@@ -89,28 +92,30 @@ class cConfigureGrabber:
         sContent = ""
 
         for sect in Config.sections():
-            # start table
-            sContent = sContent + '\n<p>\n    <table border>\n'
-            # header
-            sContent = sContent + '        <tr>\n            <th colspan="3">'+sect+'</th>\n        </tr>'
-            # iterate over available options for this section
-            for opt in Config.options(sect):
-                value = Config.get(sect,opt)
-                # start formular
-                sFormName = sect+opt
-                sForm = """
-        <tr>
-            <form name="%s" method="get" action="http://my.iowl.net/command?">
-            <td>%s</td>
-            <input type="hidden" name="action" value="updateconfig">
-            <input type="hidden" name="section" value="%s">
-            <input type="hidden" name="option" value="%s">
-            <td><input name="value" size=20 maxlength=40 value="%s"></td>
-            <td><input type="submit" value="Submit"></td>
-            </form>
-        </tr>""" %(sFormName, opt, sect, opt, value)
+            # only show sections with active parameters
+            if len(Config.options(sect)) > 0:
+                # start table
+                sContent = sContent + '\n<p>\n    <table border>\n'
+                # header
+                sContent = sContent + '        <tr>\n            <th colspan="3">'+sect+'</th>\n        </tr>'
+                # iterate over available options for this section
+                for opt in Config.options(sect):
+                    value = Config.get(sect,opt)
+                    # start formular
+                    sFormName = sect+opt
+                    sForm = """
+                    <tr>
+                    <form name="%s" method="get" action="http://my.iowl.net/command?">
+                    <td>%s</td>
+                    <input type="hidden" name="action" value="updateconfig">
+                    <input type="hidden" name="section" value="%s">
+                    <input type="hidden" name="option" value="%s">
+                    <td><input name="value" size=20 maxlength=40 value="%s"></td>
+                    <td><input type="submit" value="Submit"></td>
+                    </form>
+                    </tr>""" %(sFormName, opt, sect, opt, value)
 
-                sContent = sContent + sForm
+                    sContent = sContent + sForm
 
             # end table
             sContent = sContent + '\n    </table>\n</p>'

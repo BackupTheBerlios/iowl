@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.22 $"
+__version__ = "$Revision: 1.23 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.23  2002/03/16 13:30:35  aharth
+bugfixes for #104 and #139
+
 Revision 1.22  2002/03/16 11:03:25  aharth
 added title extraction to pclickstream
 
@@ -211,21 +214,22 @@ class pClickstreamInterface:
         # XXX                 should be string
         tUrl = urlparse.urlparse(sUrl[0])
 
-        lSessions = self.GetSessions()
+        # remove url in current session
+        if self.Session != None:
+            self.Session.RemoveUrl(tUrl)
+            if self.Session.GetClicksCount() == 0:
+                del self.Session
+                self.Session = None
 
-        for session in lSessions:
+        # remove urls
+        for session in self.lSessions:
             session.RemoveUrl(tUrl)
-
+            
             # XXX - Check this, we are deleting list items while iterating the list!
             if (session.GetClicksCount() == 0):
                 session.CloseFile()
-                iIndex = lSessions.index(session)
-                # check whether it's current session
-                if lSessions[iIndex] == self.Session:
-                    del self.Session
-                    self.Session = None
-                else:
-                    del self.lSessions[iIndex]
+                iIndex = self.lSessions.index(session)
+                del self.lSessions[iIndex]
 
 
     def GetSessions(self):
@@ -366,11 +370,11 @@ class pClickstreamInterface:
 
 
 
-    def AddClick(self, click, contentstr):
+    def AddClick(self, click, htmlstr):
         """Add click to internal list.
 
         if there is no session active, start a new one.
-        also extract title from contentstr
+        also extract title from htmlstr
 
         """
 
@@ -378,7 +382,7 @@ class pClickstreamInterface:
         self.ClickLock.acquire()
 
         # extract title
-        content = cContent.cContent(contentstr)
+        content = cContent.cContent(htmlstr)
 
         if content.ClickIsValid(click) > 0:
             # Okay, click is valid. Append to session.
@@ -388,7 +392,9 @@ class pClickstreamInterface:
                 self.StartNewSession()
 
             # extract title
-            click.SetTitle(content.GetTitle())
+            sTitle = content.GetTitle()
+            
+            click.SetTitle(sTitle)
 
             self.Session.AddClick(click)
             self.WasAdded = 1
