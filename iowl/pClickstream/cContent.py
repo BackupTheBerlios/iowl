@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cContent.py,v $
+Revision 1.3  2002/03/18 14:25:59  aharth
+try/except for title extraction
+
 Revision 1.2  2002/03/16 13:30:35  aharth
 bugfixes for #104 and #139
 
@@ -73,10 +76,13 @@ class cContent:
         """ Extract title from html string. """
         parser = SearchContent()
         parser.feed(self.htmlstr)
-        sTitle = parser.getTitle()
-
-        if len(sTitle) == 0:
-            sTitle = '(Untitled)'
+        sTitle = '(Untitled)'
+        # try to extract title
+        try:
+            sTitle = parser.getTitle()
+        # doesn't work? nevermind
+        except:
+            pass
 
         # strip leading and trailing whitespace
         sTitle = string.strip(sTitle)
