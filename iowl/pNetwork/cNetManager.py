@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.18 $"
+__version__ = "$Revision: 1.19 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.19  2001/06/05 18:21:39  i10614
+added own thread for validateOwl(). Should solve startup-problems.
+
 Revision 1.18  2001/05/30 20:27:04  i10614
 Now connect to www.iowl.net instead of random owl to get own ip. Removed some debug output.
 
@@ -212,14 +215,13 @@ class cNetManager:
             self.cOwlManager.AddOwl((self.EntryIP, self.iEntryPort))
 
         # validate list of owls
-        self.cOwlManager.ValidateOwls()
+        thread.start_new_thread(self.cOwlManager.ValidateOwls, ())
 
         # do i need to look up more owls at website?
         if self.cOwlManager.GetNumNeighbours() < self.iMinOwls:
             thread.start_new_thread(self.GetWebOwls, ())
 
         # determine own IP adress
-        # tOwl = self.cOwlManager.GetSingleOwl()
         pManager.manager.SetOwnIP(self.GetOwnIP())
 
         # generate PING
@@ -661,9 +663,9 @@ class cNetManager:
     def GetWebOwls(self):
         """Connect to url and get a csv of owls
 
-        List is of format
-        ip,ip,ip,ip...
-        and does not contain ports -> Use default port.
+        List format:
+            ip,ip,ip,ip...
+        does not contain ports -> Use default port.
 
         """
 
@@ -683,7 +685,7 @@ class cNetManager:
                     pManager.manager.DebugStr('cNetManager '+ __version__ +': Detected stale owl. Discarding...')
                     continue
 
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': Added owl.')
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Detected active owl. Adding to neighbourlist...')
                 self.cOwlManager.AddOwl((owl, self.cNetServer.GetListenPort()))
 
         except:
