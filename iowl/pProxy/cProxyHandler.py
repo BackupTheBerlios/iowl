@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.7 $"
+__version__ = "$Revision: 1.8 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.8  2001/04/16 13:05:38  i10614
+added debug output for unicode error
+
 Revision 1.7  2001/04/15 19:12:51  i10614
 now filtering clicks depending on status. Only 2xx is accepted, 302, 404 etc is skipped.
 
@@ -213,9 +216,16 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
 
 
         # build new request
-        request = '%s %s HTTP/1.0\r\n%s\r\n%s' % (method, path,
+        try:
+            request = '%s %s HTTP/1.0\r\n%s\r\n%s' % (method, path,
                                                   self.JoinHeaders(dHeaders),
                                                   content)
+        except:
+            print "Method: "+method
+            print "Path: "+path
+            print "Content: "+content
+            print "Headers: "+self.JoinHeaders(dHeaders)
+
 
         # finished!
         return host, port, request
