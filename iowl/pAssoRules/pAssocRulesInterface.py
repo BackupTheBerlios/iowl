@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 
 """
 $Log: pAssocRulesInterface.py,v $
+Revision 1.7  2001/08/10 18:30:11  i10614
+added debuglevel to all messages.
+
 Revision 1.6  2001/04/15 21:16:21  i10614
 fixed for recommendations and answers
 
@@ -59,7 +62,7 @@ class pAssocRulesInterface:
         lSessions = csi.GetSessions()
         iCount = csi.GetItemCount()
 
-        pManager.manager.DebugStr('pAssocRulesInterface '+ __version__ +': Starting new thread to compute rules.')
+        pManager.manager.DebugStr('pAssocRulesInterface '+ __version__ +': Starting new thread to compute rules.', 3)
         thread.start_new(self.ComputeRules, (lSessions, iCount))
 
 
@@ -76,7 +79,7 @@ class pAssocRulesInterface:
     def Shutdown(self):
         """Kind of destructor."""
 
-        pManager.manager.DebugStr('pAssocRulesInterface '+ __version__ +': Shutting down.')
+        pManager.manager.DebugStr('pAssocRulesInterface '+ __version__ +': Shutting down.', 1)
         pass
 
 
@@ -99,11 +102,11 @@ class pAssocRulesInterface:
             for line in traceback.format_tb(eTraceback, 15):
                 tb = tb + line
 
-            pManager.manager.DebugStr('pAssocRules '+ __version__ +': Unhandled error in thread ComputeRules: Type: '+str(eType)+', value: '+str(eValue))
-            pManager.manager.DebugStr('pAssocRules '+ __version__ +': Traceback:\n'+str(tb))
-            pManager.manager.DebugStr('pAssocRules '+ __version__ +': Trying to continue...')
+            pManager.manager.DebugStr('pAssocRules '+ __version__ +': Unhandled error in thread ComputeRules: Type: '+str(eType)+', value: '+str(eValue), 3)
+            pManager.manager.DebugStr('pAssocRules '+ __version__ +': Traceback:\n'+str(tb), 4)
+            pManager.manager.DebugStr('pAssocRules '+ __version__ +': Trying to continue...', 4)
 
-        pManager.manager.DebugStr('pAssocRulesInterface '+ __version__ +': Finished Computing Rules.')
+        pManager.manager.DebugStr('pAssocRulesInterface '+ __version__ +': Finished Computing Rules.', 3)
         self.bGotRules = 1
 
 

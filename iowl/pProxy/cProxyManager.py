@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cProxyManager.py,v $
+Revision 1.5  2001/08/10 18:37:38  i10614
+added debuglevel to all messages.
+
 Revision 1.4  2001/07/19 19:46:52  i10614
 removed warning at initial setting of options
 
@@ -71,7 +74,7 @@ class cProxyManager:
             self.cProxyCore.SetPort(str(sValue))
             # XXX - Need to restart proxy for changes to take effect!
             if pManager.manager.IsRunning():
-                pManager.manager.DebugStr('pProxyManager '+ __version__ +': Warning: Change of proxyport needs a restart!')
+                pManager.manager.DebugStr('pProxyManager '+ __version__ +': Warning: Change of proxyport needs a restart!', 1)
         elif sOption == 'clicktime':
             self.cProxyCore.SetClickTime(str(sValue))
         elif sOption == 'parentproxyip':
@@ -88,10 +91,10 @@ class cProxyManager:
             # XXX Need to restart proxy for changes to take effect!
             self.cProxyCore.SetListenAt(str(sValue))
             if pManager.manager.IsRunning():
-                pManager.manager.DebugStr('pProxyManager '+ __version__ +': Warning: Change of listen-adress needs a restart!')
+                pManager.manager.DebugStr('pProxyManager '+ __version__ +': Warning: Change of listen-adress needs a restart!', 1)
         else:
             # unknown option!
-            pManager.manager.DebugStr('pProxyManager '+ __version__ +': Warning: Trying to set unknown parameter "'+sOption+'".')
+            pManager.manager.DebugStr('pProxyManager '+ __version__ +': Warning: Trying to set unknown parameter "'+sOption+'".', 1)
 
 
     def GetParent(self):

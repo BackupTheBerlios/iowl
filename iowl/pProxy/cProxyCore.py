@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cProxyCore.py,v $
+Revision 1.5  2001/08/10 18:37:38  i10614
+added debuglevel to all messages.
+
 Revision 1.4  2001/04/22 16:20:48  i10614
 Implemented changes for Python 2.1. Dont run with older versions of python\!
 
@@ -115,7 +118,7 @@ class cProxyCore:
         # XXX Use own ThreadingTCPServer - Serious bug in Python 2.1,
         # --> http://sourceforge.net/tracker/index.php?func=detail&aid=417845&group_id=5470&atid=105470
         self.Server = MyThreadingTCPServer((self.sListenAt, self.iProxyPort), cProxyHandler.cProxyHandler)
-        pManager.manager.DebugStr('pProxyCore '+ __version__ +': Listening at '+self.sListenAt+'.')
+        pManager.manager.DebugStr('pProxyCore '+ __version__ +': Listening at '+self.sListenAt+'.', 3)
         # start Server
         self.Server.serve_forever()
 
@@ -123,7 +126,6 @@ class cProxyCore:
         """Stop the Proxy"""
 
         # XXX - dont know how to stop a server that started through serve_forever() ...
-        # Need to check this because pManager waits for proxy to return focus...
 
         pass
 

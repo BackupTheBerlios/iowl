@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: pNetworkInterface.py,v $
+Revision 1.4  2001/08/10 18:36:36  i10614
+added debuglevel to all messages.
+
 Revision 1.3  2001/04/14 15:01:36  i10614
 bugfixes
 
@@ -88,7 +91,7 @@ class pNetworkInterface:
 
     def Shutdown(self):
         """Initiate shutdown of Network"""
-        pManager.manager.DebugStr('pNetwork '+ __version__ +': Shutting down.')
+        pManager.manager.DebugStr('pNetwork '+ __version__ +': Shutting down.', 1)
         self.cNetManager.Stop()
 
 

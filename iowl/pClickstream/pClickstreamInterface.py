@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.14 $"
+__version__ = "$Revision: 1.15 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.15  2001/08/10 18:31:07  i10614
+added debuglevel to all messages.
+
 Revision 1.14  2001/08/07 18:46:18  i10614
 bugfixes by Andi
 
@@ -173,17 +176,17 @@ class pClickstreamInterface:
             self.iRestart = string.atoi(sValue)
             # XXX Update watchdog, otherwise new session timeout will only take effect for next session!
             if pManager.manager.IsRunning():
-                pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning: Change of session timeout will currently only take effect for next session.')
+                pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning: Change of session timeout will currently only take effect for next session.', 1)
 
 
     def Shutdown(self):
         """Kind of destructor."""
 
-        pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Shutting down.')
+        pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Shutting down.', 1)
 
         # Close session
         if self.Session != None:
-            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Closing current session.')
+            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Closing current session.', 1)
             self.Session.CloseFile()
 
 
@@ -266,19 +269,19 @@ class pClickstreamInterface:
                 # read file into session
                 session.OpenFile(sFullName)
                 # add session to list
-                pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Appending "'+str(sSession)+'" with '+str(session.GetClicksCount())+' Clicks.')
+                pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Appending "'+str(sSession)+'" with '+str(session.GetClicksCount())+' Clicks.', 3)
                 self.lSessions.append(session)
             except:
                 # Probably corrupt xml-file on disk.
                 # Log error and continue
-                pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning: Could not read/parse clickstream file "'+str(sFullName)+'"')
+                pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning: Could not read/parse clickstream file "'+str(sFullName)+'"', 2)
                 # rename file to prevent further read/write attempts
                 sNewName = sFullName + '_broken'
-                pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Renaming file "'+str(sFullName)+'" to "'+sNewName+'".')
+                pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Renaming file "'+str(sFullName)+'" to "'+sNewName+'".', 2)
                 try:
                     os.rename(sFullName, sNewName)
                 except:
-                    pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Could not rename file "'+str(sFullName)+'". Please move/delete it yourself.')
+                    pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Could not rename file "'+str(sFullName)+'". Please move/delete it yourself.', 2)
 
             # delete instance
             del session
@@ -297,18 +300,18 @@ class pClickstreamInterface:
         pManager.manager.StopWatchdog(self.iWatchdogID)
         self.iWatchdogID = 0
 
-        pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': CloseSession() called.')
+        pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': CloseSession() called.', 3)
 
         if self.Session == None:
             # no active session
-            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning: Trying to close non-existant session.')
+            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning: Trying to close non-existant session.', 1)
             return
 
         # append old session to list of all available sessions
         if self.Session.GetClicksCount() > 0:
             self.lSessions.append(self.Session)
         else:
-            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning: Session is empty.')
+            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning: Session is empty.', 1)
 
         # close old session
         try:
@@ -326,11 +329,11 @@ class pClickstreamInterface:
 
         """
 
-        pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Starting new session.')
+        pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Starting new session.', 2)
 
         # check if there is an old session active
         if self.Session != None:
-            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Error! Trying to start new session while there already is one.')
+            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Error! Trying to start new session while there already is one.', 0)
             return
 
         # Build new session
@@ -343,7 +346,7 @@ class pClickstreamInterface:
         if self.iWatchdogID == 0:
             self.iWatchdogID = pManager.manager.RegisterWatchdog(self.CloseSession, self.iRestart)
         else:
-            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Error! Trying to register watchdog while there already is one.')
+            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Error! Trying to register watchdog while there already is one.', 0)
 
 
 
@@ -367,7 +370,7 @@ class pClickstreamInterface:
             self.WasAdded = 1
         else:
             # click should not be recorded!
-            pManager.manager.DebugStr('cClickstream '+ __version__ +': Did not add click to session.')
+            pManager.manager.DebugStr('cClickstream '+ __version__ +': Did not add click to session.', 3)
 
         # reset watchdog regardless wether click is recorded or not
         pManager.manager.ResetWatchdog(self.iWatchdogID)

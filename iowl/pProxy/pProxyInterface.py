@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: pProxyInterface.py,v $
+Revision 1.3  2001/08/10 18:37:38  i10614
+added debuglevel to all messages.
+
 Revision 1.2  2001/03/27 14:09:11  i10614
 added functionality to specify address proxy listens at in configfile
 
@@ -56,7 +59,7 @@ class pProxyInterface:
     def ShutDown(self):
         """Stop proxy Operation"""
 
-        pManager.manager.DebugStr('pProxy '+ __version__ +': Shutting down.')
+        pManager.manager.DebugStr('pProxy '+ __version__ +': Shutting down.', 1)
         self.cProxyManager.Stop()
 
 

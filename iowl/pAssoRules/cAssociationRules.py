@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cAssociationRules.py,v $
+Revision 1.4  2001/08/10 18:30:11  i10614
+added debuglevel to all messages.
+
 Revision 1.3  2001/07/15 10:09:29  i10614
 changed supportThreshold to 0.005 to improve rule computation time
 
@@ -133,7 +136,7 @@ class cAssociationRules:
             candidate.Prune(supportThreshold)
 
             # Mike - removed debug output
-            pManager.manager.DebugStr('pAssociationRules '+ __version__ +': Computed Candidate '+str(k)+'.')
+            pManager.manager.DebugStr('pAssociationRules '+ __version__ +': Computed Candidate '+str(k)+'.', 2)
             # candidate.Print()
             # print '**************'
 

@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.20 $"
+__version__ = "$Revision: 1.21 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.21  2001/08/10 18:37:38  i10614
+added debuglevel to all messages.
+
 Revision 1.20  2001/08/07 18:47:54  i10614
 some changes
 
@@ -142,7 +145,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
                 # pass request to pGuiInterface
                 self.HandleCommand()
                 # close socket
-                # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Closing Socket (iOwl-Command).')
+                pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Closing Socket (iOwl-Command).', 4)
                 self.connection.close()
                 return
 
@@ -168,13 +171,13 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         except socket.error:
             # request could not be fulfilled, most probably because user pressed interrupted his browser
             # close socket
-            # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Closing Socket.')
+            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Closing Socket.', 4)
             self.connection.close()
             return
 
 
         # close socket
-        # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Closing Socket.')
+        pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Closing Socket.', 4)
         self.connection.close()
 
         # finished request
@@ -186,7 +189,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         if bIsExplicit:
             # Add Click to Clickstream
             ClickstreamInterface = pManager.manager.GetClickstreamInterface()
-            # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click. Title: '+str(self.ClickTitle)+' Status: '+str(self.ClickStatus))
+            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click. Title: '+str(self.ClickTitle)+' Status: '+str(self.ClickStatus), 3)
 
             click = cClick.cClick()
 
@@ -337,7 +340,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         """Send request to target server"""
         try:
             server.write(request)
-            # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Sending request: '+str(request))
+            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Sending request: '+str(request), 5)
             server.flush()
         except socket.error, err:
             self.error(500, 'Error sending data to "%s" (%s)' % (host, err))
@@ -382,7 +385,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
                 # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Getting Chunk '+str(iCount))
                 data = server.read(iBufferSize)
                 if bChecked==0:
-                    # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Extracting Title!')
+                    # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Extracting Title!', 5)
                     # need to look inside first buffer to determine if there is a <title></title> tag.
                     self.ClickTitle = self.ExtractTitle(str(data[:]))
                     bChecked = 1
@@ -504,7 +507,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
 
         # dont record invalid or temporary urls
         if self.ClickStatus.startswith('3') or self.ClickStatus.startswith('4') or self.ClickStatus.startswith('5'):
-            # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Skipping Click (Status: '+str(self.ClickStatus)+')')
+            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Skipping Click (Status: '+str(self.ClickStatus)+')', 4)
             return 0
 
         # Get cProxyInterface

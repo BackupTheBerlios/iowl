@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.9 $"
+__version__ = "$Revision: 1.10 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.10  2001/08/10 18:32:15  i10614
+added debuglevel to all messages.
+
 Revision 1.9  2001/07/15 14:37:55  i10614
 updated configuration GUI
 
@@ -144,16 +147,16 @@ class cGuiRequestHandler:
 
         # detect file requests
         if sPath.endswith('.gif') or sPath.endswith('.jpg') or sPath.endswith('.png'):
-            # pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Query for gif "'+str(sPath)+'"')
+            pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Query for gif "'+str(sPath)+'"', 3)
             # return gif
             return self.cBinaryDataGrabber.GetData(sPath)
         if sPath.endswith('.html'):
-            # pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Query for html "'+str(sPath)+'"')
+            pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Query for html "'+str(sPath)+'"', 3)
             # return html
             return self.cBinaryDataGrabber.GetData(sPath)
 
         # log query
-        pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Got Query: '+str(sQuery))
+        pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Got Query: '+str(sQuery), 2)
 
         # Get dictionary containing all options / values for request
         dQuery = cgi.parse_qs(sQuery)
@@ -263,7 +266,7 @@ class cGuiRequestHandler:
 
 
     def GetActivePage(self):
-        """Return first part of guipage with state = active """
+        """Return first part of guipage with state == active """
 
         # load from disc
         file = open(self.sActiveFilename, 'r')
@@ -275,7 +278,7 @@ class cGuiRequestHandler:
 
 
     def GetInactivePage(self):
-        """Return first part of guipage with state = inactive """
+        """Return first part of guipage with state == inactive """
 
         # load from disc
         file = open(self.sInactiveFilename, 'r')

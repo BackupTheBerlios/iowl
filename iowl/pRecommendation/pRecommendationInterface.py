@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.8 $"
+__version__ = "$Revision: 1.9 $"
 
 """
 $Log: pRecommendationInterface.py,v $
+Revision 1.9  2001/08/10 18:38:11  i10614
+added debuglevel to all messages.
+
 Revision 1.8  2001/04/15 21:16:22  i10614
 fixed for recommendations and answers
 
@@ -114,7 +117,7 @@ class pRecommendationInterface:
 
     def Shutdown(self):
         """Kind of destructor."""
-        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Shutting down.')
+        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Shutting down.', 1)
 
 
     def GenerateSingleRequest(self, sUrl):
@@ -130,9 +133,9 @@ class pRecommendationInterface:
         pNetIntf = pManager.manager.GetNetworkInterface()
 
         # Send request to iOwl-net
-        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Now sending single request to network.')
+        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Now sending single request to network.', 4)
         sId = pNetIntf.SendRequest(el)
-        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Finished sending single request to network. Id: '+str(sId))
+        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Finished sending single request to network. Id: '+str(sId), 4)
 
         # Generate empty list for answers
         self.dRules[sId] = []
@@ -165,9 +168,9 @@ class pRecommendationInterface:
         pNetIntf = pManager.manager.GetNetworkInterface()
 
         # Send request to iOwl-net
-        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Now sending session request to network.')
+        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Now sending session request to network.', 4)
         sId = pNetIntf.SendRequest(el)
-        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Finished sending session request to network. Id: '+str(sId))
+        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Finished sending session request to network. Id: '+str(sId), 4)
 
         # Generate empty list for answers
         self.dRules[sId] = []
@@ -196,13 +199,13 @@ class pRecommendationInterface:
                 lClicks = self.RecBuilder.BuildRecommendation(self.dRules[sId])
             else:
                 # request is there but got no answers
-                pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Dont have any answers for request id: '+str(sId))
+                pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Dont have any answers for request id: '+str(sId), 4)
 
             # delete id from list to disable new answers coming in.
             del self.dRules[sId]
 
         else:
-            pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Serious Error! Id '+str(sId)+' does not exist!')
+            pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Serious Error! Id '+str(sId)+' does not exist!', 3)
 
         # return recommendation
         return lClicks
@@ -219,7 +222,7 @@ class pRecommendationInterface:
 
         """
 
-        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Got single request from network. Id: '+str(sId))
+        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Got single request from network. Id: '+str(sId), 4)
         request = cRequest.cRequest()
         request.SetElement(reqEl)
 
@@ -233,11 +236,11 @@ class pRecommendationInterface:
             # Get NetworkInterface
             pNetIntf = pManager.manager.GetNetworkInterface()
             # send answer
-            pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Now sending answer to network. Id: '+str(sId))
+            pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Now sending answer to network. Id: '+str(sId), 4)
             pNetIntf.SendAnswer(answerEl, sId)
-            pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Finished sending answer to network. Id: '+str(sId))
+            pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Finished sending answer to network. Id: '+str(sId), 4)
         else:
-            pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Dont have answers for request. Id: '+str(sId))
+            pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Dont have answers for request. Id: '+str(sId), 4)
 
 
 
@@ -249,7 +252,7 @@ class pRecommendationInterface:
 
         """
 
-        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Got answer from network for my request. Id: '+str(sId))
+        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Got answer from network for my request. Id: '+str(sId), 3)
         answer = cAnswer.cAnswer()
         answer.SetElement(answerEl)
 
@@ -261,7 +264,7 @@ class pRecommendationInterface:
             # okay, append to answerlist
             self.dRules[sId].append(lAnswerRules)
         else:
-            pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Throwing away answer. Request is already gone! Id: '+str(sId))
+            pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Throwing away answer. Request is already gone! Id: '+str(sId), 3)
 
 
 

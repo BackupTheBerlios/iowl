@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.24 $"
+__version__ = "$Revision: 1.25 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.25  2001/08/10 18:34:54  i10614
+added debuglevel to all messages.
+
 Revision 1.24  2001/08/07 20:13:27  i10614
 introduced debuglevels for debug messages.
 
@@ -409,13 +412,13 @@ class cNetManager:
             cPong.ParseDOM(domPong)
 
             # log incoming pong
-            # pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Pong from %s:%s' % (str(cPong.GetAnswerer()[0]), str(cPong.GetAnswerer()[1])))
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Pong from %s:%s' % (str(cPong.GetAnswerer()[0]), str(cPong.GetAnswerer()[1])), 2)
 
             # extract PONG-source and add to own list of owls
             self.ExtractPongSource(cPong)
 
             # pass to cOwlManager
-            # pManager.manager.DebugStr('cNetManager '+ __version__ +': Passing Pong to cOwlManager.Answer()')
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Passing Pong to cOwlManager.Answer()', 3)
             self.cOwlManager.Answer(cPong)
         except:
             # unknown error. log and forget.
@@ -427,8 +430,8 @@ class cNetManager:
             for line in traceback.format_tb(eTraceback, 15):
                 tb = tb + line
 
-            pManager.manager.DebugStr('pNetwork '+ __version__ +': Unhandled error in thread HandlePong(): Type: '+str(eType)+', value: '+str(eValue))
-            pManager.manager.DebugStr('pNetwork '+ __version__ +': Traceback:\n'+str(tb))
+            pManager.manager.DebugStr('pNetwork '+ __version__ +': Unhandled error in thread HandlePong(): Type: '+str(eType)+', value: '+str(eValue), 2)
+            pManager.manager.DebugStr('pNetwork '+ __version__ +': Traceback:\n'+str(tb), 3)
 
 
     def HandleRequest(self, sRequest):
@@ -440,7 +443,7 @@ class cNetManager:
         """
 
         # log incoming Request
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Request...')
+        pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Request...', 2)
 
         try:
             # create cDOM from ascii-request
@@ -461,8 +464,8 @@ class cNetManager:
             for line in traceback.format_tb(eTraceback, 15):
                 tb = tb + line
 
-            pManager.manager.DebugStr('pNetwork '+ __version__ +': Unhandled error in thread HandleRequest(): Type: '+str(eType)+', value: '+str(eValue))
-            pManager.manager.DebugStr('pNetwork '+ __version__ +': Traceback:\n'+str(tb))
+            pManager.manager.DebugStr('pNetwork '+ __version__ +': Unhandled error in thread HandleRequest(): Type: '+str(eType)+', value: '+str(eValue),2)
+            pManager.manager.DebugStr('pNetwork '+ __version__ +': Traceback:\n'+str(tb), 3)
 
 
 
@@ -475,7 +478,7 @@ class cNetManager:
         """
 
         # log incoming Answer
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Answer...')
+        pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Answer...', 1)
 
         try:
             # create cDOM from ascii-Ping
@@ -496,8 +499,8 @@ class cNetManager:
             for line in traceback.format_tb(eTraceback, 15):
                 tb = tb + line
 
-            pManager.manager.DebugStr('pNetwork '+ __version__ +': Unhandled error in thread HandleAnswer(): Type: '+str(eType)+', value: '+str(eValue))
-            pManager.manager.DebugStr('pNetwork '+ __version__ +': Traceback:\n'+str(tb))
+            pManager.manager.DebugStr('pNetwork '+ __version__ +': Unhandled error in thread HandleAnswer(): Type: '+str(eType)+', value: '+str(eValue), 2)
+            pManager.manager.DebugStr('pNetwork '+ __version__ +': Traceback:\n'+str(tb), 3)
 
 
     def SendRequest(self, elRequest):
@@ -517,11 +520,11 @@ class cNetManager:
         cRequest = self.GenerateRequest(elRequest)
 
         # Pass Request to cOwlManager
-        pManager.manager.DebugStr('pNetwork '+ __version__ +': Passing request to network.')
+        pManager.manager.DebugStr('pNetwork '+ __version__ +': Passing request to network.', 2)
         if self.cOwlManager.Distribute(cRequest) == 'okay':
-            pManager.manager.DebugStr('pNetwork '+ __version__ +': Passed Request -> Okay.')
+            pManager.manager.DebugStr('pNetwork '+ __version__ +': Passed Request -> Okay.', 2)
         else:
-            pManager.manager.DebugStr('pNetwork '+ __version__ +': Passed Request -> Error!.')
+            pManager.manager.DebugStr('pNetwork '+ __version__ +': Passed Request -> Error!.', 2)
 
         # return id for pRecommendation
         return cRequest.GetID()
@@ -541,11 +544,11 @@ class cNetManager:
         """
 
         # Build network package containing answer
-        pManager.manager.DebugStr('pNetwork '+ __version__ +': Generating Answer.')
+        pManager.manager.DebugStr('pNetwork '+ __version__ +': Generating Answer.', 2)
         cAnswer = self.GenerateAnswer(elAnswer, id)
 
         # pass Answer to cOwlManager
-        pManager.manager.DebugStr('pNetwork '+ __version__ +': Passing answer to network.')
+        pManager.manager.DebugStr('pNetwork '+ __version__ +': Passing answer to network.', 2)
         self.cOwlManager.Answer(cAnswer)
 
 
@@ -557,7 +560,7 @@ class cNetManager:
 
         """
         # log tick
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': No PONG received for '+str(self.iInterval)+' seconds. Generating PING.')
+        pManager.manager.DebugStr('cNetManager '+ __version__ +': No PONG received for '+str(self.iInterval)+' seconds. Generating PING.', 3)
 
         # Generate Ping
         ping = self.GeneratePing()
@@ -692,18 +695,18 @@ class cNetManager:
                 s.close()
             except:
                 # socket-connect failed :-(
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not connect socket to determine own IP. Reverting to "gethostbyname()"...')
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not connect socket to determine own IP. Reverting to "gethostbyname()"...', 1)
                 try:
                     sOwnIP = socket.gethostbyname(socket.gethostname())
                 except:
-                    pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not determine own IP!')
+                    pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not determine own IP!', 0)
                     raise socket.error
         else:
             # dont use smart IP detection
             try:
                 sOwnIP = socket.gethostbyname(socket.gethostname())
             except:
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not determine own IP!')
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not determine own IP!', 0)
                 raise socket.error
 
         return sOwnIP
@@ -721,10 +724,10 @@ class cNetManager:
 
         try:
             # get list from url
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': Not enough owls in cache. Getting some more owls from website.')
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Not enough owls in cache. Getting some more owls from website.', 1)
             sList = urllib.urlopen(self.sOwlUrl).read()
             lOwls = sList.split(",")
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': Got '+str(len(lOwls))+' IPs from website. Now validating...')
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Got '+str(len(lOwls))+' IPs from website. Now validating...', 1)
             # create socket
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             for owl in lOwls:
@@ -733,14 +736,14 @@ class cNetManager:
                     s.connect((owl, int(self.cNetServer.GetListenPort())))
                     s.close()
                 except:
-                    pManager.manager.DebugStr('cNetManager '+ __version__ +': Detected stale owl. Discarding...')
+                    pManager.manager.DebugStr('cNetManager '+ __version__ +': Detected stale owl. Discarding...', 2)
                     continue
 
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': Detected active owl. Adding to neighbourlist...')
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Detected active owl. Adding to neighbourlist...', 2)
                 self.cOwlManager.AddOwl((owl, self.cNetServer.GetListenPort()))
 
         except:
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not connect to website.')
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not connect to website.', 1)
 
 
 
