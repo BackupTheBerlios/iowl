@@ -38,40 +38,43 @@ google.com/linux. Your owl tells him this resource. Thats it!
 	    * make install (root)
 
 And of course a cvs-snapshot of the iOwl.net software.
-It is available at http://iowl.berlios.de/nightly/ or using cvs diretly.
+It is available at http://www.iowl.net/files/daily/current-iowl.tar.gz 
+or using cvs diretly look at http://developer.berlios.de/cvs/?group_id=250
 
 ###############################################################################
 3. USAGE
 
 	iowl.sh is a little script that start|stop iOwl.net.
-	Restart is understood too. There is a iowl.sh status to give the PID's of 
-	running iOwl.net and a iowl.sh kill if stop does not work.
+	Restart is understood too. There is a iowl.sh status to give the PID's 
+	of running iOwl.net and a iowl.sh kill if stop does not work.
 
 	Using your agent
 
-	    * ./iowl.sh start to start iOwl.net
-	    * change the proxy in your browser to localhost:3228
-	    * checkout the link http://my.iowl.net
+	    	* ./iowl.sh start to start iOwl.net
+	    	* change the proxy in your browser to localhost:3228
+	    	* checkout the link http://my.iowl.net
 
 The link http://my.iowl.net/ is local on your pc and gives the database of your 
 visited sites. From this page you can also get recommendations.
 
 	You want recommendations? - test this
 
-    	* edit iowl.cfg (in the root of iowl) and add
+    		* edit iowl.cfg (in the root of iowl) and add
     
-    	[pNetwork]
-    	entryip = kingfisher.berlios.de # a modified owl; gives recommendation for google.de
-    	entryport = 2323
+    		[pNetwork]
+    		entryip = kingfisher.berlios.de 
+		# a modified owl; gives recommendation 
+		# for google.de and know other owls
+    		entryport = 2323
 
-    	* restart the owl ./iowl.sh restart
-    	* http://my.iowl.net/ -> click recommendation
-		or use the link
-      	http://my.iowlnet/command?action=sessionrecommandation
+    		* restart the owl ./iowl.sh restart
+    		* http://my.iowl.net/ -> click recommendation
+		  or use the link
+		  http://my.iowlnet/command?action=sessionrecommandation
 
 	Stopping the agent
 
-	    * ./iowl.sh stop to stop iOwl.net
+		* ./iowl.sh stop to stop iOwl.net
 
 more follows 
 Andreas Biessmann
