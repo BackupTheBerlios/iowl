@@ -9,10 +9,12 @@
 ##	 if it doesn't run check out the path for yourself and set below.
 ##
 ## 	$ARGUMENTS -> path to iowl.py in $IOWL_DIR
-##	$PYTHONPATH -> path to the modules of iOwl.net + original $PYTHONPATH
+##	$PYTHONPATH -> path to the modules of iOwl.net depend on $IOWL_DIR 
+##			+ original $PYTHONPATH
+##			is set below in line 94 normally is this right
 ###############################################################################
 
-# PYTHON=your_path_to_python # absolute path to python2.2 or python
+# PYTHON=your_path_to_python # absolute path to python2.2 or python set if not autodetect
 
 # PIDOF=path_to_your_pidof # set if not autodetect
 
@@ -20,12 +22,11 @@
 
 ARGUMENTS="pManagement/iowl.py"
 
-PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
-
 ###############################################################################
-# autodetect PIDOF, PYTHON, IOWL_DIR
+# autodetect PIDOF, PYTHON, IOWL_DIR, PYTHONPATH
 ###############################################################################
 
+# autodetect pidof executable
 if [ -z $PIDOF ]; then
 
 	if [ -x /bin/pidof ]; then
@@ -43,13 +44,14 @@ if [ -z $PIDOF ]; then
 	if [ -x /usr/sbin/pidof ]; then
 	PIDOF=/usr/sbin/pidof;
 	fi
-	
+
 	if [ -z $PIDOF ]; then
 		echo "There is no pidof executable found on default path. Edit iowl.sh and change PIDOF variable at line 21."
 		exit 1
 	fi
 fi
 
+# autodetect python executable
 if [ -z $PYTHON ]; then
 
 	if [ -x /usr/bin/python ]; then
@@ -67,7 +69,7 @@ if [ -z $PYTHON ]; then
 	if [ -x /usr/local/bin/python2.2 ]; then
 	PYTHON=/usr/local/bin/python2.2;
 	fi
-
+		
 	if [ -z $PYTHON ]; then
 		echo "There is no python2.2 or python executable found on default path. Edit iowl.sh and change PYTHON variable at line 17."
 		exit 1
@@ -76,15 +78,20 @@ if [ -z $PYTHON ]; then
 	fi
 fi
 
+# autodetect locataion of iowl source
 if [ -d "$IOWL_DIR" ]; then
 	# If $IOWL_DIR is not set in global profile, bashrc or users 
 	# own profile, bashrc -> set to working directory
 	export IOWL_DIR
+
 else
-	# otherwise export it
+	# otherwise export local directory
 	IOWL_DIR=`pwd`
 	export IOWL_DIR	
 fi
+
+# $PYTHONPATH environment 
+PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
 
 ###############################################################################
 # some tests
