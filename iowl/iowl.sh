@@ -16,14 +16,14 @@
 
 # PIDOF=path_to_your_pidof # set if not autodetect
 
-IOWL_DIR=`pwd`
+# IOWL_DIR=your_path_to_iowl # set if $IOWL_DIR is not set
 
 ARGUMENTS="pManagement/iowl.py"
 
 PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
 
 ###############################################################################
-# autodetect PIDOF, PYTHON
+# autodetect PIDOF, PYTHON, IOWL_DIR
 ###############################################################################
 
 if [ -z $PIDOF ]; then
@@ -76,6 +76,16 @@ if [ -z $PYTHON ]; then
 	fi
 fi
 
+if [ -z $IOWL_DIR ]; then
+	# If $IOWL_DIR is not set in global profile, bashrc or users 
+	# own profile, bashrc -> set to working directory
+	IOWL_DIR=`pwd`
+	export IOWL_DIR
+else
+	# otherwise export it
+	export IOWL_DIR	
+fi
+
 ###############################################################################
 # some tests
 ###############################################################################
@@ -93,8 +103,8 @@ fi
 ###############################################################################
 
 network () {
-	proxy=`netstat -n | sed -n -e '/\<3228/ p'`
-	iowl=`netstat -n | sed -n -e '/\<2323/ p'`
+	proxy=`netstat -n | grep -e tcp | sed -n -e '/\<3228/ p'`
+	iowl=`netstat -n | grep -e tcp | sed -n -e '/\<2323/ p'`
 	# are there open ports?
 	if [ -n "$proxy"  ]; then
 			echo "There are open ports for iOwl.net-Proxy! Wait a short time and to start again."
