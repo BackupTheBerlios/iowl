@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.5  2001/04/14 15:01:36  i10614
+bugfixes
+
 Revision 1.4  2001/04/09 13:16:30  i10614
 implemented simple caching of neighbourowls
 
@@ -63,6 +66,8 @@ import cOwlManager
 import socket
 import sys
 import traceback
+import cNetPackage
+
 
 class cNetManager:
     """Coordinator for iowl.net. Responsible for accepting incoming
@@ -121,6 +126,10 @@ class cNetManager:
             self.cOwlManager.SetRequestLifeTime(int(sValue))
 
 
+    def GetProtocolVersion(self):
+        """return version of network protocol"""
+        return self.sProtocol
+
 
     def StartConnection(self):
         """Start connection with the iOwl network
@@ -142,13 +151,13 @@ class cNetManager:
         self.cOwlManager.Start()
 
         # add entrypoint to cOwlManager
-        self.cOwlManager.AddOwl(self.EntryIP, self.iEntryPort)
+        self.cOwlManager.AddOwl((self.EntryIP, self.iEntryPort))
 
         # generate PING
-        domPing = self.GeneratePing()
+        cPing = self.GeneratePing()
 
         # pass PING to cOwlManager
-        self.cOwlManager.Distribute(domPing)
+        self.cOwlManager.Distribute(cPing)
 
         # start server
         self.cNetServer.StartListen()
@@ -185,21 +194,24 @@ class cNetManager:
             domPing = cDOM.cDOM()
             domPing.ParseString(sPing)
 
+            # create cNetPackage from DOM-Ping
+            cPing = cNetPackage.cNetPackage('ping')
+            cPing.ParseDOM(domPing)
+
             # pass ping to cOwlManager. If cOwlManager accepts ping, answer with pong
-            if self.cOwlManager.Distribute(domPing) == 'okay':
+            if self.cOwlManager.Distribute(cPing) == 'okay':
                 # generate Pong
                 try:
-                    domPong = self.GeneratePong(domPing)
+                    cPong = self.GeneratePong(cPing)
                 except:
                     # Could not generate Pong
                     pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not parse info from Ping. No Pong generated.')
                     return
-
                 # pass Pong to cOlwManager
-                self.cOwlManager.Answer(domPong)
+                self.cOwlManager.Answer(cPong)
             else:
                 # something was wrong with that Ping...
-                # pManager.manager.DebugStr('cNetManager '+ __version__ +': cOwlManager did not accept ping. Probably a vicious circle or corrupt cDOM')
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': cOwlManager did not accept ping. Probably a vicious circle or corrupt cDOM')
                 pass
         except:
             # unknown error. log and forget.
@@ -234,12 +246,15 @@ class cNetManager:
             # create cDOM from ascii-Pong
             domPong = cDOM.cDOM()
             domPong.ParseString(sPong)
+            # create cNetPackage from DOM-Pong
+            cPong = cNetPackage.cNetPackage('pong')
+            cPong.ParseDOM(domPong)
 
             # extract PONG-source and add to own list of owls
-            self.ExtractPongSource(domPong)
+            self.ExtractPongSource(cPong)
 
             # pass to cOwlManager
-            self.cOwlManager.Answer(domPong)
+            self.cOwlManager.Answer(cPong)
         except:
             # unknown error. log and forget.
             # get exception
@@ -266,12 +281,14 @@ class cNetManager:
         pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Request...')
 
         try:
-            # create cDOM from ascii-Ping
+            # create cDOM from ascii-request
             domRequest = cDOM.cDOM()
             domRequest.ParseString(sRequest)
-
+            # create cNetPackage from DOM-request
+            cRequest = cNetPackage.cRecPackage('')
+            cRequest.ParseDOM(domRequest)
             # pass to cOwlManager
-            self.cOwlManager.Distribute(domRequest)
+            self.cOwlManager.Distribute(cRequest)
         except:
             # unknown error. log and forget.
             # get exception
@@ -302,9 +319,11 @@ class cNetManager:
             # create cDOM from ascii-Ping
             domAnswer = cDOM.cDOM()
             domAnswer.ParseString(sAnswer)
-
+            # create cNetPackage from DOM-answer
+            cAnswer = cNetPackage.cRecPackage('')
+            cAnswer.ParseDOM(domAnswer)
             # pass on to cOwlManager
-            self.cOwlManager.Answer(domAnswer)
+            self.cOwlManager.Answer(cAnswer)
         except:
             # unknown error. log and forget.
             # get exception
@@ -333,13 +352,13 @@ class cNetManager:
         """
 
         # Build network package containing request
-        domRequest, id = self.GenerateRequest(elRequest)
+        cRequest = self.GenerateRequest(elRequest)
 
         # Pass Request to cOwlManager
-        self.cOwlManager.Distribute(domRequest)
+        self.cOwlManager.Distribute(cRequest)
 
         # return id for pRecommendation
-        return id
+        return cRequest.GetID()
 
 
 
@@ -356,10 +375,10 @@ class cNetManager:
         """
 
         # Build network package containing answer
-        domAnswer = self.GenerateAnswer(elAnswer, id)
+        cAnswer = self.GenerateAnswer(elAnswer, id)
 
         # pass Answer to cOwlManager
-        self.cOwlManager.Answer(domAnswer)
+        self.cOwlManager.Answer(cAnswer)
 
 
 
@@ -373,165 +392,76 @@ class cNetManager:
         pManager.manager.DebugStr('cNetManager '+ __version__ +': No PONG received for '+str(self.iInterval)+' seconds. Generating PING.')
 
         # Re-Add Entrypoint, just in case it got deleted because temporarily not available...
-        self.cOwlManager.AddOwl(self.EntryIP, self.iEntryPort)
+        self.cOwlManager.AddOwl((self.EntryIP, self.iEntryPort))
 
         # Generate Ping
         ping = self.GeneratePing()
         self.cOwlManager.Distribute(ping)
 
 
-
     def GeneratePing(self):
-        """Generate a PING cDOM
+        """Generate and return a cNetPackage object"""
 
-        a Ping looks like:
+        # generate ping
+        cPing = cNetPackage.cNetPackage('ping')
+        # set unique id
+        cPing.SetID(pManager.manager.GetUniqueNumber())
+        # set originator
+        cPing.SetOriginator(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
+        # set iOwl-Version
+        cPing.SetOwlVersion(pManager.manager.GetVersion())
+        # set network protocol version
+        cPing.SetProtocolVersion(self.sProtocol)
+        # set ttl
+        cPing.SetTTL(self.iTTL)
 
-        <iowl.net version="0.1" "protocol="0.2" id="4711" type="Ping" ttl="12">
-            <originator ip="192.168.99.2" port="2323"></originator>
-        </iowl.net>
-
-        return -- cDOM containing a PING packet
-
-        """
-
-        # create unique id
-        id = pManager.manager.GetUniqueNumber()
-        # id = 46722
-
-        # get own IP from manager
-        ownip = pManager.manager.GetOwnIP()
-        # ownip = '123.456.789.101'
-
-        # get ListenPort from cNetServer
-        iListenPort = self.cNetServer.GetListenPort()
-
-        # create the dom
-        domPing = cDOM.cDOM()
-
-        # create core element: originator, containing ip and port as attributes
-        elOriginator = domPing.CreateElement('originator', {'ip':str(ownip), 'port':str(iListenPort)}, '')
-
-        # create list containing core element
-        els = []
-        els.append(elOriginator)
-
-        # get iOwl-version
-        sVersion = str(pManager.manager.GetVersion())
-        # sVersion = 'Testversion'
-
-        # create container: iowl.net
-        elCont = domPing.CreateElementContainer('iowl.net', {'version':sVersion, 'protocol':self.sProtocol, 'id':str(id), 'type':'Ping', 'ttl':str(self.iTTL)}, els)
-
-        # save elements in dom
-        domPing.SetRootElement(elCont)
-
-        # finished!
-        return domPing
+        return cPing
 
 
-    def GeneratePong(self, domPing):
-        """Generate a PONG cDOM
+    def GeneratePong(self, cPing):
+        """Generate and return a cPong Object"""
 
-        PONG is Answer to incoming Ping. It contains the same data as
-        a Ping + info about myself.
+        # generate pong
+        cPong = cNetPackage.cPong()
+        # set id from ping
+        cPong.SetID(cPing.GetID())
+        # set originator
+        cPong.SetOriginator(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
+        # set iOwl-Version
+        cPong.SetOwlVersion(pManager.manager.GetVersion())
+        # set network protocol version
+        cPong.SetProtocolVersion(self.sProtocol)
+        # set answerer
+        cPong.SetAnswerer(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
 
-        Note that attribute 'id' has to be the id of the corresponding PING.
-        Also note that answer's TTL-counter is irrelevant since their way through the network
-        is already fixed and they dont get distributed like requests.
-
-        a Pong looks like:
-
-        <iowl.net version="0.1" "protocol="0.2" id="4711" type="Pong" ttl="10">
-            <originator ip="192.168.99.2" port="2323"></originator>
-            <answerer ip="192.168.99.2" port="2323"></answer>
-        </iowl.net>
-
-        return -- cDOM containing a PONG packet
-
-        """
-
-        # get id of PING
-        # id = 123
-        version, protocol, id, type, ttl, ip, port = self.cOwlManager.GetDomInfo(domPing)
-
-        # get own IP from manager
-        ownip = pManager.manager.GetOwnIP()
-        # ownip = '123.456.789.101'
-
-        # get ListenPort from cNetServer
-        iListenPort = self.cNetServer.GetListenPort()
-
-        # create the dom
-        domPong = cDOM.cDOM()
-
-        # create core element: originator, containing ip and port as attributes
-        elOriginator = domPong.CreateElement('originator', {'ip':str(ownip), 'port':str(iListenPort)}, '')
-        # create core element: answerer, containing ip and port as attributes
-        elAnswerer = domPong.CreateElement('answerer', {'ip':str(ownip), 'port':str(iListenPort)}, '')
-
-        # create list containing core elements
-        els = []
-        els.append(elOriginator)
-        els.append(elAnswerer)
-
-        # get iOwl-version
-        sVersion = str(pManager.manager.GetVersion())
-        # sVersion = 'Testversion'
-
-        # create container: iowl.net
-        elCont = domPong.CreateElementContainer('iowl.net', {'version':sVersion, 'protocol':self.sProtocol, 'id':str(id), 'type':'Pong', 'ttl':'10'}, els)
-
-        # save elements in dom
-        domPong.SetRootElement(elCont)
-
-        # finished!
-        return domPong
+        return cPong
 
 
     def GenerateRequest(self, elRequest):
-        """Generate complete Request-package containing elRequest
+        """Generate a request
 
         elRequest  -- Request as generated by pRecommendation
 
-        return      -- id of new package
+        return     -- cNetpackage
 
         """
-        # get new id
-        # id = 123
-        id = pManager.manager.GetUniqueNumber()
 
-        # get own IP from manager
-        # ownip = '123.456.789.101'
-        ownip = pManager.manager.GetOwnIP()
+        # generate request
+        cRequest = cNetPackage.cRecPackage('request')
+        # set unique id
+        cRequest.SetID(pManager.manager.GetUniqueNumber())
+        # set originator
+        cRequest.SetOriginator(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
+        # set iOwl-Version
+        cRequest.SetOwlVersion(pManager.manager.GetVersion())
+        # set network protocol version
+        cRequest.SetProtocolVersion(self.sProtocol)
+        # store elRequest
+        cRequest.StorePayload(elRequest)
+        # set ttl
+        cRequest.SetTTL(self.iTTL)
 
-        # get ListenPort from cNetServer
-        iListenPort = self.cNetServer.GetListenPort()
-
-        # create the dom
-        domRequest = cDOM.cDOM()
-
-        # create core element: originator, containing ip and port as attributes
-        elOriginator = domRequest.CreateElement('originator', {'ip':str(ownip), 'port':str(iListenPort)}, '')
-        # elRequest.writexml(sys.stdout)
-
-        # create list containing core elements
-        els = []
-        els.append(elOriginator)
-        els.append(elRequest)
-
-        # get iOwl-version
-        sVersion = str(pManager.manager.GetVersion())
-        # sVersion = 'Testversion'
-
-        # create container: iowl.net
-        elCont = domRequest.CreateElementContainer('iowl.net', {'version':sVersion, 'protocol':self.sProtocol, 'id':str(id), 'type':'Request', 'ttl':str(self.iTTL)}, els)
-
-        # save elements in dom
-        domRequest.SetRootElement(elCont)
-
-        # finished!
-        print domRequest.ToXML()
-        return domRequest, id
+        return cRequest
 
 
     def GenerateAnswer(self, elAnswer, id):
@@ -539,64 +469,35 @@ class cNetManager:
 
         elAnswer    -- Answer as generated by pRecommendation
         id          -- id Answer should contain (id of request this answer belongs to. Needed to figure the
-                        correct routing in cOwlManager
+                       correct routing in cOwlManager
 
-        return      -- domAnswer, ready for sending through network
-
+        return      -- cNetpackage
 
         """
 
-        # get own IP from manager
-        ownip = pManager.manager.GetOwnIP()
-        # ownip = '123.456.789.101'
+        # generate answer
+        cAnswer = cNetPackage.cRecPackage('answer')
+        # set id
+        cAnswer.SetID(id)
+        # set originator
+        cAnswer.SetOriginator(pManager.manager.GetOwnIP(), self.cNetServer.GetListenPort())
+        # set iOwl-Version
+        cAnswer.SetOwlVersion(pManager.manager.GetVersion())
+        # set network protocol version
+        cAnswer.SetProtocolVersion(self.sProtocol)
+        # store elRequest
+        cAnswer.StorePayload(elAnswer)
 
-        # get ListenPort from cNetServer
-        iListenPort = self.cNetServer.GetListenPort()
-
-        # create the dom
-        domAnswer = cDOM.cDOM()
-
-        # create core element: originator, containing ip and port as attributes
-        elOriginator = domAnswer.CreateElement('originator', {'ip':str(ownip), 'port':str(iListenPort)}, '')
-
-        # create list containing core elements
-        els = []
-        els.append(elOriginator)
-        els.append(elAnswer)
-
-        # get iOwl-version
-        sVersion = str(pManager.manager.GetVersion())
-        # sVersion = 'Testversion'
-
-        # create container: iowl.net
-        elCont = domAnswer.CreateElementContainer('iowl.net', {'version':sVersion, 'protocol':self.sProtocol, 'id':str(id), 'type':'Answer', 'ttl':str(self.iTTL)}, els)
-
-        # save elements in dom
-        domAnswer.SetRootElement(elCont)
-
-        # finished!
-        # print domAnswer.ToXML()
-        return domAnswer
+        return Answer
 
 
-    def ExtractPongSource(self, domPong):
+    def ExtractPongSource(self, cPong):
         """Extract source of PONG
 
         Add new owl (Pong-source) to cOwlmanager's list of known owls.
 
         """
-
-        # look for element containing 'answerer'
-        lElements = domPong.MatchingElements('answerer', '')
-        if len(lElements)==1:
-            # found it!
-            # create list of attributes
-            lAttrs = ['ip','port']
-            dAttrs = domPong.GetAttrs(lElements[0], lAttrs)
-            # add source owl to cOwlManager
-            self.cOwlManager.AddOwl(dAttrs['ip'], dAttrs['port'])
-        else:
-            raise 'Could not get PONG info...'
+        self.cOwlManager.AddOwl(cPong.GetAnswerer())
 
 
     def GetOwnIP(self):
@@ -645,6 +546,24 @@ class cNetManager:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #############################################################################
 ## TEST FUNCTIONS ###########################################################
 
@@ -655,7 +574,7 @@ def test():
     dummy = cDOM.cDOM()
     elReq = dummy.CreateElement('request', {'url':'www.iowl.net', 'otherurl':'www.arschlecken.de'}, 'Bitte recommendation liefern!')
     elAns = dummy.CreateElement('answer', {'url':'www.wissen.de'}, 'Check das aus!')
-    re, id = manager.GenerateRequest(elReq)
+    re = manager.GenerateRequest(elReq)
     print
     print re.ToXML()
     print
@@ -669,8 +588,6 @@ def test():
 
 if __name__ == '__main__':
     test()
-
-
 
 
 

@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cNeighbourOwl.py,v $
+Revision 1.3  2001/04/14 15:01:36  i10614
+bugfixes
+
 Revision 1.2  2001/04/09 13:16:30  i10614
 implemented simple caching of neighbourowls
 
@@ -79,7 +82,7 @@ class cNeighbourOwl:
             # Can't call remote function - delete owl from list
             pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Cant do RPC for '+str(self.IP)+':'+str(self.iPort)+'. Deleting owl from list of known owls.')
             # Delete owl
-            self.cOwlManager.DeleteOwl(self.cOwlManager.lKnownOwls, self.IP, self.iPort)
+            self.cOwlManager.DeleteOwl(self.cOwlManager.lKnownOwls, (self.IP, self.iPort))
 
 
     def Pong(self, sPong):

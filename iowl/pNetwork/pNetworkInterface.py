@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: pNetworkInterface.py,v $
+Revision 1.3  2001/04/14 15:01:36  i10614
+bugfixes
+
 Revision 1.2  2001/03/27 18:25:17  i10614
 added shutdown notification
 
@@ -71,7 +74,6 @@ class pNetworkInterface:
         Pass setparam-call to cNetManager
 
         """
-
         self.cNetManager.SetParam(sOption, sValue)
 
 
@@ -81,22 +83,27 @@ class pNetworkInterface:
         Necessary to generate PINGs after interval time
 
         """
-
         self.cNetManager.TimerTick(interval)
 
 
     def Shutdown(self):
         """Initiate shutdown of Network"""
-
-
         pManager.manager.DebugStr('pNetwork '+ __version__ +': Shutting down.')
         self.cNetManager.Stop()
 
 
     def Start(self):
         """Start operation of iOwl network"""
-
         self.cNetManager.StartConnection()
 
+
+    def GetListenPort(self):
+        """return port i am listening on"""
+        return self.cNetManager.GetListenPort()
+
+
+    def GetProtocolVersion(self):
+        """return version of network protocol"""
+        return self.cNetManager.GetProtocolVersion()
 
 
