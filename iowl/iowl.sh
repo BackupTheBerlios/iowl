@@ -94,7 +94,7 @@ fi
 
 network () {
 	proxy=`netstat -n | sed -n -e '/\<3228/ p'`
-	iowl=`netstat -n | sed -n -e '/\<2828/ p'`
+	iowl=`netstat -n | sed -n -e '/\<2323/ p'`
 	# are there open ports?
 	if [ -n "$proxy"  ]; then
 			echo "There are open ports for iOwl.net-Proxy! Wait a short time and to start again."
