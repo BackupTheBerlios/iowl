@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.24 $"
+__version__ = "$Revision: 1.25 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.25  2002/02/27 13:46:40  Saruman
+finer grained logfile locking, fixed racecondition during shutdown.
+
 Revision 1.24  2002/02/25 16:46:43  Saruman
 modified exit code(s).
 
@@ -233,10 +236,6 @@ class cManager:
             # do not log
             return
 
-        # Queue up for critical section - only one output a time!
-        # Acquire Lock
-        self.DbgLock.acquire()
-
         # Build timestamp
         message = time.strftime('%d.%m.%y %H:%M:%S', time.localtime(time.time()))
 
@@ -246,6 +245,10 @@ class cManager:
 
         message = message + ' -- '
         message = message + sDebugInfo
+
+        # Queue up for critical section - only one output a time!
+        # Acquire Lock
+        self.DbgLock.acquire()
 
         # Handle output according to debugmode
         if self.sDebugMode == 'console':
@@ -540,6 +543,12 @@ class cManager:
         self.intfNetwork.Shutdown()
         self.intfStatistics.Shutdown()
         self.intfProxy.ShutDown()
+
+        # there is a race condition while shutting down. If too many threads wait for debug output, the logfile
+        # might get closed by shutdown().
+        # quickfix: wait until DbgLock is released. Sleep one second to allow all waiting threads to re-acquire lock.
+        while self.DbgLock.locked():
+            thread.sleep(1)
 
         # close logfile
         try:
