@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: pGuiInterface.py,v $
+Revision 1.3  2001/08/10 18:42:50  i10614
+added debuglevel to all messages.
+
 Revision 1.2  2001/03/27 18:23:11  i10614
 added session creation date to history
 
@@ -59,7 +62,7 @@ class pGuiInterface:
 
         """
 
-        pManager.manager.DebugStr('pGui '+ __version__ +': Shutting down.')
+        pManager.manager.DebugStr('pGui '+ __version__ +': Shutting down.', 1)
         return
 
 
