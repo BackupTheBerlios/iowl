@@ -13,7 +13,7 @@
 ##
 ##	$PYTHONPATH -> path to the modules of iOwl.net + original $PYTHONPATH
 ##	$IOWL_DIR -> maybe $HOME/iowl/ or something
-#########################################################################
+###############################################################################
 
 # PYTHON="python"
 PYTHON="python2.2"
@@ -29,10 +29,14 @@ IOWL_DIR=$HOME/source/iowl
 
 # a little test if $IOWL_DIR is true
 
-if [ ! -d $IOWL_DIR ]; then echo $IOWL_DIR "does not exist .. please change iowl.sh"; fi
+if [ ! -d $IOWL_DIR ]; 
+then echo $IOWL_DIR "does not exist .. please change iowl.sh"
+exit 1;
+fi
 
-##########################################################################
+###############################################################################
 # how start|stop|status|kill does work
+###############################################################################
 
 iowl_start () {
 	# is it running?
@@ -100,7 +104,9 @@ iowl_kill () {
 	fi
 }
 
+###############################################################################
 # iOwl.net start|stop|restart|kill|status
+###############################################################################
 case "$1" in
 
    start)
