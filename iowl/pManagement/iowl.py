@@ -1,11 +1,11 @@
 #!/usr/local/bin/python
 
-__version__ = "$Revision: 1.8 $"
+__version__ = "$Revision: 1.9 $"
 
 """
 $Log: iowl.py,v $
-Revision 1.8  2001/05/25 19:18:43  i10614
-enabled taskbar-exit
+Revision 1.9  2001/05/25 19:24:38  i10614
+added "hide menu" for workaround for sticky popup-menu
 
 Revision 1.7  2001/05/24 19:26:49  i10614
 Changed icon filename. Removed "stop iowl" from systray menu.
@@ -149,7 +149,8 @@ if sys.platform[:3] == 'win':
                 AppendMenu( menu, win32con.MF_STRING, 1023, "Activate")
                 AppendMenu( menu, win32con.MF_STRING, 1024, "De-Activate")
                 AppendMenu( menu, win32con.MF_STRING, 1025, "Show iOwl.net")
-                AppendMenu( menu, win32con.MF_STRING, 1026, "Close iOwl.net" )
+                AppendMenu( menu, win32con.MF_STRING, 1026, "Exit iOwl.net")
+                AppendMenu( menu, win32con.MF_STRING, 1027, "Hide menu")
                 pos = GetCursorPos()
                 TrackPopupMenu(menu, win32con.TPM_LEFTALIGN, pos[0], pos[1], 0, self.hwnd, None)
             return 1
@@ -174,6 +175,10 @@ if sys.platform[:3] == 'win':
                 Shell_NotifyIcon(NIM_DELETE, nid)
                 # stop iOwl
                 StopiOwl()
+             elif id == 1027:
+                # do nothing, just a workaround for broken popup-menu
+                pass
+
 
         def OnQueryEndSession(self, hwnd, msg, wparam, lparam):
             # Shutdown iOwl
