@@ -37,6 +37,9 @@ include '/home/groups/iowl/htdocs/header.html';
 
 <p><a name="linux"></a></p>
 <p><b>Linux</b></p>
+<ol>
+  <li>Download current cvs-snapshot <a href="http://www.iowl.net/files/daily/current-iowl.tar.gz">current-iowl.tar.gz</a> 
+      and extract with <span class="kursiv">tar -xzvf current-iowl.tar.gz</span></li>
 <p>&nbsp;</p>
 
 <?php
