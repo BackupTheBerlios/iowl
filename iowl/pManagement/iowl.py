@@ -1,9 +1,12 @@
 #!/usr/local/bin/python
 
-__version__ = "$Revision: 1.10 $"
+__version__ = "$Revision: 1.11 $"
 
 """
 $Log: iowl.py,v $
+Revision 1.11  2001/05/26 11:39:10  i10614
+changed win32-traymenu
+
 Revision 1.10  2001/05/25 19:28:48  i10614
 bugfix for menu
 
@@ -116,20 +119,25 @@ if sys.platform[:3] == 'win':
                         0, 0, hinst, None)
             UpdateWindow(self.hwnd)
 
-            # set icon
+            # set icons
             iconPathName = "data/iowl.ico"
-            if not os.path.isfile(iconPathName):
-                # Look in the source tree.
-                iconPathName = os.path.abspath(os.path.join( os.path.split(sys.executable)[0], "..\\PC\\pyc.ico" ))
             if os.path.isfile(iconPathName):
                 icon_flags = win32con.LR_LOADFROMFILE | win32con.LR_DEFAULTSIZE
-                hicon = LoadImage(hinst, iconPathName, win32con.IMAGE_ICON, 0, 0, icon_flags)
+                self.hicon_act = LoadImage(hinst, iconPathName, win32con.IMAGE_ICON, 0, 0, icon_flags)
             else:
                 # Can't find a Python icon file - using default
-                hicon = LoadIcon(0, win32con.IDI_APPLICATION)
+                self.hicon_act = LoadIcon(0, win32con.IDI_APPLICATION)
+
+            iconPathName = "data/iowl_in.ico"
+            if os.path.isfile(iconPathName):
+                icon_flags = win32con.LR_LOADFROMFILE | win32con.LR_DEFAULTSIZE
+                self.hicon_inact = LoadImage(hinst, iconPathName, win32con.IMAGE_ICON, 0, 0, icon_flags)
+            else:
+                # Can't find a Python icon file - using default
+                self.hicon_inact = LoadIcon(0, win32con.IDI_APPLICATION)
 
             flags = NIF_ICON | NIF_MESSAGE | NIF_TIP
-            nid = (self.hwnd, 0, flags, win32con.WM_USER+20, hicon, "iOwl.net")
+            nid = (self.hwnd, 0, flags, win32con.WM_USER+20, self.hicon_act, "iOwl.net")
             Shell_NotifyIcon(NIM_ADD, nid)
 
         def OnDestroy(self, hwnd, msg, wparam, lparam):
@@ -146,11 +154,28 @@ if sys.platform[:3] == 'win':
                 pass
             elif lparam==win32con.WM_RBUTTONUP:
                 menu = CreatePopupMenu()
-                AppendMenu( menu, win32con.MF_STRING, 1023, "Activate")
-                AppendMenu( menu, win32con.MF_STRING, 1024, "De-Activate")
-                AppendMenu( menu, win32con.MF_STRING, 1025, "Show iOwl.net")
-                AppendMenu( menu, win32con.MF_STRING, 1026, "Exit iOwl.net")
-                AppendMenu( menu, win32con.MF_STRING, 1027, "Hide menu")
+                if (pManager.manager.bIsRunning == 0):
+                    # we are not yet running. Display all options.
+                    AppendMenu( menu, win32con.MF_STRING, 1023, "Activate")
+                    AppendMenu( menu, win32con.MF_STRING, 1024, "De-Activate")
+                    AppendMenu( menu, win32con.MF_STRING, 1025, "Show iOwl.net")
+                    AppendMenu( menu, win32con.MF_STRING, 1027, "Hide menu")
+                    AppendMenu( menu, win32con.MF_SEPARATOR, 1027, "bar")
+                    AppendMenu( menu, win32con.MF_STRING, 1026, "Exit iOwl.net")
+                else:
+                    # we are running. Check state of iOwl.net and display according menu-options.
+                    if pManager.manager.GetProxyInterface().GetStatus()==0:
+                        # not recording
+                        AppendMenu( menu, win32con.MF_STRING, 1023, "Activate")
+                    else:
+                        # recording
+                        AppendMenu( menu, win32con.MF_STRING, 1024, "De-Activate")
+                        
+                    AppendMenu( menu, win32con.MF_STRING, 1025, "Show iOwl.net")
+                    AppendMenu( menu, win32con.MF_STRING, 1027, "Hide menu")
+                    AppendMenu( menu, win32con.MF_SEPARATOR, 1027, "bar")
+                    AppendMenu( menu, win32con.MF_STRING, 1026, "Exit iOwl.net")
+
                 pos = GetCursorPos()
                 TrackPopupMenu(menu, win32con.TPM_LEFTALIGN, pos[0], pos[1], 0, self.hwnd, None)
             return 1
@@ -160,11 +185,13 @@ if sys.platform[:3] == 'win':
             if id == 1023:
                 # activate
                 pManager.manager.GetProxyInterface().SetParam('recording','1')
-                # XXX - Update trayicon to active
+                # Update trayicon to active
+                self.SetIcon(1)
             elif id == 1024:
-                # activate
+                # inactivate
                 pManager.manager.GetProxyInterface().SetParam('recording','0')
-                # XXX - Update trayicon to inactive
+                # Update trayicon to inactive
+                self.SetIcon(0)
             elif id == 1025:
                 # Open Browser pointing to "http://my.iowl.net"
                 ShellExecute(0, "open", "http://my.iowl.net", None, None, win32con.SW_SHOWNORMAL);
@@ -179,12 +206,32 @@ if sys.platform[:3] == 'win':
                 # do nothing, just a workaround for broken popup-menu
                 pass
 
-
         def OnQueryEndSession(self, hwnd, msg, wparam, lparam):
             # Shutdown iOwl
             StopiOwl()
             return 1
-		
+
+        def SetIcon(self, bState):
+            """ Set trayicon
+
+            XXX Just modifying the icon should do the job. Ne need for completely deleting the icon from the taskbar.
+
+            """
+
+            # remove old icon
+            nid = (self.hwnd, 0)
+            Shell_NotifyIcon(NIM_DELETE, nid)
+            if bState==0:
+                # inactive
+                flags = NIF_ICON | NIF_MESSAGE | NIF_TIP
+                nid = (self.hwnd, 0, flags, win32con.WM_USER+20, self.hicon_inact, "iOwl.net")
+                Shell_NotifyIcon(NIM_ADD, nid)
+            else:
+                # active
+                flags = NIF_ICON | NIF_MESSAGE | NIF_TIP
+                nid = (self.hwnd, 0, flags, win32con.WM_USER+20, self.hicon_act, "iOwl.net")
+                Shell_NotifyIcon(NIM_ADD, nid)
+
 
 def usage():
     print("Usage: python iowl.py -c configfile")
@@ -196,11 +243,13 @@ def winstart():
     Create a trayicon with basic iOwl commands    
     """
     
-    # start iOwl in new thread
-    thread.start_new(StartiOwl, ())
-
     # create trayicon
     tray = TrayIcon()
+
+    # start iOwl in new thread
+    thread.start_new(StartiOwl, (tray,))
+
+    # message loop
     PumpMessages()
 
 
@@ -211,7 +260,7 @@ def StopiOwl():
 
 def unixstart():
     """Start iOwl on unix platform"""
-    StartiOwl()
+    StartiOwl(None)
 
 
 def main():
@@ -244,7 +293,11 @@ def main():
         # start console-based
         unixstart()
 
-def StartiOwl():
+def StartiOwl(tray):
+    if tray!=None:
+        # pManager needs the trayicon to update it...
+        pManager.manager.SetTray(tray)
+        
     # start iOwl.net
     try:
         pManager.manager.StartOwl()
