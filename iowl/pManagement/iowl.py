@@ -1,9 +1,12 @@
 #!/usr/local/bin/python
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: iowl.py,v $
+Revision 1.4  2001/04/22 16:20:47  i10614
+Implemented changes for Python 2.1. Dont run with older versions of python\!
+
 Revision 1.3  2001/04/22 13:26:10  i10614
 modified starting to enable codefork depending on platform
 
@@ -68,7 +71,6 @@ import sys
 import pManager
 import traceback
 import socket
-import Tkinter
 import thread
 
 def usage():

@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cDOM.py,v $
+Revision 1.3  2001/04/22 16:20:47  i10614
+Implemented changes for Python 2.1. Dont run with older versions of python\!
+
 Revision 1.2  2001/04/14 15:03:11  i10614
 added GetElementsByName
 
@@ -243,11 +246,14 @@ class cDOM:
         return -- created element
 
         """
-        newel = xml.dom.minidom.Document.createElement(sName)
+        # dummy = xml.dom.minidom.Document()
+        newel = xml.dom.minidom.Document().createElement(sName)
+        # newel = dummy.createElement(sName)
         for key in dAttrs.keys():
             newel.setAttribute(key, dAttrs[key])
 
-        textel = xml.dom.minidom.Document.createTextNode(sText)
+        textel = xml.dom.minidom.Document().createTextNode(sText)
+        # textel = dummy.createTextNode(sText)
         newel.appendChild(textel)
 
         return newel
@@ -263,7 +269,7 @@ class cDOM:
         return -- created element
 
         """
-        newel = xml.dom.minidom.Document.createElement(sName)
+        newel = xml.dom.minidom.Document().createElement(sName)
         for key in dAttrs.keys():
             newel.setAttribute(key, dAttrs[key])
 

@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.9 $"
+__version__ = "$Revision: 1.10 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.10  2001/04/22 16:20:48  i10614
+Implemented changes for Python 2.1. Dont run with older versions of python\!
+
 Revision 1.9  2001/04/22 13:28:50  i10614
 added http-headers to prevent caching of iOwl-pages
 
@@ -99,6 +102,8 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
 
     def handle(self):
         """Get called by cProxyCore for each request"""
+
+        pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Handle()')
 
         try:
             # Parse request

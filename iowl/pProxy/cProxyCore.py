@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cProxyCore.py,v $
+Revision 1.4  2001/04/22 16:20:48  i10614
+Implemented changes for Python 2.1. Dont run with older versions of python\!
+
 Revision 1.3  2001/03/27 14:09:11  i10614
 added functionality to specify address proxy listens at in configfile
 
@@ -25,6 +28,14 @@ changed shutdown-handling. Now accepts Ctrl-c for a clean shutdown.
 import cProxyHandler
 import SocketServer
 import pManager
+
+
+# XXX Use own ThreadingTCPServer - Serious bug in Python 2.1,
+# --> http://sourceforge.net/tracker/index.php?func=detail&aid=417845&group_id=5470&atid=105470
+class MyThreadingTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+    def close_request(self, request):
+        pass
+
 
 class cProxyCore:
     """Contains the core functionality of pProxy
@@ -99,10 +110,12 @@ class cProxyCore:
         """
 
         # create Server, pass cProxyHandler
-        self.Server = SocketServer.ThreadingTCPServer((self.sListenAt, self.iProxyPort), cProxyHandler.cProxyHandler)
+        # self.Server = SocketServer.ThreadingTCPServer((self.sListenAt, self.iProxyPort), cProxyHandler.cProxyHandler)
 
+        # XXX Use own ThreadingTCPServer - Serious bug in Python 2.1,
+        # --> http://sourceforge.net/tracker/index.php?func=detail&aid=417845&group_id=5470&atid=105470
+        self.Server = MyThreadingTCPServer((self.sListenAt, self.iProxyPort), cProxyHandler.cProxyHandler)
         pManager.manager.DebugStr('pProxyCore '+ __version__ +': Listening at '+self.sListenAt+'.')
-
         # start Server
         self.Server.serve_forever()
 
