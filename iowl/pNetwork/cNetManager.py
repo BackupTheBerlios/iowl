@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.11 $"
+__version__ = "$Revision: 1.12 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.12  2001/05/07 07:40:17  i10614
+added iow.net/entry.pl functionality
+
 Revision 1.11  2001/04/22 13:31:39  i10614
 bugfix - entryIP was not initialized
 
@@ -79,6 +82,8 @@ import socket
 import sys
 import traceback
 import cNetPackage
+import urllib
+import thread
 
 
 class cNetManager:
@@ -102,7 +107,11 @@ class cNetManager:
         self.sProtocol = "0.2"
 
         # name for owlfile
-        self.sOwlFilename="owls.txt"
+        self.sOwlFilename = "owls.txt"
+
+        # url for owls
+        self.sOwlUrl = "http://www.iowl.net/entry.pl"
+        self.iMinOwls = 10
 
         # entryowl
         self.EntryIP = ''
@@ -180,6 +189,10 @@ class cNetManager:
 
         # validate list of owls
         self.cOwlManager.ValidateOwls()
+
+        # do i need to look up more owls at website?
+        if self.cOwlManager.GetNumNeighbours() < self.iMinOwls:
+            thread.start_new_thread(self.GetWebOwls, ())
 
         # determine own IP adress
         tOwl = self.cOwlManager.GetSingleOwl()
@@ -614,18 +627,43 @@ class cNetManager:
             try:
                 sOwnIP = socket.gethostbyname(socket.gethostname())
             except:
-                # Uh-oh. Cant determine own IP. Wait a few seconds
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not execute "gethostbyname()". Trying again.')
-                time.sleep(10)
-                try:
-                    # try again. if it fails again, shut down :-(
-                    sOwnIP = socket.gethostbyname(socket.gethostname())
-                except:
-                    pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not determine own IP!')
-                    raise socket.error
-
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not determine own IP!')
+                raise socket.error
 
         return sOwnIP
+
+
+
+    def GetWebOwls(self):
+        """Connect to url and get a csv of owls
+
+        List is of format
+        ip,ip,ip,ip...
+        and does not contain ports -> Use default port.
+
+        """
+
+        try:
+            # get list from url
+            sList = urllib.urlopen(self.sOwlUrl).read()
+            lOwls = sList.split(",")
+            # create socket
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            for owl in lOwls:
+                try:
+                    s.connect((owl, int(self.cNetServer.GetListenPort())))
+                    s.close()
+                except:
+                    pManager.manager.DebugStr('cNetManager '+ __version__ +': Discarding IP %s' %(owl, ))
+                    continue
+
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Adding IP %s' %(owl, ))
+                self.cOwlManager.AddOwl((owl, self.cNetServer.GetListenPort()))
+
+        except:
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not connect to website.')
+
+
 
 
 
