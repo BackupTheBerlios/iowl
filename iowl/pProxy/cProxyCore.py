@@ -1,7 +1,12 @@
-__version__ = "$Revision: 1.7 $"
+__version__ = "$Revision: 1.8 $"
 
 """
 $Log: cProxyCore.py,v $
+Revision 1.8  2002/02/18 11:31:16  Saruman
+Fixed bug #102:
+SystemExit exception no longer dumps irritating messages
+to stdout.
+
 Revision 1.7  2002/02/11 15:14:39  Saruman
 prevent "address in use" - error for proxyport (like AH did for netserver)
 
@@ -37,6 +42,33 @@ changed shutdown-handling. Now accepts Ctrl-c for a clean shutdown.
 import cProxyHandler
 import SocketServer
 import pManager
+import sys
+import exceptions
+
+class MyThreadingTCPServer(SocketServer.ThreadingTCPServer):
+    """Subclass standard ThreadingTCPServer to override handle_error()"""
+
+    def handle_error(self, request, client_address):
+        """Catch and ignore SystemExit Exception.
+
+        SystemExit gets raised everytime a thread is exited before a request
+        is finished (e.g. trying to connect to unresolvable domains). To prevent
+        these Exceptions from beeing dumped to stderr by Socketserver, catch them
+        here and ignore them.
+        
+        """
+
+        # get exception type and value
+        type, value = sys.exc_info()[:2]
+        # ignore SystemExit
+        if (type == exceptions.SystemExit):
+            # do nothing
+            pass
+        else:
+            # call superclass' handle_error
+            SocketServer.ThreadingTCPServer.handler_error(request, client_adress)
+
+
 
 
 class cProxyCore:
@@ -112,7 +144,8 @@ class cProxyCore:
         """
 
         # create Server, pass cProxyHandler
-        self.Server = SocketServer.ThreadingTCPServer((self.sListenAt, self.iProxyPort), cProxyHandler.cProxyHandler)
+        # self.Server = SocketServer.ThreadingTCPServer((self.sListenAt, self.iProxyPort), cProxyHandler.cProxyHandler)
+        self.Server = MyThreadingTCPServer((self.sListenAt, self.iProxyPort), cProxyHandler.cProxyHandler)
         # prevent "address in use"-error
         self.Server.allow_reuse_address = 1
         pManager.manager.DebugStr('pProxyCore '+ __version__ +': Listening at '+self.sListenAt+'.', 3)
