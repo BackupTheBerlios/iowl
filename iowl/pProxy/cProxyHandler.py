@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.25 $"
+__version__ = "$Revision: 1.26 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.26  2002/01/30 10:41:11  Saruman
+Again improved explicit click detection. Tried to improve title extraction from html-files.
+
 Revision 1.25  2002/01/29 20:40:21  Saruman
 Updated inline docu. Changed behaviour of title extraction - Now only try to find
 title in html-files.
@@ -129,26 +132,14 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
     inherits from StreamRequestHandler
     implements:
         - handle()-function.
-        - __init__()-function
 
     """
 
-    def __init__(self, request, client_address, server):
-        """this is just the standard __init__() from
-        BaseRequestHandler only thing added is a except-clause
-        to get rid of these annoying socket-errors that only occur
-        under win32...
-
-        """
-
-        try:
-            SocketServer.StreamRequestHandler.__init__(self, request, client_address, server)
-        except socket.error:
-            pass
-
-
     def handle(self):
         """Get called by cProxyCore for each request"""
+
+        # default: implicit click
+        self.m_bIsExplicit = 0
 
         try:
             # Parse request
@@ -158,7 +149,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             if self.IsCommand(host):
                 # pass request to pGuiInterface
                 self.HandleCommand()
-                # close socket
+                # command finished. close socket
                 self.connection.close()
                 return
 
@@ -194,11 +185,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
 
         # finished request
         # Now pass click to pClickstreamINterface, if it is an explicit one
-
-        # check if this was an explicit click
-        bIsExplicit = self.IsExplicit()
-
-        if bIsExplicit:
+        if self.m_bIsExplicit:
             # Add Click to Clickstream
             ClickstreamInterface = pManager.manager.GetClickstreamInterface()
             pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click. Title: '+str(self.ClickTitle)+' Status: '+str(self.ClickStatus), 3)
@@ -363,6 +350,8 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         # response header should be in first line!
         response = server.readline()
 
+        pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Got response: '+str(response), 5)
+
         # split response
         fields = string.split(response)
         version = fields[0]
@@ -373,6 +362,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         self.ClickStatus = string.strip(status)
 
         dHeaders = self.ParseHeaders(server)
+        pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Got response headers: '+ self.JoinHeaders(dHeaders), 5)
 
         # store content-type for Clickstream:
         self.ClickContent = ''
@@ -381,6 +371,9 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         else:
             # Assume text/plain
             self.ClickContent = 'text/plain'
+
+        # Now check for explicit click. (Need ClickStatus and content-type!)
+        self.m_bIsExplicit = self.IsExplicit()
 
         # pass response to client
         try:
@@ -391,12 +384,12 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             # XXX Title Extraction is an EVIL HACK - Remove as soon as
             # possible and find a proper solution!
             # only look for title in html files
-            if self.ClickContent == 'text/html':
-                bChecked = 0
-            else:
+            if string.find(self.ClickContent, 'text/html') < 0:
                 bChecked = 1
+            else:
+                bChecked = 0
 
-            iBufferSize = 1024
+            iBufferSize = 2048
             iCount = 0;
             # transfer actual document by chunks of iBufferSize
             while 1:
@@ -521,14 +514,16 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             # do not record any clicks!
             return 0
 
-        if self.ClickContent != 'text/html':
+        # validate content
+        if string.find(self.ClickContent, 'text/html') < 0:
             # currently only type "text/html" is allowed!
-            return 0
+            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Skipping Click: Content is '+self.ClickContent+', should contain text/html', 4)
+            return
 
         # dont record invalid or temporary urls
         if self.ClickStatus.startswith('3') or self.ClickStatus.startswith('4') or self.ClickStatus.startswith('5'):
             pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Skipping Click (Status: '+str(self.ClickStatus)+')', 4)
-            return 0
+            return
 
         # Get cProxyInterface
         cProxyInterface = pManager.manager.GetProxyInterface()
