@@ -1,9 +1,12 @@
 #!/usr/local/bin/python
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: iowl.py,v $
+Revision 1.3  2001/04/22 13:26:10  i10614
+modified starting to enable codefork depending on platform
+
 Revision 1.2  2001/04/16 13:06:21  i10614
 experimental GUI added
 
@@ -72,16 +75,34 @@ def usage():
     print("Usage: python iowl.py -c configfile")
 
 
-def DisplayGui():
+def winstart():
+    """Start iOwl on win32
+
+    Needs a minimal gui to register for WM_DELETE_WINDOW
+    to have a clean shutdown
+    """
+
+    # start iOwl in new thread
+    thread.start_new(StartiOwl, ())
+    # build minimal gui
     root = Tkinter.Tk()
     root.title("iOwl.net")
+    # register window to catch shutdown...
     root.protocol('WM_DELETE_WINDOW', StopiOwl)
-    # frame = Tkinter.Frame()
-    # frame.pack()
-    Tkinter.Label(root, text="Intelligent Owl Network").pack(side=Tkinter.TOP)
-    Tkinter.Button(root, text="start iOwl", command=Start).pack(side=Tkinter.LEFT)
-    Tkinter.Button(root, text="stop iOwl", command=StopiOwl).pack(side=Tkinter.RIGHT)
+    # make window invisible
+    root.withdraw()
+    # start gui...
     root.mainloop()
+
+
+def StopiOwl():
+    """Called when message 'WM_DELETE_WINDOW' arrives"""
+    pManager.manager.ShutDown()
+
+
+def unixstart():
+    """Start iOwl on unix platform"""
+    StartiOwl()
 
 
 def main():
@@ -106,12 +127,16 @@ def main():
     # modul pManager
     pManager.manager = pManager.cManager(configfile)
 
-    # start gui
-    DisplayGui()
-    # StartiOwl()
+    # start, depending on os
+    if sys.platform[:3] == 'win':
+        # windows...
+        # winstart()
+        # XXX For now, just start like unix...
+        unixstart()
 
-def Start():
-    thread.start_new(StartiOwl, ())
+    else:
+        # start console-based
+        unixstart()
 
 def StartiOwl():
     # start iOwl.net
@@ -144,8 +169,6 @@ def StartiOwl():
         pManager.manager.DebugStr('pManager '+ __version__ +': Now shutting down.')
         pManager.manager.ShutDown()
 
-def StopiOwl():
-    pManager.manager.ShutDown()
 
 
 

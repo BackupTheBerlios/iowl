@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.7 $"
+__version__ = "$Revision: 1.8 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.8  2001/04/22 13:26:10  i10614
+modified starting to enable codefork depending on platform
+
 Revision 1.7  2001/04/16 13:06:21  i10614
 experimental GUI added
 
@@ -405,10 +408,10 @@ class cManager:
         self.intfProxy.ShutDown()
 
         # close logfile
-        self.LogFileHandle.close()
-
-        # TEST
-        time.sleep(5)
+        try:
+            self.LogFileHandle.close()
+        except:
+            pass
 
         # exit
         sys.exit()
@@ -446,7 +449,7 @@ class cManager:
         self.iDebugLevel = iLevel
 
         # log change
-        self.DebugStr('pManager '+ __version__ +': Changed Debug-level to ' + str(iLevel) + '.')
+        # self.DebugStr('pManager '+ __version__ +': Changed Debug-level to ' + str(iLevel) + '.')
 
 
     def RegisterWatchdog(self, function, interval):
