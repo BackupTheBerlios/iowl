@@ -1,8 +1,12 @@
 
-__version__ = "$Revision: 1.18 $"
+__version__ = "$Revision: 1.19 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.19  2002/02/11 16:16:22  Saruman
+Fixed bug when validating cached owls.
+Now should be able to validate all cached owls, not just the first.
+
 Revision 1.18  2002/02/11 15:12:38  Saruman
 Major network changes.
 Network protocol now 0.3, incompatible to older versions!
@@ -524,12 +528,12 @@ class cOwlManager:
 
         """
 
-        # create socket
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
         for owl in self.lKnownOwls:
             try:
+                # create socket
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.connect((owl.GetIP(), int(owl.GetPort())))
+                pManager.manager.DebugStr('cOwlManager '+ __version__ +': validated owl %s:%s.' %(str(owl.GetIP()), str(owl.GetPort())), 3)
                 s.close()
             except:
                 pManager.manager.DebugStr('cOwlManager '+ __version__ +': Removing unreachable owl %s:%s.' %(str(owl.GetIP()), str(owl.GetPort())), 3)
