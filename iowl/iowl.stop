@@ -12,7 +12,6 @@ ARGUMENTS="pManagement/iowl.py"
 IOWLPS=`ps U $UID | grep -e "$PYTHON $IOWL_DIR/$ARGUMENTS" | head -1 | tail -1`
 PROG=`echo "$IOWLPS" | cut -c27-82`
 IOWLPID=`echo "$IOWLPS" | cut -c-5`
-echo $PROG
 
 # if running stop - if not do nothing
 case "$PROG" in
