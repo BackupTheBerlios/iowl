@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.11 $"
+__version__ = "$Revision: 1.12 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.12  2001/05/07 07:39:36  i10614
+added mutex for neighbour-handling
+
 Revision 1.11  2001/04/22 18:55:40  i10614
 bugfix for validating neighbourowls
 
@@ -128,6 +131,9 @@ class cOwlManager:
         # time requests are valid - default 5 minutes
         self.iRequestLifeTime = 300
 
+        # mutex
+        self.OwlLock = thread.allocate_lock()
+
 
     def SetNumNeighbours(self, neighbours):
         """Set number of neighbour owls"""
@@ -164,10 +170,15 @@ class cOwlManager:
 
         """
 
+        # Acquire Lock
+        self.OwlLock.acquire()
+
         # look if owl is kown already
         for owl in self.lKnownOwls:
             if (str(owl.IP) == str(tOrig[0])) and (str(owl.iPort) == str(tOrig[1])):
                 # already there -> return old owl
+                # release Lock
+                self.OwlLock.release()
                 return owl
 
         # okay, this is a new owl.
@@ -175,20 +186,29 @@ class cOwlManager:
 
         # Add to list and return new owl
         self.lKnownOwls.append(newOwl)
+        # release Lock
+        self.OwlLock.release()
         return newOwl
 
 
     def DeleteOwl(self, lOwlList, tOwl):
         """Delete an owl from lOwlList"""
 
+        # Acquire Lock
+        self.OwlLock.acquire()
+
         # look for owl
         for owl in lOwlList:
             if str(owl.IP) == str(tOwl[0]) and str(owl.iPort) == str(tOwl[1]):
                 # found! Now delete it
                 lOwlList.remove(owl)
+                # release Lock
+                self.OwlLock.release()
                 return
 
         # Uh-oh. Trying to delete non-existing owl?
+        # release Lock
+        self.OwlLock.release()
         return
 
 
@@ -500,11 +520,24 @@ class cOwlManager:
     def GetSingleOwl(self):
         """return tuple containing IP and Port of one owl"""
 
+        # acquire Lock
+        self.OwlLock.acquire()
         if len(self.lKnownOwls) > 0:
             owl = self.lKnownOwls[0]
+            # release Lock
+            self.OwlLock.release()
             return (owl.GetIP(), owl.GetPort())
         else:
+            # release Lock
+            self.OwlLock.release()
             return ('0.0.0.0', '0')
+
+
+    def GetNumNeighbours(self):
+        """return number of known neighbourowls"""
+        return len(self.lKnownOwls)
+
+
 
 
 
