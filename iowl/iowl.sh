@@ -96,8 +96,13 @@ network () {
 	proxy=`netstat -n | grep -e 3228 | tail -1 | cut -b -10`
 	iowl=`netstat -n | grep -e 2828 | tail -1 | cut -b -10`
 	# are there open ports?
-	if [ "$proxy" "$iowl" ]; then
-			echo "There are open ports! Wait a short time and to start again."
+	if [ -n "$proxy"  ]; then
+			echo "There are open ports for iOwl.net-Proxy! Wait a short time and to start again."
+			exit 1;
+	fi
+	
+	if [ -n "$iowl" ]; then
+			echo "There are open ports for iOwl.net-Recommendation! Wait a short time and to start again."
 			exit 1;
 	fi
 }
