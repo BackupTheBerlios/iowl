@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.22 $"
+__version__ = "$Revision: 1.23 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.23  2002/02/22 14:48:33  Saruman
+added thread-id to logmessages.
+
 Revision 1.22  2002/02/19 15:35:14  Saruman
 Fixed newline bug (#128)
 
@@ -215,7 +218,7 @@ class cManager:
 
         If iLevel > current debuglevel, message is ignored.
 
-        Complete message with a timestamp prior to printing.
+        Complete message with a timestamp and thread id prior to printing.
 
         iLevel     -- integer representing importance of message. 0 -> system critical, 5 -> unimportant
         sDebugInfo -- string containing message
@@ -233,6 +236,11 @@ class cManager:
 
         # Build timestamp
         message = time.strftime('%d.%m.%y %H:%M:%S', time.localtime(time.time()))
+
+        # get current thread id
+        thread_id = thread.get_ident()
+        message = message + ' Td.: '+str(thread_id)
+
         message = message + ' -- '
         message = message + sDebugInfo
 
