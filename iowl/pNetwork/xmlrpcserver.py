@@ -1,6 +1,6 @@
 #
 # XML-RPC SERVER
-# $Id: xmlrpcserver.py,v 1.2 2001/04/09 12:22:16 i10614 Exp $
+# $Id: xmlrpcserver.py,v 1.3 2001/04/14 15:01:15 i10614 Exp $
 #
 # a simple XML-RPC server for Python
 #
@@ -32,7 +32,6 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         """
         pass
 
-# class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 class RequestHandler(MyHandler):
 
     def do_POST(self):
@@ -74,7 +73,7 @@ class RequestHandler(MyHandler):
 
     def call(self, method, params):
 	# override this method to implement RPC methods
-	# print "CALL", method, params
+	print "CALL", method, params
 	return params
 
 if __name__ == '__main__':
