@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.16 $"
+__version__ = "$Revision: 1.17 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.17  2002/02/19 18:53:57  aharth
+tried to unify UI
+
 Revision 1.16  2002/02/13 10:47:34  Saruman
 added statistics gui
 
@@ -89,6 +92,7 @@ import cLogfileGrabber
 import cConfigureGrabber
 import cRulesGrabber
 import cStatsDataGrabber
+import re
 
 
 class cGuiRequestHandler:
@@ -123,9 +127,10 @@ class cGuiRequestHandler:
         # set default filenames
         self.cHelpDataGrabber.SetHelpFileName('data/ui/help.ht')
         self.cAboutDataGrabber.SetAboutFileName('data/ui/about.ht')
-        self.sActiveFilename = 'data/ui/interfaceact.ht'
-        self.sInactiveFilename = 'data/ui/interfaceinact.ht'
+        self.sBeginFilename = 'data/ui/interfaceheader.ht'
         self.sEndFilename = 'data/ui/interfacefooter.ht'
+        self.sPreviousCommand = 'showhistory'
+        self.dPreviousParams = None
 
 
     def SetParam(self, sOption, sValue):
@@ -143,12 +148,88 @@ class cGuiRequestHandler:
             self.cHelpDataGrabber.SetHelpFileName(str(sValue))
         elif sOption == 'aboutpage':
             self.cAboutDataGrabber.SetAboutFileName(str(sValue))
-        elif sOption == 'activepage':
-            self.sActiveFilename = str(sValue)
-        elif sOption == 'inactivepage':
-            self.sInactiveFilename = str(sValue)
+        elif sOption == 'beginpage':
+            self.sBeginFilename = str(sValue)
         elif sOption == 'endpage':
             self.sEndFilename = str(sValue)
+
+
+    def save_command(self, sCommand, dParams):
+        self.sPreviousCommand = sCommand
+        self.dPreviousParams = dParams
+
+
+    def execute_command(self, sCommand, dParams):
+        # execute command
+        if sCommand == 'showhelp':
+            self.save_command(sCommand, dParams)
+            # return help page
+            return self.cHelpDataGrabber.GetHtml(dParams)
+        elif sCommand == 'showabout':
+            self.save_command(sCommand, dParams)
+            # return about page
+            return self.cAboutDataGrabber.GetHtml(dParams)
+        elif sCommand == 'showhistory':
+            self.save_command(sCommand, dParams)
+            # return history page
+            # --> return default page
+            return self.cDefaultDataGrabber.GetHtml(dParams)
+        elif sCommand == 'showlog':
+            self.save_command(sCommand, dParams)
+            # return logfile page
+            return self.cLogfileGrabber.GetHtml(dParams)
+        elif sCommand == 'showconfig':
+            self.save_command(sCommand, dParams)
+            # return configuration page
+            return self.cConfigureGrabber.GetHtml(dParams)
+        elif sCommand == 'singlerecommendation':
+            self.save_command(sCommand, dParams)
+            # return single recommendation for url stored in dParams
+            return self.cSingleRecommendationDataGrabber.GetHtml(dParams)
+        elif sCommand == 'sessionrecommendation':
+            self.save_command(sCommand, dParams)
+            # return recommendations for current session
+            return self.cSessionRecommendationDataGrabber.GetHtml(dParams)
+        elif sCommand == 'longtermrecommendation':
+            self.save_command(sCommand, dParams)
+            # return all-time recommendations
+            return self.cLongtermRecommendationDataGrabber.GetHtml(dParams)
+        elif sCommand == 'getrecommendations':
+            self.save_command(sCommand, dParams)
+            # return single recommendation for url stored in dParams
+            return self.cGetRecommendationsDataGrabber.GetHtml(dParams)
+        elif sCommand == 'activate':
+            # activate clickstream recording
+            pManager.manager.UpdateConfig('pProxy','recording','1')
+            return self.execute_command(self.sPreviousCommand, self.dPreviousParams)
+            # return mainpage
+        elif sCommand == 'deactivate':
+            # deactivate clickstream recording
+            pManager.manager.UpdateConfig('pProxy','recording','0')
+            # return mainpage
+            return self.execute_command(self.sPreviousCommand, self.dPreviousParams)
+        elif sCommand == 'remove':
+            # remove url from clickstream
+            # get clickstreaminterface
+            cs = pManager.manager.GetClickstreamInterface()
+            # remove url from clickstream
+            cs.RemoveUrl(dParams['sUrl'])
+            return self.cDefaultDataGrabber.GetHtml(dParams)
+        elif sCommand == 'updateconfig':
+            self.save_command(sCommand, dParams)
+            # update configuration
+            pManager.manager.UpdateConfig(dParams['section'], dParams['option'], dParams['value'])
+            # return updated config dialog
+            return self.cConfigureGrabber.GetHtml(dParams)
+        elif sCommand == 'showrules':
+            self.save_command(sCommand, dParams)
+            return self.cRulesGrabber.GetHtml(dParams)
+        elif sCommand == 'showstats':
+            self.save_command(sCommand, dParams)
+            return self.cStatsDataGrabber.GetHtml(dParams)
+        elif sCommand == 'error':
+            # return error page
+            return self.cErrorDataGrabber.GetHtml(dParams)
 
 
 
@@ -191,67 +272,8 @@ class cGuiRequestHandler:
         # parse query
         sCommand, dParams = self.cCommandValidator.ValidateQuery(dQuery)
 
-        # execute command
-        if sCommand == 'showhelp':
-            # return help page
-            return self.cHelpDataGrabber.GetHtml(dParams)
-        elif sCommand == 'showabout':
-            # return about page
-            return self.cAboutDataGrabber.GetHtml(dParams)
-        elif sCommand == 'showhistory':
-            # return history page
-            # --> return default page
-            return self.cDefaultDataGrabber.GetHtml(dParams)
-        elif sCommand == 'showlog':
-            # return logfile page
-            return self.cLogfileGrabber.GetHtml(dParams)
-        elif sCommand == 'showconfig':
-            # return configuration page
-            return self.cConfigureGrabber.GetHtml(dParams)
-        elif sCommand == 'singlerecommendation':
-            # return single recommendation for url stored in dParams
-            return self.cSingleRecommendationDataGrabber.GetHtml(dParams)
-        elif sCommand == 'sessionrecommendation':
-            # return recommendations for current session
-            return self.cSessionRecommendationDataGrabber.GetHtml(dParams)
-        elif sCommand == 'longtermrecommendation':
-            # return all-time recommendations
-            return self.cLongtermRecommendationDataGrabber.GetHtml(dParams)
-        elif sCommand == 'getrecommendations':
-            # return single recommendation for url stored in dParams
-            return self.cGetRecommendationsDataGrabber.GetHtml(dParams)
-        elif sCommand == 'activate':
-            # activate clickstream recording
-            pManager.manager.UpdateConfig('pProxy','recording','1')
-            # return mainpage
-            return self.cDefaultDataGrabber.GetHtml(dParams)
-        elif sCommand == 'deactivate':
-            # deactivate clickstream recording
-            pManager.manager.UpdateConfig('pProxy','recording','0')
-            # return mainpage
-            return self.cDefaultDataGrabber.GetHtml(dParams)
-        elif sCommand == 'remove':
-            # remove url from clickstream
-            # get clickstreaminterface
-            cs = pManager.manager.GetClickstreamInterface()
-            # remove url from clickstream
-            cs.RemoveUrl(dParams['sUrl'])
-            return self.cDefaultDataGrabber.GetHtml(dParams)
-        elif sCommand == 'updateconfig':
-            # update configuration
-            pManager.manager.UpdateConfig(dParams['section'], dParams['option'], dParams['value'])
-            # return updated config dialog
-            return self.cConfigureGrabber.GetHtml(dParams)
-        elif sCommand == 'showrules':
-            return self.cRulesGrabber.GetHtml(dParams)
-        elif sCommand == 'showstats':
-            return self.cStatsDataGrabber.GetHtml(dParams)
-        elif sCommand == 'error':
-            # return error page
-            return self.cErrorDataGrabber.GetHtml(dParams)
-
-
-
+        return self.execute_command(sCommand, dParams)
+        
 
     def GetHeader(self, sTitle, sScript='', sFunction=''):
         """return header part for iOwl-pages
@@ -295,10 +317,20 @@ class cGuiRequestHandler:
         """Return first part of guipage with state == active """
 
         # load from disc
-        file = open(self.sActiveFilename, 'r')
+        file = open(self.sBeginFilename, 'r')
 
         # read activefile to string
         sContent = file.read()
+
+        # search and replace placeholders
+        prog = re.compile("\$IS_ACTIVE\$")
+        sTmp = prog.sub("Active", sContent)
+
+        prog = re.compile("\$DE_ACTIVATE_CMD\$")
+        sTmp2 = prog.sub("deactivate", sTmp)
+
+        prog = re.compile("\$RECORDING_CLICKSTREAM_MSG\$")
+        sContent = prog.sub("recording clickstream", sTmp2)
 
         return sContent
 
@@ -307,10 +339,20 @@ class cGuiRequestHandler:
         """Return first part of guipage with state == inactive """
 
         # load from disc
-        file = open(self.sInactiveFilename, 'r')
+        file = open(self.sBeginFilename, 'r')
 
         # read inactivefile to string
         sContent = file.read()
+
+        # search and replace placeholders
+        prog = re.compile("\$IS_ACTIVE\$")
+        sTmp = prog.sub("Inactive", sContent)
+
+        prog = re.compile("\$DE_ACTIVATE_CMD\$")
+        sTmp2 = prog.sub("activate", sTmp)
+
+        prog = re.compile("\$RECORDING_CLICKSTREAM_MSG\$")
+        sContent = prog.sub("not recording clickstream", sTmp2)
 
         return sContent
 

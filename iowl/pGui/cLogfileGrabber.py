@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cLogfileGrabber.py,v $
+Revision 1.2  2002/02/19 18:53:57  aharth
+tried to unify UI
+
 Revision 1.1  2001/07/15 10:13:43  i10614
 initial commit
 
@@ -57,7 +60,9 @@ class cLogfileGrabber:
             sPart1 = self.cGui.GetActivePage()
 
         # begin html
-        sContent = "<html><p><pre>"
+        sContent = "<h2>Logfile</h2>"
+
+        sContent = sContent + "<p><pre>"
 
         # load logfile from disc
         Logfile = open(pManager.manager.GetLogfilePath(), 'r')
@@ -77,7 +82,7 @@ class cLogfileGrabber:
                 sContent = sContent + lLines[linecounter]
 
         # end html
-        sContent = sContent + "</pre></p></html>"
+        sContent = sContent + "</pre></p>"
 
         # get end part
         sPart2 = self.cGui.GetEndPage()

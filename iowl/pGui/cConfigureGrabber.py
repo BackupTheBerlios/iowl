@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cConfigureGrabber.py,v $
+Revision 1.4  2002/02/19 18:53:57  aharth
+tried to unify UI
+
 Revision 1.3  2002/01/29 20:35:23  Saruman
 changed priority of debug output
 
@@ -52,8 +55,11 @@ class cConfigureGrabber:
             # get active page
             sPart1 = self.cGui.GetActivePage()
 
+        # header
+        sContent = '<h2>Configuration</h2>'
+
         # get content
-        sContent = self.ParseConfig()
+        sContent = sContent + self.ParseConfig()
 
         # get end part
         sPart2 = self.cGui.GetEndPage()
