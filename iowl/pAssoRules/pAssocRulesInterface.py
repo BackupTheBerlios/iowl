@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.9 $"
+__version__ = "$Revision: 1.10 $"
 
 """
 $Log: pAssocRulesInterface.py,v $
+Revision 1.10  2002/01/25 15:19:35  aharth
+fixed typo in cDOM that caused error message in pAssocRulesInterface
+
 Revision 1.9  2002/01/25 13:19:31  aharth
 added itemsets stuff
 
@@ -114,23 +117,6 @@ class pAssocRulesInterface:
 
         """
         self.AssocRules.ComputeRules(lSessions, iCount, self.sItemsetPathName)
-        try:
-            pass
-        except:
-            # unknown error. log and forget.
-            # get exception
-            print 'AssocRules Exception'
-            eType, eValue, eTraceback = sys.exc_info()
-
-            # build stacktrace string
-            tb = ''
-            for line in traceback.format_tb(eTraceback, 15):
-                tb = tb + line
-
-            pManager.manager.DebugStr('pAssocRules '+ __version__ +': Unhandled error in thread ComputeRules: Type: '+str(eType)+', value: '+str(eValue), 3)
-            pManager.manager.DebugStr('pAssocRules '+ __version__ +': Traceback:\n'+str(tb), 4)
-            pManager.manager.DebugStr('pAssocRules '+ __version__ +': Trying to continue...', 4)
-
         pManager.manager.DebugStr('pAssocRulesInterface '+ __version__ +': Finished Computing Rules.', 3)
         self.bGotRules = 1
 

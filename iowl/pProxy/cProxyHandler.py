@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.22 $"
+__version__ = "$Revision: 1.23 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.23  2002/01/25 15:19:35  aharth
+fixed typo in cDOM that caused error message in pAssocRulesInterface
+
 Revision 1.22  2001/08/12 21:23:59  i10614
 Catching "list index out of range"-exception in Handleresponse.
 
@@ -423,6 +426,10 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         iEnd = sLowData.find('</title>')
 
         sTitle = u''
+        print 'iStart = ' + str(iStart)
+        print 'iEnd = ' + str(iEnd)
+        print sData
+        
         if (iStart >= 0) and (iEnd > iStart):
             # okay, we have a complete title-tag
             sTitle = sData[iStart+len('<title>'):iEnd]

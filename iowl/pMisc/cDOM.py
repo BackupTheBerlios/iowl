@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: cDOM.py,v $
+Revision 1.6  2002/01/25 15:19:35  aharth
+fixed typo in cDOM that caused error message in pAssocRulesInterface
+
 Revision 1.5  2002/01/18 11:07:48  aharth
 Minor bugfixes
 
@@ -307,7 +310,7 @@ class cDOM:
         # now here are the elements with given name
         for el in lEls:
             sTagName, dAttr, sContent = self.GetElementContent(el, lAttr)
-            if content == null and sTagName == null:
+            if sContent == '' and sTagName == None:
                 skip
             if (sTagName == sName):
                 lContents.append(sContent)
