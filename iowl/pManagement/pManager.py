@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.20 $"
+__version__ = "$Revision: 1.21 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.21  2002/02/11 19:53:05  aharth
+modified build stuff
+
 Revision 1.20  2002/02/11 15:09:08  Saruman
 setting default value for own ip to 127.0.0.1
 
@@ -155,10 +158,10 @@ class cManager:
         """Constructor."""
 
         # version
-        self.iOwlVersion = 1.0
+        self.iOwlVersion = '1.0 alpha 4'
 
         # build number & date - update whenever an official release is built
-        self.sBuild = '14 2001-05-26'
+        self.sBuild = '$DATE you_got_this_from_cvs_or_something_is_broken $'
 
         # default logfile
         self.sLogFileName = "iowl.log"
