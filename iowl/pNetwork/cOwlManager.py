@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.8 $"
+__version__ = "$Revision: 1.9 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.9  2001/04/15 21:28:58  i10614
+Test: Not deleting owls involved in vicious circles
+
 Revision 1.8  2001/04/15 21:16:22  i10614
 fixed for recommendations and answers
 
@@ -212,15 +215,15 @@ class cOwlManager:
             pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Detected vicious circle.')
             # To prevent sending more requests to the owl causing the circle, delete originating owl from
             # KnownOwls (if it is there)
-            try:
+            #try:
                 # i need to get reference to neighbourowl object representing the originating owl.
                 # get value list from request dictionary (== get attributes of request)
-                reqAttributes = self.dRequests[cNetPackage.GetID()]
+            #    reqAttributes = self.dRequests[cNetPackage.GetID()]
                 # try to delete first element of list (should be a reference to a neighbourOwl) from KnownOwls.
                 # might not exist in list if i dont know that owl
-                self.lKnownOwls.remove(reqAttributes[self.SourceOwl])
-            except:
-                pass
+            #    self.lKnownOwls.remove(reqAttributes[self.SourceOwl])
+            #except:
+            #    pass
 
             return 0
 
@@ -287,16 +290,9 @@ class cOwlManager:
             # need a deep copy of list, not just reference...
             lNeighbours = self.lKnownOwls[:]
 
-        distri = []
-        for i in lNeighbours:
-            distri.append(str(i.IP) +':'+ str(i.iPort))
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Neigbours: '+str(distri)+'.')
-
         # remove originating owl from neighbours - dont want to send to creator of packet!
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Removing originator.')
         self.DeleteOwl(lNeighbours, cNetPackage.GetOriginator())
         # remove myself from neighbours - dont want to send to myself!
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Removing myself.')
         self.DeleteOwl(lNeighbours, (pManager.manager.GetOwnIP(), self.cNetManager.cNetServer.GetListenPort()))
 
         # now replace originator of netpackage with myself
@@ -305,7 +301,7 @@ class cOwlManager:
         distri = []
         for i in lNeighbours:
             distri.append(str(i.IP) +':'+ str(i.iPort))
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Neigbours: '+str(distri)+'.')
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Distributing to: '+str(distri)+'.')
 
         if len(lNeighbours) == 0:
             # empty list!
