@@ -1,8 +1,13 @@
 
-__version__ = "$Revision: 1.16 $"
+__version__ = "$Revision: 1.17 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.17  2001/08/10 18:35:59  i10614
+more debug output.
+added debuglevel to all messages.
+minor cleanups.
+
 Revision 1.16  2001/07/15 10:21:33  i10614
 added verbose debug output for different network version conflicts
 
@@ -183,8 +188,8 @@ class cOwlManager:
         """
 
         # Acquire Lock
-        # pManager.manager.DebugStr('cOwlManager '+ __version__ +': AddOwl - acquiring lock for '+ \
-        #     str(tOrig[0]) + ':' + str(tOrig[1]) +'.')
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': AddOwl - acquiring lock for '+ \
+                str(tOrig[0]) + ':' + str(tOrig[1]) +'.', 4)
         self.OwlLock.acquire()
 
         # look if owl is kown already
@@ -192,8 +197,8 @@ class cOwlManager:
             if (str(owl.IP) == str(tOrig[0])) and (str(owl.iPort) == str(tOrig[1])):
                 # already there -> return old owl
                 # release Lock
-                # pManager.manager.DebugStr('cOwlManager '+ __version__ +': AddOwl - releasing lock for '+ \
-                #     str(tOrig[0]) + ':' + str(tOrig[1]) +'.')
+                pManager.manager.DebugStr('cOwlManager '+ __version__ +': AddOwl - releasing lock for '+ \
+                     str(tOrig[0]) + ':' + str(tOrig[1]) +'.', 4)
                 self.OwlLock.release()
                 return owl
 
@@ -204,8 +209,8 @@ class cOwlManager:
         self.lKnownOwls.append(newOwl)
 
         # release Lock
-        # pManager.manager.DebugStr('cOwlManager '+ __version__ +': AddOwl - releasing lock for '+ \
-        #     str(tOrig[0]) + ':' + str(tOrig[1]) +'.')
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': AddOwl - releasing lock for '+ \
+             str(tOrig[0]) + ':' + str(tOrig[1]) +'.', 4)
         self.OwlLock.release()
 
         # return owl
@@ -216,8 +221,8 @@ class cOwlManager:
         """Delete an owl from lOwlList"""
 
         # Acquire Lock
-        # pManager.manager.DebugStr('cOwlManager '+ __version__ +': DeleteOwl - acquiring lock for '+ \
-        #     str(tOwl[0]) + ':' + str(tOwl[1]) +'.')
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': DeleteOwl - acquiring lock for '+ \
+            str(tOwl[0]) + ':' + str(tOwl[1]) +'.', 4)
         self.OwlLock.acquire()
 
         # look for owl
@@ -226,15 +231,15 @@ class cOwlManager:
                 # found! Now delete it
                 lOwlList.remove(owl)
                 # release Lock
-                # pManager.manager.DebugStr('cOwlManager '+ __version__ +': DeleteOwl - releasing lock for '+ \
-                #     str(tOwl[0]) + ':' + str(tOwl[1]) +'.')
+                pManager.manager.DebugStr('cOwlManager '+ __version__ +': DeleteOwl - releasing lock for '+ \
+                    str(tOwl[0]) + ':' + str(tOwl[1]) +'.', 4)
                 self.OwlLock.release()
                 return
 
         # Uh-oh. Trying to delete non-existing owl?
         # release Lock
-        # pManager.manager.DebugStr('cOwlManager '+ __version__ +': DeleteOwl - releasing lock for '+ \
-        #     str(tOwl[0]) + ':' + str(tOwl[1]) +'.')
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': DeleteOwl - releasing lock for '+ \
+            str(tOwl[0]) + ':' + str(tOwl[1]) +'.', 4)
         self.OwlLock.release()
         return
 
@@ -250,22 +255,20 @@ class cOwlManager:
         # check protocol version
         if cNetPackage.GetProtocolVersion() != self.cNetManager.sProtocol:
             # wrong protocol version. Log error, throw domObj away and continue operation
-            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Received NetPackage with different network version. Mine: '+str(self.cNetManager.sProtocol)+', other: '+str(cNetPackage.GetProtocolVersion()))
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Received NetPackage with different network version. Mine: '+str(self.cNetManager.sProtocol)+', other: '+str(cNetPackage.GetProtocolVersion()), 2)
             return 0
 
         # check type of domObj
         if cNetPackage.GetType() not in ('ping', 'request'):
             # unknown type. Log error, throw domObj away and continue operation
-            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Received unknown Dom type "'+cNetPackage.GetType()+'".')
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Received unknown Dom type "'+cNetPackage.GetType()+'".', 2)
             return 0
 
-        # check for circular structures. If id of request is already in
-        # request-list -> Throw away!
+        # check for circular structures. If id of request is already in request-list -> Throw away!
         if cNetPackage.GetID() in self.dRequests.keys():
             # Log error, throw domObj away and continue operation
-            # pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Detected vicious circle.')
-            # To prevent sending more requests to the owl causing the circle, delete originating owl from
-            # KnownOwls (if it is there)
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Detected vicious circle.', 3)
+            # To prevent sending more requests to the owl causing the circle, delete originating owl from known owls (if it is there)
             #try:
                 # i need to get reference to neighbourowl object representing the originating owl.
                 # get value list from request dictionary (== get attributes of request)
@@ -317,7 +320,7 @@ class cOwlManager:
 
         # if TTL reached zero -> dont distribute request any further
         if cNetPackage.GetTTL() <= 0:
-            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Request "'+str(cNetPackage.GetID())+'" reached TTL 0. No more distributing.')
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Request "'+str(cNetPackage.GetID())+'" reached TTL 0. No more distributing.', 3)
             # return okay cause cNetPackage is accepted regardless of ttl.
             # it just does not get distributed further.
             return 'okay'
@@ -353,12 +356,12 @@ class cOwlManager:
         distri = []
         for i in lNeighbours:
             distri.append(str(i.IP) +':'+ str(i.iPort))
-        # pManager.manager.DebugStr('cOwlManager '+ __version__ +': Distributing to: '+str(distri)+'.')
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Distributing to '+str(len(distri))+' owls.')
+
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Distributing to '+str(len(distri))+' owls.', 3)
 
         # if len(lNeighbours) == 0:
             # empty list!
-            # pManager.manager.DebugStr('cOwlManager '+ __version__ +': Cant Distribute. NeighbourList is empty.')
+            #  pManager.manager.DebugStr('cOwlManager '+ __version__ +': Cant Distribute. NeighbourList is empty.')
 
         # Get cDom-representation of cNetPackage
         domObj = cNetPackage.GetDOM()
@@ -371,7 +374,7 @@ class cOwlManager:
         if cNetPackage.GetType()=='ping':
             # call ping()
             for owl in lNeighbours:
-                # pManager.manager.DebugStr('cOwlManager '+ __version__ +': Sending Ping to '+str(owl.IP)+':'+str(owl.iPort)+'.')
+                pManager.manager.DebugStr('cOwlManager '+ __version__ +': Sending Ping to '+str(owl.IP)+':'+str(owl.iPort)+'.', 4)
                 # start new thread for each RPC
                 thread.start_new_thread(owl.Ping, (sObj,))
             return 'okay'
@@ -383,11 +386,11 @@ class cOwlManager:
                 thread.start_new_thread(owl.Request, (sObj,))
 
             # Pass request to own pRecommendation Interface except if it was generated by own owl
-            # pManager.manager.DebugStr('cOwlManager '+ __version__ +': request from %s:%s' %(str(OrigOwl.GetIP()), str(OrigOwl.GetPort())))
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': request from %s:%s' %(str(OrigOwl.GetIP()), str(OrigOwl.GetPort())), 4)
             if (OrigOwl.GetIP()!=pManager.manager.GetOwnIP()) or \
                (str(OrigOwl.GetPort())!=str(self.cNetManager.cNetServer.GetListenPort())):
                 # ok, request was not generated by myself.
-                pManager.manager.DebugStr('cOwlManager '+ __version__ +': Passing new request to own pRecommendation.')
+                pManager.manager.DebugStr('cOwlManager '+ __version__ +': Passing new request to own pRecommendation.', 3)
                 # Get Request element from domObj
                 elRequest = cNetPackage.GetPayload()
                 # get pRecommandationInterface from manager
@@ -419,13 +422,13 @@ class cOwlManager:
             # id no longer exists in requests table. Probably request expired or max
             # number of answers reached.
             # Throw away answer and continue operation
-            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received answer for non-existant request. Throwing away..')
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received answer for non-existant request. Throwing away..', 3)
             return
 
         # check type of domObj
         if cNetPackage.GetType() not in ('pong', 'answer'):
             # unknown type. Log error, throw domObj away and continue operation
-            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Received unknown Dom type "'+cNetPackage.GetType()+'" as Answer. Skipping...')
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Received unknown Dom type "'+cNetPackage.GetType()+'" as Answer. Skipping...', 3)
             return
 
         # look if request was created by myself
@@ -435,11 +438,11 @@ class cOwlManager:
             if cNetPackage.GetType() == 'pong':
                 # Pong info already extracted inside cNetManager.HandlePong().
                 # just throw away and continue
-                pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received Pong for myself.')
+                pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received Pong for myself.', 3)
                 return
             elif cNetPackage.GetType() == 'answer':
                 # Pass it to pRecommendationInterface
-                pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received Answer for myself. Passing on to pRecommendation.')
+                pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received Answer for myself. Passing on to pRecommendation.', 3)
                 # Get Answer element from cNetPackage
                 elAnswer = cNetPackage.GetPayload()
                 # Get recommendation interface from pManager.
@@ -447,7 +450,7 @@ class cOwlManager:
                 pRecIntf.SetAnswer(elAnswer, cNetPackage.GetID())
                 return
             else:
-                pManager.manager.DebugStr('cOwlManager '+ __version__ +': domType Error! Should never get here!')
+                pManager.manager.DebugStr('cOwlManager '+ __version__ +': domType Error! Should never get here!', 1)
                 return
 
 
@@ -472,7 +475,7 @@ class cOwlManager:
             thread.start_new_thread(origOwl.Answer, (sObj,))
             return
         else:
-            pManager.manager.DebugStr('cOwlManager '+ __version__ +': domType Error! Should never get here!')
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': domType Error! Should never get here!', 1)
             return
 
         # increment answer counter for request
@@ -483,7 +486,7 @@ class cOwlManager:
         if reqAttributes[self.iRecvdAnswers] > reqAttributes[self.iMaxAnswers]:
             # request reached max answer count.
             # delete it from request dictionary.
-            pManager.manager.DebugStr('cOwlManager '+ __version__ +': MaxAnswers reached for request "'+cNetPackage.GetID()+'". Deleting it from dictionary.')
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': MaxAnswers reached for request "'+cNetPackage.GetID()+'". Deleting it from dictionary.', 3)
             del self.dRequests[cNetPackage.GetID()]
 
 
@@ -523,8 +526,8 @@ class cOwlManager:
                 iNumDeleted = iNumDeleted + 1
 
         if iNumDeleted > 1:
-            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Cleaned Requeststable from expired entries. Deleted: '+str(iNumDeleted)+', remaining: '+str(len(self.dRequests.keys())))
-    
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Cleaned Requeststable from expired entries. Deleted: '+str(iNumDeleted)+', remaining: '+str(len(self.dRequests.keys())), 3)
+
         return
 
 
@@ -543,7 +546,7 @@ class cOwlManager:
                 s.connect((owl.GetIP(), int(owl.GetPort())))
                 s.close()
             except:
-                pManager.manager.DebugStr('cOwlManager '+ __version__ +': Removing unreachable owl %s:%s.' %(str(owl.GetIP()), str(owl.GetPort())))
+                pManager.manager.DebugStr('cOwlManager '+ __version__ +': Removing unreachable owl %s:%s.' %(str(owl.GetIP()), str(owl.GetPort())), 3)
                 self.DeleteOwl(self.lKnownOwls, (owl.GetIP(), owl.GetPort()))
 
 
