@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cDefaultDataGrabber.py,v $
+Revision 1.5  2001/03/28 21:26:11  i10614
+modified GUI
+
 Revision 1.4  2001/03/28 19:53:07  i10614
 replaced http://iowl with http://my.iowl.net
 
@@ -137,10 +140,6 @@ class cDefaultDataGrabber:
                 if iClickIndex > iMaxClicks:
                     # dont display too many clicks!
                     break
-
-
-        # add version and build
-        sContent = sContent + '<p align="right"><small>Version: %s, build %s</small></p>' % (pManager.manager.GetVersion(), pManager.manager.GetBuild())
 
         # Get second part of page
         sPart2 = self.cGui.GetEndPage()

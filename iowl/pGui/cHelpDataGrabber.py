@@ -1,9 +1,12 @@
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cHelpDataGrabber.py,v $
-Revision 1.1  2001/03/24 19:22:56  i10614
-Initial revision
+Revision 1.2  2001/03/28 21:26:11  i10614
+modified GUI
+
+Revision 1.1.1.1  2001/03/24 19:22:56  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.4  2001/02/25 12:32:42  mpopp
 *** empty log message ***
@@ -65,6 +68,9 @@ class cHelpDataGrabber:
             # owl is logging
             # get active page
             sPart1 = self.cGui.GetActivePage()
+
+        # add version and build
+        sContent = sContent + '<p align="right"><small>Version: %s, build %s</small></p>' % (pManager.manager.GetVersion(), pManager.manager.GetBuild())
 
        # Get second part of page
         sPart2 = self.cGui.GetEndPage()
