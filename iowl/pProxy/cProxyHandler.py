@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.29 $"
+__version__ = "$Revision: 1.30 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.30  2002/03/10 10:13:47  Saruman
+changed debug levels
+
 Revision 1.29  2002/02/20 11:41:00  Saruman
 Dont report unresolvable domains with "200 OK" :)
 
@@ -412,7 +415,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
                 # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Getting Chunk '+str(iCount))
                 data = server.read(iBufferSize)
                 if bChecked==0:
-                    pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Extracting Title.', 3)
+                    pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Extracting Title.', 5)
                     # need to look inside first buffer to determine if there is a <title></title> tag.
                     # Explicitly pass a copy of data! (Call by value)
 
@@ -532,12 +535,12 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         # validate content
         if string.find(self.ClickContent, 'text/html') < 0:
             # currently only type "text/html" is allowed!
-            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Skipping Click: Content is '+self.ClickContent+', should contain text/html', 4)
+            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Skipping Click: Content is '+self.ClickContent+', should contain text/html', 5)
             return
 
         # dont record invalid or temporary urls
         if self.ClickStatus.startswith('3') or self.ClickStatus.startswith('4') or self.ClickStatus.startswith('5'):
-            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Skipping Click (Status: '+str(self.ClickStatus)+')', 4)
+            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Skipping Click (Status: '+str(self.ClickStatus)+')', 5)
             return
 
         # Get cProxyInterface
