@@ -12,9 +12,11 @@ agent provides hints on interesting web sites, depending on your personal
 preferences and interests. The completely distributed peer-to-peer network
 architecture of iOwl.net guarantees personalized search results, ease of use
 and a maximum of privacy. Your data is only stored local on your machine.
-Nobody can browse your data. The idea: Your profile is part of a
-"non-local-database". Someone has similar rules but dont know such as
-google.com/linux. Your owl tells him this resource. Thats it!
+Nobody can browse your data. 
+The idea: 
+Your profile is part of a "non-local-database". Someone has similar rules 
+but dont know such as google.com/linux. Your owl tells him this resource. 
+Thats it!
 
 ###############################################################################
 2. INSATLLATION
