@@ -8,14 +8,14 @@
 <a href="http://my.iowl.net/command?action=showrules">Show Rules</a> |
 <a href="http://my.iowl.net/command?action=sessionrecommendation">Session Recommendation</a> |
 <a href="http://my.iowl.net/command?action=showconfig">Configuration</a> |
-<a href="http://my.iowl.net/command?action=showlog&inumlines=100">Show last logfile entries</a> |
+<a href="http://my.iowl.net/command?action=showlog&inumlines=100">Logfile</a> |
 <a href="http://my.iowl.net/command?action=showstats">Statistics</a>
 ]
 </p>
 <p>
 <a href="http://my.iowl.net/command?action=showhelp">Help</a> - 
-<a href="http://my.iowl.net/command?action=deactivate">Deactivate</a> -
-recording clickstream
+<a href="http://my.iowl.net/command?action=$DE_ACTIVATE_CMD$">$IS_ACTIVE$</a> -
+$RECORDING_CLICKSTREAM_MSG$
 </p>
 </div>
 <hr />
