@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.19 $"
+__version__ = "$Revision: 1.20 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.20  2002/02/13 10:46:22  Saruman
+introduced counters and functions for gathering network stats.
+
 Revision 1.19  2002/02/11 16:16:22  Saruman
 Fixed bug when validating cached owls.
 Now should be able to validate all cached owls, not just the first.
@@ -157,8 +160,14 @@ class cOwlManager:
         # time requests are valid - default 5 minutes
         self.iRequestLifeTime = 300
 
-        # mutex
+        # mutex for adding/removing owls
         self.OwlLock = thread.allocate_lock()
+
+        # total number of pongs received for myself
+        self.iNumPongsReceived = 0
+
+        # total number of answers received for myself
+        self.iNumAnswersReceived = 0
 
 
     def SetNumNeighbours(self, neighbours):
@@ -169,6 +178,16 @@ class cOwlManager:
     def SetMaxOwlsToKeep(self, maxOwls):
         """Set max number of owls in list of known owls"""
         self.iMaxOwlsToKeep = maxOwls
+
+
+    def GetNumPongsReceived(self):
+        """return total number of Pongs received"""
+        return self.iNumPongsReceived
+
+
+    def GetNumAnswersReceived(self):
+        """return total number of Answers received"""
+        return self.iNumAnswersReceived
 
 
     def SetRequestLifeTime(self, iTime):
@@ -412,13 +431,13 @@ class cOwlManager:
             # id no longer exists in requests table. Probably request expired or max
             # number of answers reached.
             # Throw away answer and continue operation
-            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received answer for non-existant request. Throwing away..', 3)
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received answer for non-existant request. Throwing away..', 2)
             return
 
         # check type of domObj
         if cNetPackage.GetType() not in ('pong', 'answer'):
             # unknown type. Log error, throw domObj away and continue operation
-            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Received unknown Dom type "'+cNetPackage.GetType()+'" as Answer. Skipping...', 3)
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Received unknown Dom type "'+cNetPackage.GetType()+'" as Answer. Skipping...', 2)
             return
 
         # look if request was created by myself
@@ -429,6 +448,8 @@ class cOwlManager:
                 # Pong info already extracted inside cNetManager.HandlePong().
                 # just throw away and continue
                 pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received Pong for myself.', 3)
+                # count Pong
+                self.iNumPongsReceived += 1
                 return
             elif cNetPackage.GetType() == 'answer':
                 # Pass it to pRecommendationInterface
@@ -438,6 +459,8 @@ class cOwlManager:
                 # Get recommendation interface from pManager.
                 pRecIntf = pManager.manager.GetRecommendationInterface()
                 pRecIntf.SetAnswer(elAnswer, cNetPackage.GetID())
+                # count Answer
+                self.iNumAnswersReceived += 1
                 return
             else:
                 pManager.manager.DebugStr('cOwlManager '+ __version__ +': domType Error! Should never get here!', 1)
@@ -541,9 +564,27 @@ class cOwlManager:
 
 
 
-    def GetNumNeighbours(self):
+    def GetNumKnownOwls(self):
         """return number of known neighbourowls"""
         return len(self.lKnownOwls)
+
+
+    def GetNumActiveRoutings(self):
+        """return number of active routing entries"""
+        # return len(self.dRequests.keys)
+        return len(self.dRequests)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

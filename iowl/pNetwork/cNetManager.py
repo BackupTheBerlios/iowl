@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.29 $"
+__version__ = "$Revision: 1.30 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.30  2002/02/13 10:46:22  Saruman
+introduced counters and functions for gathering network stats.
+
 Revision 1.29  2002/02/11 15:12:38  Saruman
 Major network changes.
 Network protocol now 0.3, incompatible to older versions!
@@ -242,6 +245,26 @@ class cNetManager:
         return self.sProtocol
 
 
+    def GetNumKnownOwls(self):
+        """return number of known neighbourowls"""
+        return self.cOwlManager.GetNumKnownOwls()
+
+
+    def GetNumActiveRoutings(self):
+        """return number of active routing entries"""
+        return self.cOwlManager.GetNumActiveRoutings()
+
+
+    def GetNumPongsReceived(self):
+        """return total number of Pongs received"""
+        return self.cOwlManager.GetNumPongsReceived()
+
+
+    def GetNumAnswersReceived(self):
+        """return total number of Answers received"""
+        return self.cOwlManager.GetNumAnswersReceived()
+
+
     def StartConnection(self):
         """Start network package
 
@@ -277,7 +300,7 @@ class cNetManager:
         self.cOwlManager.ValidateOwls()
 
         # do i need to look up more owls at website?
-        if ((self.cOwlManager.GetNumNeighbours() < self.iMinOwls) and (self.bGetWebOwls == 1)):
+        if ((self.cOwlManager.GetNumKnownOwls() < self.iMinOwls) and (self.bGetWebOwls == 1)):
             thread.start_new_thread(self.GetWebOwls, ())
 
         # determine own IP adress
@@ -431,7 +454,7 @@ class cNetManager:
             # check if i am the first hop of this pong (originator set to 127.0.0.1)
             # -> set answerer ip!
             if cPong.GetOriginator()[0]=='127.0.0.1':
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': First hop. Setting Answerer IP to %s' % (sOrigin), 2)
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': First hop. Setting Answerer IP to %s' % (sOrigin), 3)
                 cPong.SetAnswererIP(sOrigin)
 
             # set originator ip
@@ -589,7 +612,7 @@ class cNetManager:
 
         """
         # log tick
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': No PONG received for '+str(self.iInterval)+' seconds. Generating PING.', 3)
+        pManager.manager.DebugStr('cNetManager '+ __version__ +': No PONG received for '+str(self.iInterval)+' seconds. Generating PING.', 2)
 
         # Generate Ping
         ping = self.GeneratePing()

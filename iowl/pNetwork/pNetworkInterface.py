@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: pNetworkInterface.py,v $
+Revision 1.5  2002/02/13 10:46:22  Saruman
+introduced counters and functions for gathering network stats.
+
 Revision 1.4  2001/08/10 18:36:36  i10614
 added debuglevel to all messages.
 
@@ -109,4 +112,23 @@ class pNetworkInterface:
         """return version of network protocol"""
         return self.cNetManager.GetProtocolVersion()
 
+
+    def GetNumKnownOwls(self):
+        """return number of active owls i know"""
+        return self.cNetManager.GetNumKnownOwls()
+
+
+    def GetNumActiveRoutings(self):
+        """return number of active routing entries"""
+        return self.cNetManager.GetNumActiveRoutings()
+
+
+    def GetNumPongsReceived(self):
+        """return total number of pongs received for myself"""
+        return self.cNetManager.GetNumPongsReceived()
+
+
+    def GetNumAnswersReceived(self):
+        """return total number of answers received for myself"""
+        return self.cNetManager.GetNumAnswersReceived()
 
