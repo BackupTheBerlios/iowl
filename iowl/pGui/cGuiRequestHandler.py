@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.19 $"
+__version__ = "$Revision: 1.20 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.20  2002/02/27 11:03:55  Saruman
+minor html mods
+
 Revision 1.19  2002/02/20 18:42:11  aharth
 fixed store page bug
 
@@ -318,25 +321,26 @@ class cGuiRequestHandler:
         if sScript =='':
             # no scripts needed
             sData = """<html>
-                    <head>
-                    <title>%s</title>
-                    <link rel="stylesheet" href="data/ui/style.css" type="text/css">
-                    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-                    <base href="http://my.iowl.net/">
-                    </head>
-                    <body>
-                    """ %sTitle
+<head>
+<title>%s</title>
+<link rel="stylesheet" href="data/ui/style.css" type="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<base href="http://my.iowl.net/">
+</head>
+<body>
+""" %sTitle
+
         else:
             # need script in header and attribute onload="..."
             sData = """<html>
-                    <head>
-                    <title>%s</title>
-                    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-                    <base href="http://my.iowl.net/">
-                    %s
-                    </head>
-                    <body bgcolor="#BBBBBB" text="#000000" link="#AA0000" vlink="#880000" alink="#AA0000" background="data/images/back.gif" onload ="%s">
-                    """ % (sTitle, sScript, sFunction)
+<head>
+<title>%s</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<base href="http://my.iowl.net/">
+%s
+</head>
+<body bgcolor="#BBBBBB" text="#000000" link="#AA0000" vlink="#880000" alink="#AA0000" background="data/images/back.gif" onload ="%s">
+""" % (sTitle, sScript, sFunction)
 
         return sData
 
