@@ -1,10 +1,13 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cRPCRequestHandler.py,v $
-Revision 1.1  2001/03/24 19:22:40  i10614
-Initial revision
+Revision 1.2  2001/08/10 18:36:21  i10614
+added debug output.
+
+Revision 1.1.1.1  2001/03/24 19:22:40  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.6  2001/02/17 13:48:43  mbauer
 removed some debug output
@@ -38,7 +41,7 @@ class cRPCRequestHandler(xmlrpcserver.RequestHandler):
 
         """
 
-        # pManager.manager.DebugStr('cRPCReqHandler '+ __version__ +': Dispatching: ' + str(method) + str(params))
+        pManager.manager.DebugStr('cRPCReqHandler '+ __version__ +': Dispatching: ' + str(method) + str(params), 4)
         try:
                 server_method = getattr(self, method)
         except:

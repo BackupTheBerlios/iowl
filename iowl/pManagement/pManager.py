@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.16 $"
+__version__ = "$Revision: 1.17 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.17  2001/08/10 18:33:08  i10614
+added debug output.
+
 Revision 1.16  2001/08/07 18:49:45  i10614
 implemented real debuglevels
 
@@ -442,6 +445,7 @@ class cManager:
 
         # we are running
         self.m_bIsRunning = 1
+        self.DebugStr('pManager '+ __version__ +': iOwl running.', 0)
 
         # Focus does not come back from pProxy until iOwl is shut down
         self.intfProxy.Start()
