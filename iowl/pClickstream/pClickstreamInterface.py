@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.11 $"
+__version__ = "$Revision: 1.12 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.12  2001/07/15 14:36:29  i10614
+implemented config-change from GUI
+
 Revision 1.11  2001/05/26 16:27:20  i10614
 changed default path
 
@@ -162,6 +165,8 @@ class pClickstreamInterface:
             self.sClickstreamPathName = sValue
         elif (sParameter == 'restartsession'):
             self.iRestart = string.atoi(sValue)
+            # XXX Update watchdog, otherwise new session timeout will only take effect for next session!
+            pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Warning! Change of session timeout will currently only take effect for next session.')
 
 
     def Shutdown(self):
@@ -220,11 +225,6 @@ class pClickstreamInterface:
 
     def OpenSessions(self):
         """Read sessions into list."""
-
-        # XXX OpenSessions is called periodically
-        # should only be called once
-        # ...and from sessions on disk
-        # XXX gefixt - Mike
 
         # normalize path: no change on unix, lowercase and forward slashes on win32
         self.sClickstreamPathName = os.path.normcase(self.sClickstreamPathName)

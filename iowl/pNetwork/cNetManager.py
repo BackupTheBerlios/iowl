@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.21 $"
+__version__ = "$Revision: 1.22 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.22  2001/07/15 14:38:59  i10614
+implemented config-change from GUI
+
 Revision 1.21  2001/07/15 10:20:23  i10614
 getting owls from www.iowl.net now optional
 
@@ -188,7 +191,9 @@ class cNetManager:
         elif sOption == 'maxowlstokeep':
             self.cOwlManager.SetMaxOwlsToKeep(int(sValue))
         elif sOption == 'listenport':
+            # XXX Need to restart listener for changes to take effect!
             self.cNetServer.SetListenPort(int(sValue))
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Warnig: change of listenport currently only takes effect after restart of iOwl.')
         elif sOption == 'ttl':
             self.iTTL = int(sValue)
         elif sOption == 'interval':

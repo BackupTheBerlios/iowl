@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.13 $"
+__version__ = "$Revision: 1.14 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.14  2001/07/15 14:38:39  i10614
+implemented config-change from GUI
+
 Revision 1.13  2001/07/15 10:18:39  i10614
 added functions to get logfile and configfile handles
 
@@ -319,6 +322,8 @@ class cManager:
         if sOption == 'logfilename':
             # if names differ -> close old logfile, open new one
             if self.sLogFileName != sValue:
+                # Acquire Lock
+                self.DbgLock.acquire()
                 # close old file
                 self.LogFileHandle.close()
                 # store new name
@@ -326,9 +331,9 @@ class cManager:
                 # open new logfile in append mode
                 try:
                     self.LogFileHandle = open(self.sLogFileName, 'a')
-                except:
-                    print('pManager '+ __version__ +': Can\'t open Logfile!')
-                    raise
+                finally:
+                    # release lock
+                    self.DbgLock.release()
 
         elif sOption == 'debuglevel':
             self.iDebugLevel = int(sValue)
@@ -336,6 +341,39 @@ class cManager:
         else:
             # unknown option!
             self.DebugStr('pManager '+ __version__ +': Warning: Trying to set unknown parameter "'+sOption+'".')
+
+
+    def UpdateConfig(self, sSection, sOption, sValue):
+        """Update configuration of running iOwl.
+
+        Called by pGui if user changes options through GUI.
+
+        sSection -- Section in Configfile
+        sOption  -- Option to set
+        sValue   -- Value for option
+
+        returns true if successfull set new param, false otherwise
+
+        """
+
+        # is section valid?
+        if sSection in self.dPackages.keys():
+            # self.DebugStr('pManager '+ __version__ +': Setting Options for package "'+sSection+'".')
+            # set new parameter
+            try:
+                self.dPackages[sSection].SetParam(sOption, sValue)
+            except:
+                # could not set option!
+                return 0
+
+            # now save to configfile to make changes permanent
+            self.SaveParam(sSection, sOption, sValue)
+            # okay, return
+            return 1
+
+        else:
+            # unknown section!
+            return 0
 
 
     def SaveParam(self, sSection, sOption, sValue):
@@ -545,7 +583,7 @@ class cManager:
 
         if self.tray==None:
             return
-        
+
         self.tray.SetIcon(bState)
 
 
@@ -556,7 +594,7 @@ class cManager:
 
 
 
-        
+
 ####################################################################
 ## TEST FUNCTIONS ##################################################
 

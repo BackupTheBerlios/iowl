@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cProxyManager.py,v $
+Revision 1.3  2001/07/15 14:39:18  i10614
+implemented config-change from GUI
+
 Revision 1.2  2001/03/27 14:09:11  i10614
 added functionality to specify address proxy listens at in configfile
 
@@ -63,6 +66,8 @@ class cProxyManager:
 
         if sOption == 'proxyport':
             self.cProxyCore.SetPort(str(sValue))
+            # XXX - Need to restart proxy for changes to take effect!
+            pManager.manager.DebugStr('pProxyManager '+ __version__ +': Warning: Change of proxyport needs a restart!')
         elif sOption == 'clicktime':
             self.cProxyCore.SetClickTime(str(sValue))
         elif sOption == 'parentproxyip':
@@ -73,8 +78,12 @@ class cProxyManager:
             self.cProxyCore.SetUseParent(int(sValue))
         elif sOption == 'recording':
             self.bRecording = int(sValue)
+            # update trayicon
+            pManager.manager.SetIcon(int(sValue))
         elif sOption == 'listenat':
+            # XXX Need to restart proxy for changes to take effect!
             self.cProxyCore.SetListenAt(str(sValue))
+            pManager.manager.DebugStr('pProxyManager '+ __version__ +': Warning: Change of listen-adress needs a restart!')
         else:
             # unknown option!
             pManager.manager.DebugStr('pProxyManager '+ __version__ +': Warning: Trying to set unknown parameter "'+sOption+'".')
