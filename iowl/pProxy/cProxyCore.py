@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 
 """
 $Log: cProxyCore.py,v $
+Revision 1.7  2002/02/11 15:14:39  Saruman
+prevent "address in use" - error for proxyport (like AH did for netserver)
+
 Revision 1.6  2002/01/20 16:07:29  Saruman
 removed workaround for bugs regarding ThreadingTCPServer in Python 2.1
 
@@ -110,6 +113,8 @@ class cProxyCore:
 
         # create Server, pass cProxyHandler
         self.Server = SocketServer.ThreadingTCPServer((self.sListenAt, self.iProxyPort), cProxyHandler.cProxyHandler)
+        # prevent "address in use"-error
+        self.Server.allow_reuse_address = 1
         pManager.manager.DebugStr('pProxyCore '+ __version__ +': Listening at '+self.sListenAt+'.', 3)
 
         # start Server
