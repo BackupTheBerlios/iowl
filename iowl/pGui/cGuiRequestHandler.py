@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.5  2001/05/25 12:43:43  i10614
+adapted bckcolor
+
 Revision 1.4  2001/04/22 13:24:03  i10614
 changed html meta-tags to disable caching of iOwl-pages
 
@@ -216,7 +219,7 @@ class cGuiRequestHandler:
                     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
                     <base href="http://my.iowl.net/">
                     </head>
-                    <body bgcolor="#BBBBBB" text="#000000" link="#AA0000" vlink="#880000" alink="#AA0000" background="data/pix/back.gif">
+                    <body bgcolor="#CCCCCC" text="#000000" link="#AA0000" vlink="#880000" alink="#AA0000" background="data/pix/back.gif">
                     """ %sTitle
         else:
             # need script in header and attribute onload="..."
