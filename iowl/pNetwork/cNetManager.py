@@ -1,10 +1,10 @@
 
-__version__ = "$Revision: 1.7 $"
+__version__ = "$Revision: 1.8 $"
 
 """
 $Log: cNetManager.py,v $
-Revision 1.7  2001/04/15 19:23:29  i10614
-added debug output
+Revision 1.8  2001/04/15 19:58:48  i10614
+fixes for recomendations
 
 Revision 1.6  2001/04/15 19:10:59  i10614
 Ping<->Pong works again.
@@ -365,7 +365,11 @@ class cNetManager:
         cRequest = self.GenerateRequest(elRequest)
 
         # Pass Request to cOwlManager
-        self.cOwlManager.Distribute(cRequest)
+        pManager.manager.DebugStr('pNetwork '+ __version__ +': Passing request to cOwlManager.Distribute().')
+        if self.cOwlManager.Distribute(cRequest) == 'okay':
+            pManager.manager.DebugStr('pNetwork '+ __version__ +': Passed Request -> Okay.')
+        else:
+            pManager.manager.DebugStr('pNetwork '+ __version__ +': Passed Request -> Error!.')
 
         # return id for pRecommendation
         return cRequest.GetID()
