@@ -29,7 +29,7 @@ If you would like to compile your own python2.2
     * make install (root)
 
 And of course a cvs-snapshot of the iOwl.net software.
-It is available at http://iowl.berlios.de/nightly/.
+It is available at http://iowl.berlios.de/nightly/ or using cvs diretly.
 
 This README is for iowl.sh
 
