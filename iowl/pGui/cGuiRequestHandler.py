@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.21 $"
+__version__ = "$Revision: 1.22 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.22  2002/03/04 22:14:47  aharth
+minor cosmetic change
+
 Revision 1.21  2002/03/01 14:39:14  aharth
 minor bugfix for activate/deactivate
 
@@ -366,7 +369,7 @@ class cGuiRequestHandler:
         sTmp2 = prog.sub("deactivate", sTmp)
 
         prog = re.compile("\$RECORDING_CLICKSTREAM_MSG\$")
-        sContent = prog.sub("recording clickstream", sTmp2)
+        sContent = prog.sub('<font class="recording">recording clickstream</font>', sTmp2)
 
         return sContent
 
@@ -388,9 +391,9 @@ class cGuiRequestHandler:
         sTmp2 = prog.sub("activate", sTmp)
 
         prog = re.compile("\$RECORDING_CLICKSTREAM_MSG\$")
-        sContent = prog.sub("not recording clickstream", sTmp2)
+        sContent = prog.sub('<font class="notrecording">not recording clickstream</font>', sTmp2)
 
-        return sContent
+	return sContent
 
 
     def GetEndPage(self):
