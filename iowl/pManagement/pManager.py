@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.17 $"
+__version__ = "$Revision: 1.18 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.18  2002/01/17 10:36:53  Saruman
+changed default options for logfile and logging
+
 Revision 1.17  2001/08/10 18:33:08  i10614
 added debug output.
 
@@ -148,11 +151,11 @@ class cManager:
         # version
         self.iOwlVersion = 1.0
 
-        # build date
+        # build number & date - update whenever an official release is built
         self.sBuild = '14 2001-05-26'
 
         # default logfile
-        self.sLogFileName = "data/iowl.log"
+        self.sLogFileName = "iowl.log"
 
         # open logfile in append mode
         try:
@@ -177,7 +180,7 @@ class cManager:
         #                     "logfile"
         #                     "both"
         #                     "none"
-        self.sDebugMode = 'both'
+        self.sDebugMode = 'logfile'
 
         # default debug level
         self.iDebugLevel = 1    # 0 -> only system critical messages
