@@ -1,9 +1,0 @@
-# iOwl.net - LIESMICH.iowl.stop
-
-Diese Liesmich befasst sich mit iowl.stop
-
-iowl.stop ist ein kleines shell-script zum beenden von iowl
-es benutzt "ps U $UID" um die laufenden iOwl.net Prozesse per "kill -9" zu
-loeschen
-
-Andreas Biessmann 
