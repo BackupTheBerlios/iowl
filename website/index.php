@@ -12,8 +12,8 @@ the iOwl.net and <a href="nightly/current-iowl.tar.gz">download the tar.gz</a>!
 </p>
 
 <p>
-The iOwl.net agent recommends web resources based on the browsing
-history its users. The peer-to-peer network architecture of iOwl.net
+The iOwl.net agent recommends web resources based on your browsing
+history. The peer-to-peer network architecture of iOwl.net
 guarantees a <a href="product/privacy.php">maximum of privacy</a>. If you're
 interested in the technical details, you can have a look at the following
 documents:
@@ -41,7 +41,9 @@ Main Package Overview
 
 <p>
 Some hints for installing iOwl.net on Linux (in German) can be found on
-our <a href="http://www.iowl.net/wiki/">Wiki</a>.
+our <a href="http://www.iowl.net/wiki/">Wiki</a>. You can also have a look
+at our <a href="http://developer.berlios.de/project/iowl/">berlios project
+page</a>.
 </p>
 
 <?php
