@@ -1,3 +1,6 @@
+<?php
+include '/home/groups/iowl/htdocs/header.html';
+?>
 <h1>Product</h1>
 <h2>Features
   - <a href="screen.html">Screenshots</a>
@@ -16,3 +19,6 @@
   <li>Easy installation </li>
   <li>Easy configuration</li>
 </ul>
+<?php
+include '/home/groups/iowl/htdocs/footer.html';
+?>

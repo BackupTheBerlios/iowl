@@ -1,3 +1,6 @@
+<?php
+include '/home/groups/iowl/htdocs/header.html';
+?>
 <h1>Product</h1>
 <h2><a href="features.html">Features</a>
   - Screenshots
@@ -8,3 +11,6 @@
 <p>&nbsp;</p>
 <p>Recommendations look like this:</p>
 <p><img src="/pix/screen_recommendation.gif" width="568" height="520" align="middle"></p>
+<?php
+include '/home/groups/iowl/htdocs/footer.html';
+?>

@@ -1,3 +1,6 @@
+<?php
+include '/home/groups/iowl/htdocs/header.html';
+?>
 <h1>Product</h1>
 <p>The software of iOwl.net gives access to the intelligent owl
    network which provides - based on peer 2 peer (p2p) network technologie
@@ -9,3 +12,6 @@
 <p>See the <a href="screen.html">screenshots</a> to get a feeling
    how iOwl.net looks like and go to the privacy notes to learn why
    iOwl.net is a <a href="privacy.html">secure system</a> that enables a maximum of communication.</p>
+<?php
+include '/home/groups/iowl/htdocs/footer.html';
+?>

@@ -1,3 +1,6 @@
+<?php
+include '/home/groups/iowl/htdocs/header.html';
+?>
 <h1>Product</h1>
 <h2><a href="features.html">Features</a>
   - <a href="screen.html">Screenshots</a>
@@ -13,3 +16,6 @@
    of iOwl.net avoids gathering of all user profiles. There is no
    central server that might collect user profiles. Abuse of iOwl.net
    user preferences is impossible.</p>
+<?php
+include '/home/groups/iowl/htdocs/footer.html';
+?>
