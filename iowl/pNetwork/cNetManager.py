@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.7  2001/04/15 19:23:29  i10614
+added debug output
+
 Revision 1.6  2001/04/15 19:10:59  i10614
 Ping<->Pong works again.
 
@@ -241,8 +244,6 @@ class cNetManager:
         Pass PONG to cOwlManager.Answer().
 
         """
-        # log incoming pong
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Pong...')
 
         try:
             # reset WatchDog
@@ -254,6 +255,9 @@ class cNetManager:
             # create cNetPackage from DOM-Pong
             cPong = cNetPackage.cPong()
             cPong.ParseDOM(domPong)
+
+            # log incoming pong
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Pong from %s:%s' % (str(cPong.GetAnswerer()[0]), str(cPong.GetAnswerer()[1])))
 
             # extract PONG-source and add to own list of owls
             self.ExtractPongSource(cPong)
