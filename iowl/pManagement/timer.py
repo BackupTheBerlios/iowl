@@ -1,10 +1,13 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: timer.py,v $
-Revision 1.1  2001/03/24 19:22:37  i10614
-Initial revision
+Revision 1.2  2001/03/27 18:24:30  i10614
+fixed some bugs
+
+Revision 1.1.1.1  2001/03/24 19:22:37  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.5  2001/03/18 22:23:59  mbauer
 added try-except to timer-function
@@ -22,9 +25,13 @@ Initial checkin
 """
 import time
 import thread
+import sys
+import traceback
+import pManager
 
 class sleeper:
     """Representation of sleeping/waiting task"""
+
     def __init__(self, function, interval, id):
         self.originterval = interval
         self.interval = interval
@@ -38,7 +45,7 @@ class sleeper:
             time.sleep(self.interval)
 
             # wake up
-            if self.keepRunning:
+            if self.keepRunning == 1:
                 # need offset since time.sleep() is not very exact :-(
                 offset = 0.5
                 runningtime = time.time() - self.starttime
@@ -56,9 +63,9 @@ class sleeper:
                         for line in traceback.format_tb(eTraceback, 15):
                             tb = tb + line
 
-                        pManager.manager.DebugStr('pManager '+ __version__ +': Unhandled error in timer-called function: Type: '+str(eType)+', value: '+str(eValue))
-                        pManager.manager.DebugStr('pManager '+ __version__ +': Traceback:\n'+str(tb))
-                        pManager.manager.DebugStr('pManager '+ __version__ +': Trying to continue...')
+                        pManager.manager.DebugStr('timer '+ __version__ +': Unhandled error in timer-called function: Type: '+str(eType)+', value: '+str(eValue))
+                        pManager.manager.DebugStr('timer '+ __version__ +': Traceback:\n'+str(tb))
+                        pManager.manager.DebugStr('timer '+ __version__ +': Trying to continue...')
 
                     # reset interval
                     self.interval = self.originterval
@@ -69,9 +76,13 @@ class sleeper:
                     # sleep on for remaining interval
                     self.interval = self.originterval - (time.time() - self.starttime)
 
+        # exit thread
+        pManager.manager.DebugStr('timer '+ __version__ +': Watchdog '+ str(self.id)+' exiting.')
+
 
     def stop(self):
         """stop thread"""
+        pManager.manager.DebugStr('timer '+ __version__ +': Watchdog '+ str(self.id)+' deactivated.')
         self.keepRunning = 0
 
 
@@ -82,6 +93,7 @@ class sleeper:
 
     def reset(self):
         """Reset thread"""
+        pManager.manager.DebugStr('timer '+ __version__ +': Watchdog '+ str(self.id)+' resetted.')
         self.starttime = time.time()
 
 
@@ -91,6 +103,8 @@ class timer:
     register with function and intervall and timer
     calls registered function after interval has expired.
 
+    XXX - need better handling of sleeper-threads in list.
+          Possible memory hog since the list does not get cleared!
     """
 
     def __init__(self):
@@ -153,13 +167,6 @@ def test1():
 
     print 'stopping s1'
     t.stop(s1)
-    # print 'trying to reset s2'
-    # t.reset(s2)
-    print 'resetting s2'
-    t.reset(s2)
-    time.sleep(4)
-    print 'resetting s2'
-    t.reset(s2)
 
     time.sleep(20)
 
