@@ -3,22 +3,22 @@
 
 DIR=`pwd`
 
-if [ ! "`cat ~/.bash_profile | grep iowl.start`" ]; then
+if [ ! "`cat ~/.bash_profile | grep iowl.sh`" ]; then
 echo "" >> ~/.bash_profile;
 echo IOWL_DIR="$DIR" >> ~/.bash_profile;
 echo export IOWL_DIR >> ~/.bash_profile;
-echo exec "$DIR"/iowl.start \& >> ~/.bash_profile;
+echo exec "$DIR"/iowl.sh start \& >> ~/.bash_profile;
 echo "Adding iowl.start to ~/.bash_profile to start iOwl.net on every console login";
 else echo "iowl.start is part of your ~/.bash_profile and starts iOwl.net on every console login";
 fi
 
-if [ ! "`cat ~/.bashrc | grep iowl.start`" ];then
+if [ ! "`cat ~/.bashrc | grep iowl.sh`" ];then
 echo "" >> ~/.bashrc;
 echo IOWL_DIR="$DIR" >> ~/.bashrc;
 echo export IOWL_DIR >> ~/.bashrc;
-echo exec "$DIR"/iowl.start \& >> ~/.bashrc;
-echo "Adding iowl.start to ~/.bashrc to start iOwl.net on every X login";
-else echo "iowl.start is part of your ~/.bashrc and starts iOwl.net on every X login";
+echo exec "$DIR"/iowl.sh start\& >> ~/.bashrc;
+echo "Adding iowl.sh start to ~/.bashrc to start iOwl.net on every X login";
+else echo "iowl.sh start is part of your ~/.bashrc and starts iOwl.net on every X login";
 fi
 
 exit 0
