@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.4  2001/03/28 15:40:02  i10614
+finally got rid of (most) thread exceptions (socket.error) under win32
+
 Revision 1.3  2001/03/26 17:57:54  i10614
 removed url from debug output to prevent logging of passwords
 
@@ -52,13 +55,31 @@ import socket
 import urlparse
 import cClick
 import htmlentitydefs
+import sys
 
 class cProxyHandler(SocketServer.StreamRequestHandler):
     """The handler hook-in for the proxyServer
 
-    inherits from StreamRequestHandler, only implement handle()-function.
+    inherits from StreamRequestHandler
+    implements:
+        - handle()-function.
+        - __init__()-function
 
     """
+
+    def __init__(self, request, client_address, server):
+        """this is just the standard __init__() from
+        BaseRequestHandler only thing added is a except-clause
+        to get rid of these annoying socket-errors that only occur
+        under win32...
+
+        """
+
+        try:
+            SocketServer.StreamRequestHandler.__init__(self, request, client_address, server)
+        except socket.error:
+            pass
+
 
     def handle(self):
         """Get called by cProxyCore for each request"""
