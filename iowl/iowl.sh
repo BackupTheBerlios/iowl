@@ -9,7 +9,8 @@ PYTHON="python2.2"
 ARGUMENTS="pManagement/iowl.py"
 
 # var's - PIDLIST
-PIDLIST=`pidof $PYTHON $IOWL_DIR/$ARGUMENTS`
+#PIDLIST=`pidof $PYTHON $IOWL_DIR/$ARGUMENTS`
+PIDOF=`which pidof`
 
 # set Pythonpath so python can find all our modules and append original $PYTHONPATH.
 PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
@@ -18,6 +19,9 @@ export PYTHONPATH
 # how start|stop|kill does work
 
 iowl_start () {
+	# is it running?
+	PIDLIST=`$PIDOF $PYTHON $IOWL_DIR/$ARGUMENTS`
+	# if runs do nothing; else start it
 	if [ -n "$PIDLIST" ];
         	then
         	# iOwl.net already running
@@ -32,6 +36,9 @@ iowl_start () {
 }
 
 iowl_stop () {
+	# is it running?
+	PIDLIST=`$PIDOF $PYTHON $IOWL_DIR/$ARGUMENTS`
+	# if runs stop it; else do nothing
    	if [ -n "$PIDLIST" ];
         	then 
         	# iOwl.net is already running
@@ -46,6 +53,9 @@ iowl_stop () {
 }  
 
 iowl_kill () {
+	# is it running?
+	PIDLIST=`$PIDOF $PYTHON $IOWL_DIR/$ARGUMENTS`
+	# if runs kill it; if not do nothing
 	if [ -n "$PIDLIST" ];
         	then 
         	# iOwl.net is already running
