@@ -1,9 +1,9 @@
 #!/bin/sh
 # iOwl.net - iowl.stop
 
-BEFEHL="python2.2 iowl.py"
+BEFEHL="python2.2 pManagement/iowl.py"
 AUSGABE=`ps U $UID | egrep "$BEFEHL" | head -1 | tail -1` 
-PROG=`echo "$AUSGABE" | cut -c27-45`
+PROG=`echo "$AUSGABE" | cut -c27-56`
 IOWLPID=`echo "$AUSGABE" | cut -c-5`
 
 case "$PROG" in
