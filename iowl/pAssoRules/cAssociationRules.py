@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 
 """
 $Log: cAssociationRules.py,v $
+Revision 1.7  2002/01/30 17:52:50  aharth
+fixed bug #105
+
 Revision 1.6  2002/01/25 13:19:31  aharth
 added itemsets stuff
 
@@ -50,7 +53,7 @@ import pManager
 import cRule
 import time
 import os
-
+import re
 
 class cAssociationRules:
 
@@ -96,6 +99,22 @@ class cAssociationRules:
             itemsets.CountUrl(lUrls)
 
 
+    def DeleteItemsets(self, sItemsetPathName):
+        """ For now, delete previous itemsets."""
+        # normalize path: no change on unix, lowercase and forward slashes on win32
+        sItemsetPathName = os.path.normcase(sItemsetPathName)
+
+        # create list of files
+        lFiles = os.listdir(sItemsetPathName)
+
+        # prepare list of sessions
+        for sFileName in lFiles:
+            match = re.compile("""itemset.*xml$""")
+            if match.match(sFileName):
+                # remove this itemsets file
+                os.remove(os.path.join(sItemsetPathName, sFileName))
+
+
     def ComputeRules(self, lSessions, iOverallCount, sItemsetPathName):
         """Compute association rules.
 
@@ -104,12 +123,12 @@ class cAssociationRules:
         sItemsetPathName -- path name for temporary itemsets
 
         """
+        self.DeleteItemsets(sItemsetPathName)
+        
         oneItemsets = self.ComputeCandidateOneItemsets(lSessions)
-        #print '*************One Itemsets'
-        #oneItemsets.Print()
+        
         oneItemsets.OpenFile(os.path.join(sItemsetPathName, 'itemset1.xml'))
-        oneItemsets.CloseFile()
-        #print '*************'
+
         # store large itemsets here
         largeItemsets = []
 
@@ -123,15 +142,11 @@ class cAssociationRules:
             supportThreshold = 2
         if (supportThreshold > 10):
             supportThreshold = 10
+
         pManager.manager.DebugStr('pAssociationRules '+ __version__ +': Support threshold '+str(iOverallCount) + '/50 = '+str(supportThreshold)+'.', 2)
         oneItemsets.Prune(supportThreshold)
 
-        # Mike - removed debug output
-        #
-        # print 'Computed candidate one itemsets and pruned'
-        # print '*************Did Count'
-        # oneItemsets.Print()
-        # print '****************'
+        oneItemsets.CloseFile()
 
         # i itemsets starting with 1-itemsets
         # but python starts counting indexes from 0
@@ -153,8 +168,6 @@ class cAssociationRules:
 
             # Mike - removed debug output
             pManager.manager.DebugStr('pAssociationRules '+ __version__ +': Computed Candidate '+str(k)+'.', 2)
-            # candidate.Print()
-            # print '**************'
 
             candidateItemset.OpenFile(os.path.join(sItemsetPathName, 'itemset'+str(k)+'.xml'))
             candidateItemset.CloseFile()
@@ -166,15 +179,7 @@ class cAssociationRules:
         # 0th entry is Null, 1st is one itemsets
         # 2nd entry is start
         for large in largeItemsets[2:]:
-            # Mike - removed debug output
-            # large.Print()
-            # print '***'
-            # print large.GetSize()
             self.GenerateRules(large)
-
-        # Mike - removed debug output
-        # print k
-        # print iOverallCount
 
 
     def GenerateCandidates(self, itemsets):

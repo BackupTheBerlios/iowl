@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.10 $"
+__version__ = "$Revision: 1.11 $"
 
 """
 $Log: pAssocRulesInterface.py,v $
+Revision 1.11  2002/01/30 17:52:50  aharth
+fixed bug #105
+
 Revision 1.10  2002/01/25 15:19:35  aharth
 fixed typo in cDOM that caused error message in pAssocRulesInterface
 
@@ -56,8 +59,6 @@ import pManager
 import thread
 import sys
 import traceback
-import os
-import re
 
 class pAssocRulesInterface:
 
@@ -72,8 +73,6 @@ class pAssocRulesInterface:
         csi = pManager.manager.GetClickstreamInterface()
         lSessions = csi.GetSessions()
         iCount = csi.GetItemCount()
-
-        self.DeleteItemsets()
 
         pManager.manager.DebugStr('pAssocRulesInterface '+ __version__ +': Starting new thread to compute rules.', 3)
         thread.start_new(self.ComputeRules, (lSessions, iCount))
@@ -94,20 +93,6 @@ class pAssocRulesInterface:
         """Kind of destructor."""
         pManager.manager.DebugStr('pAssocRulesInterface '+ __version__ +': Shutting down.', 1)
 
-
-    def DeleteItemsets(self):
-        """ For now, delete previous itemsets."""
-        # normalize path: no change on unix, lowercase and forward slashes on win32
-        self.sItemsetPathName = os.path.normcase(self.sItemsetPathName)
-
-        # create list of files
-        lFiles = os.listdir(self.sItemsetPathName)
-        # prepare list of sessions
-        for sFileName in lFiles:
-            match = re.compile("""itemset*xml$""")
-            if match.match(sFileName):
-                # remove this itemsets file
-                os.remove(sFileName)
 
     def ComputeRules(self, lSessions, iCount):
         """Compute association rules.
