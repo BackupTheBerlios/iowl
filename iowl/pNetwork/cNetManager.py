@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.20 $"
+__version__ = "$Revision: 1.21 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.21  2001/07/15 10:20:23  i10614
+getting owls from www.iowl.net now optional
+
 Revision 1.20  2001/06/10 15:56:51  i10614
 added own thread for initialization
 
@@ -135,6 +138,11 @@ class cNetManager:
 
         # url for owls
         self.sOwlUrl = "http://www.iowl.net/entry.pl"
+
+        # use webowls
+        self.bGetWebOwls = 1
+
+        # mimimun number of owls
         self.iMinOwls = 15
 
         # entryowl
@@ -187,6 +195,10 @@ class cNetManager:
             self.iInterval = int(sValue)
         elif sOption == 'requestlifetime':
             self.cOwlManager.SetRequestLifeTime(int(sValue))
+        elif sOption == 'getwebowls':
+            self.bGetWebOwls = int(sValue)
+        else:
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Warning: unknown option %s' %(sOption, ))
 
 
     def GetProtocolVersion(self):
@@ -229,7 +241,7 @@ class cNetManager:
         self.cOwlManager.ValidateOwls()
 
         # do i need to look up more owls at website?
-        if self.cOwlManager.GetNumNeighbours() < self.iMinOwls:
+        if (self.cOwlManager.GetNumNeighbours() < self.iMinOwls) and (self.bGetWebOwls == 1):
             thread.start_new_thread(self.GetWebOwls, ())
 
         # determine own IP adress
@@ -690,6 +702,7 @@ class cNetManager:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             for owl in lOwls:
                 try:
+                    # if connection to iOwl-port fails, owl is invalid
                     s.connect((owl, int(self.cNetServer.GetListenPort())))
                     s.close()
                 except:
