@@ -12,14 +12,14 @@ ARGUMENTS="pManagement/iowl.py"
 PYTHONPATH=./pAssoRules:./pClickstream:./pGui:./pManagement:./pMisc:./pNetwork:./pProxy:./pRecommendation:./pStatistics:$PYTHONPATH
 
 # var's for start
-IOWLPS=`ps U $UID | egrep "$PYTHON $ARGUMENTS" | head -1 | tail -1`
-PROG=`echo "$IOWLPS" | cut -c27-56`
+IOWLPS=`ps U $UID | egrep "$PYTHON $IOWL_DIR/$ARGUMENTS" | head -1 | tail -1`
+PROG=`echo "$IOWLPS" | cut -c27-90`
 IOWLPID=`echo "$IOWLPS" | cut -c-5`
 
 
 case "$PROG" in
 
-	*"$PYTHON $ARGUMENTS" )
+	*"$PYTHON $IOWL_DIR/$ARGUMENTS" )
 		# iOwl.net already running
 		echo "iOwl.net already running!"
 	;;
@@ -27,7 +27,7 @@ case "$PROG" in
 	* )
 		# iOwl.net isnt running
 		export PYTHONPATH
-		$PYTHON $ARGUMENTS 2>&1 &
+		$PYTHON $IOWL_DIR/$ARGUMENTS 2>&1 &
 		# TODO: Check return value from iOwl
 
 	;;
