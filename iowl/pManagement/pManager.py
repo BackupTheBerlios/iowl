@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.6  2001/04/14 14:56:51  i10614
+cosmetic changes
+
 Revision 1.5  2001/04/07 17:06:24  i10614
 many, many bugfixes for working network communication
 
@@ -473,15 +476,15 @@ class cManager:
         XXX - Need a better method to provide REALLY global unique
               identifiers AND be anonymous as possible
 
-        return -- a 20-digit sequence of numbers
+        return -- a 20-digit sequence of numbers (string)
 
         """
 
-        number = ''
+        sNumber = ''
         for i in range(20):
-            number = number + str(whrandom.randint(0,9))
+            sNumber = sNumber + str(whrandom.randint(0,9))
 
-        return number
+        return sNumber
 
 
     def SetOwnIP(self, ownIP):
