@@ -6,7 +6,7 @@ include '/home/groups/iowl/htdocs/header.html';
 <p>iOwl.net software is at an early stage of development. Nevertheless we would like to
    share it with all the people around the world in order to give every beta tester the chance
    to influence the further development by his <a href="../support/email.php">feedback</a>.
-   It would be very helpful to get as many <a href="http://developer.berlios.de/bugs/?func=addbug&group_id=250">bug reports</a>
+   It would be very helpful to get as many <a href="http://developer.berlios.de/bugs/?func=addbug&amp;group_id=250">bug reports</a>
    as possible so that we can soon present a stable release. Thanks for feedback in advance.</p>
 <p>As this is an alpha version of iOwl.net there are some restrictions that will be worked out in the future:
 <ul>
@@ -28,8 +28,8 @@ include '/home/groups/iowl/htdocs/header.html';
  
 
 <h2><a name="linux"></a>Linux</h2>
-<p><b><a href="http://cvs.berlios.de/cgi-bin/cvsweb.cgi/iowl/?cvsroot=iowl">CVS</a> <a href="/files/daily/">Daily</a> Snapshot</b><br>
-<a href="/files/daily/current-iowl.tar.gz">iowl.tar.gz</a></p>
+<p><b><a href="http://cvs.berlios.de/cgi-bin/cvsweb.cgi/iowl/?cvsroot=iowl">CVS</a> <a href="../nightly/">Daily Snapshot</a><br>
+<a href="../nightly/current-iowl.tar.gz">iowl.tar.gz</a></p>
 <?php
 include '/home/groups/iowl/htdocs/footer.html';
 ?>
