@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cRulesGrabber.py,v $
+Revision 1.2  2002/02/20 10:10:42  aharth
+ui cosmetics
+
 Revision 1.1  2002/02/10 21:40:54  aharth
 added showrules feature, cleaned up ui
 
@@ -51,7 +54,7 @@ class cRulesGrabber:
         # get Rules
         lRules = psi.GetRules()
         
-        sContent = '<h2>Association Rules</h2>\n'
+        sContent = '<h2>Rules</h2>\n'
 
         if len(lRules.lData) == 0:
             sContent = sContent + '<p class="message">Sorry, no rules available at this time.</p>'
