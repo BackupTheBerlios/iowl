@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.16 $"
+__version__ = "$Revision: 1.17 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.17  2001/05/26 14:01:34  i10614
+changed default params
+
 Revision 1.16  2001/05/26 11:48:31  i10614
 changed "No Title" to "Unknown Title".
 
@@ -414,7 +417,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
 
             return sTitle
 
-        return 'No Title'
+        return 'Unknown Title'
 
 
 

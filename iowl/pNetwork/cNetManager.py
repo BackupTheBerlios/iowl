@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.16 $"
+__version__ = "$Revision: 1.17 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.17  2001/05/26 14:01:19  i10614
+changed default params
+
 Revision 1.16  2001/05/26 11:41:28  i10614
 less debug output
 
@@ -128,6 +131,12 @@ class cNetManager:
         # entryowl
         self.EntryIP = ''
         self.EntryPort = 0
+
+        # timetolive
+        self.iTTL = 5
+
+        # interval in secs to wait for PONGS
+        self.iInterval = 1200
 
 
     def SetParam(self, sOption, sValue):

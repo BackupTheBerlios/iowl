@@ -1,10 +1,13 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cNetServer.py,v $
-Revision 1.1  2001/03/24 19:22:39  i10614
-Initial revision
+Revision 1.2  2001/05/26 14:01:19  i10614
+changed default params
+
+Revision 1.1.1.1  2001/03/24 19:22:39  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.5  2001/03/18 23:02:33  mbauer
 added missing import socket
@@ -31,7 +34,7 @@ class cNetServer:
 
     def __init__(self):
         """Constructor"""
-        pass
+        self.iListenPort = 2323
 
 
     def SetListenPort(self, iPort):

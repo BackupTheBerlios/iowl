@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.11 $"
+__version__ = "$Revision: 1.12 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.12  2001/05/26 14:00:58  i10614
+changed default params
+
 Revision 1.11  2001/05/26 13:00:49  i10614
 changed iowl version and formated it
 
@@ -158,7 +161,7 @@ class cManager:
         # default Debug-level: 0 -> console only
         #                      1 -> logfile only
         #                      2 -> both
-        self.iDebugLevel = 0
+        self.iDebugLevel = 1
 
 
         # get basedir
@@ -527,11 +530,11 @@ class cManager:
         """Set trayicon-handle"""
         self.tray = tray
 
+
     def SetIcon(self, bState):
         """Change trayicon"""
 
         if self.tray==None:
-            print "pManager --> No Icon..."
             return
         
         self.tray.SetIcon(bState)

@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.6  2001/05/26 14:00:06  i10614
+changed default params
+
 Revision 1.5  2001/05/25 12:43:43  i10614
 adapted bckcolor
 
@@ -79,11 +82,11 @@ class cGuiRequestHandler:
         self.cCommandValidator = cCommandValidator.cCommandValidator()
 
         # set default filenames
-        self.cHelpDataGrabber.SetHelpFileName('../pGui/help.ht')
-        self.cAboutDataGrabber.SetAboutFileName('../pGui/about.ht')
-        self.sActiveFilename = '../pGui/interfaceact.ht'
-        self.sInactiveFilename = '../pGui/interfaceinact.ht'
-        self.sEndFilename = '../pGui/interfacefooter.ht'
+        self.cHelpDataGrabber.SetHelpFileName('data/help.ht')
+        self.cAboutDataGrabber.SetAboutFileName('data/about.ht')
+        self.sActiveFilename = 'data/interfaceact.ht'
+        self.sInactiveFilename = 'data/interfaceinact.ht'
+        self.sEndFilename = 'data/interfacefooter.ht'
 
 
     def SetParam(self, sOption, sValue):
@@ -176,12 +179,16 @@ class cGuiRequestHandler:
             # activate clickstream recording
             pManager.manager.SaveParam('pProxy','recording','1')
             pManager.manager.GetProxyInterface().SetParam('recording','1')
+            # update trayicon, if any
+            pManager.manager.SetIcon(1)
             # return mainpage
             return self.cDefaultDataGrabber.GetHtml(dParams)
         elif sCommand == 'deactivate':
             # deactivate clickstream recording
             pManager.manager.SaveParam('pProxy','recording','0')
             pManager.manager.GetProxyInterface().SetParam('recording', '0')
+            # update trayicon, if any
+            pManager.manager.SetIcon(0)
             # return mainpage
             return self.cDefaultDataGrabber.GetHtml(dParams)
         elif sCommand == 'remove':
