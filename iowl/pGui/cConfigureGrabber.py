@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: cConfigureGrabber.py,v $
+Revision 1.6  2002/03/04 19:49:06  aharth
+submit instead of Absenden :)
+
 Revision 1.5  2002/03/02 14:32:49  Saruman
 Fix bug #132: Configuration now works without javascript.
 
@@ -103,7 +106,7 @@ class cConfigureGrabber:
             <input type="hidden" name="section" value="%s">
             <input type="hidden" name="option" value="%s">
             <td><input name="value" size=20 maxlength=40 value="%s"></td>
-            <td><input type="submit" value=" Absenden "></td>
+            <td><input type="submit" value="Submit"></td>
             </form>
         </tr>""" %(sFormName, opt, sect, opt, value)
 
