@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 
 """
 $Log: cNeighbourOwl.py,v $
+Revision 1.7  2001/08/07 18:50:42  i10614
+introduced debuglevels
+
 Revision 1.6  2001/06/05 18:20:18  i10614
 minor change
 
@@ -61,7 +64,6 @@ class cNeighbourOwl:
 
     def GetServer(self):
         """return xmlrpc Server-object representing this owl"""
-
         return xmlrpclib.Server('http://'+str(self.IP)+':'+str(self.iPort))
 
 
@@ -84,11 +86,11 @@ class cNeighbourOwl:
             # call remote Ping-function
             myself.Ping(sPing)
         except TypeError:
-            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': PING for '+str(self.IP)+':'+str(self.iPort)+' could not be sent (TypeError).')
-            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Content of PING: '+sPing)
+            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': PING for '+str(self.IP)+':'+str(self.iPort)+' could not be sent (TypeError).', 2)
+            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Content of PING: '+sPing, 3)
         except:
             # Can't call remote function - delete owl from list
-            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Cant do RPC for '+str(self.IP)+':'+str(self.iPort)+'. Discarding owl.')
+            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Cant do RPC for '+str(self.IP)+':'+str(self.iPort)+'. Discarding owl.', 2)
             # Delete owl
             self.cOwlManager.DeleteOwl(self.cOwlManager.lKnownOwls, (self.IP, self.iPort))
 
@@ -102,11 +104,11 @@ class cNeighbourOwl:
             # call remote Pong-function
             myself.Pong(sPong)
         except TypeError:
-            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': PONG for '+str(self.IP)+':'+str(self.iPort)+' could not be sent (TypeError).')
-            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Content of PONG: '+sPong)
+            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': PONG for '+str(self.IP)+':'+str(self.iPort)+' could not be sent (TypeError).', 2)
+            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Content of PONG: '+sPong, 3)
         except:
             # Can't call remote function - delete owl from list
-            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Cant do RPC for '+str(self.IP)+':'+str(self.iPort)+'. Discarding owl.')
+            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Cant do RPC for '+str(self.IP)+':'+str(self.iPort)+'. Discarding owl.', 2)
             # Delete owl
             self.cOwlManager.DeleteOwl(self.cOwlManager.lKnownOwls, (self.IP, self.iPort))
 
@@ -121,11 +123,11 @@ class cNeighbourOwl:
             # call remote Request-function
             myself.Request(sRequest)
         except TypeError:
-            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': REQUEST for '+str(self.IP)+':'+str(self.iPort)+' could not be sent (TypeError).')
-            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Content of REQUEST: '+sRequest)
+            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': REQUEST for '+str(self.IP)+':'+str(self.iPort)+' could not be sent (TypeError).', 2)
+            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Content of REQUEST: '+sRequest, 3)
         except:
             # Can't call remote function - delete owl from list
-            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Cant do RPC for '+str(self.IP)+':'+str(self.iPort)+'. Discarding owl.')
+            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Cant do RPC for '+str(self.IP)+':'+str(self.iPort)+'. Discarding owl.', 2)
             # Delete owl
             self.cOwlManager.DeleteOwl(self.cOwlManager.lKnownOwls, (self.IP, self.iPort))
 
@@ -140,11 +142,11 @@ class cNeighbourOwl:
             # call remote Answer-function
             myself.Answer(sAnswer)
         except TypeError:
-            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': ANSWER for '+str(self.IP)+':'+str(self.iPort)+' could not be sent (TypeError).')
-            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Content of ANSWER: '+sANSWER)
+            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': ANSWER for '+str(self.IP)+':'+str(self.iPort)+' could not be sent (TypeError).', 2)
+            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Content of ANSWER: '+sAnswer, 3)
         except:
             # Can't call remote function - delete owl from list
-            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Cant do RPC for '+str(self.IP)+':'+str(self.iPort)+'. Discarding owl.')
+            pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Cant do RPC for '+str(self.IP)+':'+str(self.iPort)+'. Discarding owl.', 2)
             # Delete owl
             self.cOwlManager.DeleteOwl(self.cOwlManager.lKnownOwls, (self.IP, self.iPort))
 
