@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.34 $"
+__version__ = "$Revision: 1.35 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.35  2002/09/10 15:50:33  abiessmann
+corrected URLs because of DNS change
+
 Revision 1.34  2002/03/23 19:20:56  aharth
 connect to network faster when using a dial-up connection
 
@@ -179,7 +182,7 @@ class cNetManager:
         self.sOwlFilename = "data/cache.txt"
 
         # url for owls
-        self.sOwlUrl = "http://www.iowl.net/entry.pl"
+        self.sOwlUrl = "http://iowl.berlios.de/entry.pl"
 
         # use webowls
         self.bGetWebOwls = 0
@@ -796,7 +799,7 @@ def test():
     manager.cNetServer.SetListenPort(2323)
     manager.iTTL = 10
     dummy = cDOM.cDOM()
-    elReq = dummy.CreateElement('request', {'url':'www.iowl.net', 'otherurl':'www.arschlecken.de'}, 'Bitte recommendation liefern!')
+    elReq = dummy.CreateElement('request', {'url':'iowl.berlios.de', 'otherurl':'www.arschlecken.de'}, 'Bitte recommendation liefern!')
     elAns = dummy.CreateElement('answer', {'url':'www.wissen.de'}, 'Check das aus!')
     re = manager.GenerateRequest(elReq)
     print
