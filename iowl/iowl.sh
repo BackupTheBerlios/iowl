@@ -1,11 +1,17 @@
 #!/bin/sh
-# iOwl.net - iowl.net: start|stop|restart|kill
+# iOwl.net - iowl.sh: start|stop|restart|kill
 
 # the executable
 # PYTHON="python"
 
 # debian needs this:
 PYTHON="python2.2"
+
+# arguments:
+ARGUMENTS="pManagement/iowl.py"
+
+# check if iOwl is already running
+PIDLIST=$(/bin/pidof $PYTHON $ARGUMENTS)
 
 # set Pythonpath so python can find all our modules and append original $PYTHONPATH.
 PYTHONPATH=./pAssoRules:./pClickstream:./pGui:./pManagement:./pMisc:./pNetwork:./pProxy:./pRecommendation:./pStatistics:$PYTHONPATH
@@ -20,12 +26,22 @@ IOWLPID=`echo "$PSAUSGABE" | cut -c-5`
 # how start|stop|kill does work
 
 iowl_start () {
-  echo "iOwl.net is starting up"
-  $PYTHON pManagement/iowl.py &
+	if [ ! -n "$PIDLIST" ]
+	then
+  	# no pids found. start iOwl.net
+	# start iOwl
+  	$PYTHON $ARGUMENTS &
+  	
+	else
+	# iOwl already running
+  	echo "iOwl.net already running!"
+  	echo "(PIDs: "$PIDLIST")"
+	
+	fi
 }
 
 iowl_stop () {
-   case "$PROG" in
+   	case "$PROG" in
 
    	*"$BEFEHL"* )
 		kill -2 $IOWLPID
