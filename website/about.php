@@ -26,7 +26,7 @@ include '/home/groups/iowl/htdocs/header.html';
   </tr>
   <tr>
     <td>web:</td>
-    <td><a href="http://www.iowl.net">www.iOwl.net</a></td>
+    <td><a href="http://iowl.berlios.de">iowl.berlios.de</a></td>
   </tr>
 </table>
 <?php
