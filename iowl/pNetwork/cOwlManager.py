@@ -1,8 +1,12 @@
 
-__version__ = "$Revision: 1.23 $"
+__version__ = "$Revision: 1.24 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.24  2002/02/21 13:57:14  Saruman
+Of course, never executed code never gets tested.
+Fixed.
+
 Revision 1.23  2002/02/21 13:49:45  Saruman
 Fixed totally dumb bug for counting answers. Code was never executed.
 C0-Ueberdeckungstests anyone? ;-)
@@ -471,7 +475,7 @@ class cOwlManager:
                 # count Pong
                 self.iNumPongsReceived += 1
                 # finish answer
-                self.FinishAnswer(reqAttributes)
+                self.FinishAnswer(reqAttributes, cNetPackage)
                 return
             elif cNetPackage.GetType() == 'answer':
                 # Pass it to pRecommendationInterface
@@ -484,7 +488,7 @@ class cOwlManager:
                 # count Answer
                 self.iNumAnswersReceived += 1
                 # finish answer
-                self.FinishAnswer(reqAttributes)
+                self.FinishAnswer(reqAttributes, cNetPackage)
                 return
             else:
                 pManager.manager.DebugStr('cOwlManager '+ __version__ +': domType Error! Should never get here!', 1)
@@ -507,7 +511,7 @@ class cOwlManager:
             # start new thread for RPC
             thread.start_new_thread(origOwl.Pong, (sObj,))
             # finish answer
-            self.FinishAnswer(reqAttributes)
+            self.FinishAnswer(reqAttributes, cNetPackage)
             return
         elif cNetPackage.GetType() == 'answer':
             # Pass answer to originating Owl and continue
@@ -515,14 +519,14 @@ class cOwlManager:
             pManager.manager.DebugStr('cOwlManager '+ __version__ +': Sending Answer to '+str(origOwl.GetIP())+':'+str(origOwl.GetPort())+'.', 4)
             thread.start_new_thread(origOwl.Answer, (sObj,))
             # finish answer
-            self.FinishAnswer(reqAttributes)
+            self.FinishAnswer(reqAttributes, cNetPackage)
             return
         else:
             pManager.manager.DebugStr('cOwlManager '+ __version__ +': domType Error! Should never get here!', 1)
             return
 
 
-    def FinishAnswer(self, reqAttributes):
+    def FinishAnswer(self, reqAttributes, cNetPackage):
         """Finish handling of incoming answer
 
         Main purpose: increment and check answercounters
