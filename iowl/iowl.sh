@@ -13,12 +13,15 @@
 ##	$PYTHONPATH -> path to the modules of iOwl.net + original $PYTHONPATH
 ###############################################################################
 
+typeset -x PYTHON
 # PYTHON="python"
 PYTHON="python2.2"
 
+export PYTHON 
+
 ARGUMENTS="pManagement/iowl.py"
 
-# PIDOF=path_to_your_pidof
+# PIDOF=path_to_your_pidof # set if not autodetect
 
 IOWL_DIR=`pwd`
 
@@ -73,7 +76,18 @@ iowl_start () {
 		# iOwl.net isnt running
 		export PYTHONPATH
 		$PYTHON $IOWL_DIR/$ARGUMENTS &
-		# TODO: Check return value from iOwl;
+
+		# checking return-value of iOwl.net
+		case $? in
+			
+			2)	echo "ERROR: There are no PIDs of iOwl.net but the socket-address is already in use!"
+				echo "Wait a short time and start iOwl.net again"
+				exit 1
+			;;
+
+			*)	echo "iOwl.net successfully startet"	
+			;;
+		esac
 	fi
 }
 
