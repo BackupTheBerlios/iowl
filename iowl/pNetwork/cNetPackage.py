@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cNetPackage.py,v $
+Revision 1.5  2002/02/22 12:04:46  Saruman
+initiate answerer IP of pong to localhost.
+
 Revision 1.4  2002/02/11 15:12:38  Saruman
 Major network changes.
 Network protocol now 0.3, incompatible to older versions!
@@ -234,7 +237,7 @@ class cPong(cNetPackage):
         cNetPackage.__init__(self, sType)
 
         # Answerer IP
-        self.sAnswIP = ''
+        self.sAnswIP = '127.0.0.1'
 
         # Answerer Port
         self.iAnswPort = 0
