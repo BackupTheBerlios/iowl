@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.3  2001/03/24 23:26:50  i10614
+fixed bug when creating lots of empty sessions.
+
 Revision 1.2  2001/03/24 19:27:41  i10614
 cvs does not like empty dirs while importing. Trying to add manually.
 
@@ -189,23 +192,19 @@ class pClickstreamInterface:
         # XXX OpenSessions is called periodically
         # should only be called once
         # ...and from sessions on disk
+        # XXX gefixt - Mike
 
         # normalize path: no change on unix, lowercase and forward slashes on win32
         self.sClickstreamPathName = os.path.normcase(self.sClickstreamPathName)
 
         list = os.listdir(self.sClickstreamPathName)
         for file in list:
-            # Mike - removed debug output, added try-except-clause to handle corrupt xml-files
-            #
-            #print file
-            match = re.compile("""clickstream.*xml$""")     # <-- added $ to expression, files HAVE to end with 'xml'
+            match = re.compile("""clickstream.*xml$""")
             if match.match(file):
                 session = cSession.cSession()
                 fullname = os.path.join(self.sClickstreamPathName, file)
-                # print fullname
                 try:
                     session.OpenFile(fullname)
-                    #session.Print()
                     self.lSessions.append(session)
                 except:
                     # Probably corrupt xml-file on disk.
@@ -237,8 +236,12 @@ class pClickstreamInterface:
             except:
                 pass
 
-            # append old session to list of all available sessions
-            self.lSessions.append(self.Session)
+            if self.Session.GetClicksCount() > 0:
+                # append old session to list of all available sessions
+                self.lSessions.append(self.Session)
+            else:
+                pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Old session is empty.')
+
 
         pManager.manager.DebugStr('pClickstreamInterface '+ __version__ +': Starting new session.')
 
