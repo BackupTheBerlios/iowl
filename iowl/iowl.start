@@ -9,7 +9,7 @@ PYTHON="python2.2"
 ARGUMENTS="pManagement/iowl.py"
 
 # set Pythonpath so python can find all our modules and keep original $PYTHONPATH.
-PYTHONPATH=./pAssoRules:./pClickstream:./pGui:./pManagement:./pMisc:./pNetwork:./pProxy:./pRecommendation:./pStatistics:$PYTHONPATH
+PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
 
 # var's for start
 IOWLPS=`ps U $UID | egrep "$PYTHON $IOWL_DIR/$ARGUMENTS" | head -1 | tail -1`

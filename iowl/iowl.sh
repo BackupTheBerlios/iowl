@@ -14,7 +14,7 @@ PROG=`echo "$IOWLPS" | cut -c27-82`
 IOWLPID=`echo "$IOWLPS" | cut -c-5`
 
 # set Pythonpath so python can find all our modules and append original $PYTHONPATH.
-PYTHONPATH=./pAssoRules:./pClickstream:./pGui:./pManagement:./pMisc:./pNetwork:./pProxy:./pRecommendation:./pStatistics:$PYTHONPATH
+PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
 export PYTHONPATH
 
 # how start|stop|kill does work
