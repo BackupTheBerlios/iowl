@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.15 $"
+__version__ = "$Revision: 1.16 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.16  2001/07/15 10:21:33  i10614
+added verbose debug output for different network version conflicts
+
 Revision 1.15  2001/06/10 15:56:08  i10614
 debug output fixes
 
@@ -247,7 +250,7 @@ class cOwlManager:
         # check protocol version
         if cNetPackage.GetProtocolVersion() != self.cNetManager.sProtocol:
             # wrong protocol version. Log error, throw domObj away and continue operation
-            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Received NetPackage with different network version.')
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Received NetPackage with different network version. Mine: '+str(self.cNetManager.sProtocol)+', other: '+str(cNetPackage.GetProtocolVersion()))
             return 0
 
         # check type of domObj
