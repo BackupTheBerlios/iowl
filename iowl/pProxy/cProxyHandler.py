@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.6  2001/04/14 15:04:07  i10614
+fix for title-umlauts, workaround for keep-alive connections
+
 Revision 1.5  2001/04/09 12:24:23  i10614
 changed buffersize for answering requests to 4096bytes
 
@@ -59,6 +62,7 @@ import urlparse
 import cClick
 import htmlentitydefs
 import sys
+import cgi
 
 class cProxyHandler(SocketServer.StreamRequestHandler):
     """The handler hook-in for the proxyServer
@@ -87,8 +91,6 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
     def handle(self):
         """Get called by cProxyCore for each request"""
 
-        # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Got Request from Browser')
-
         try:
             # Parse request
             host, port, request = self.ParseRequest()
@@ -100,7 +102,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
                 return
 
             # init title string
-            self.ClickTitle = 'Unknown Title'
+            self.ClickTitle = 'No Title'
 
             # Build Timestamp for click
             self.ClickTimestamp = time.time()
@@ -115,8 +117,8 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             try:
                 self.HandleResponse(server)
             except IOError:
-                # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Warnig: IOError while HandleResponse. Maybe Browser closed connection?')
-                pass
+                return
+
         except socket.error:
             # request could not be fulfilled, most probably because user pressed interrupted his browser
             # log socket error and forget.
@@ -125,7 +127,6 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
 
 
         # finished request
-        # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Finished Request')
         # Now pass click to pClickstreamINterface, if it is an explicit one
 
         # check if this is an explicit click
@@ -134,7 +135,6 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         if bIsExplicit:
             # Add Click to Clickstream
             ClickstreamInterface = pManager.manager.GetClickstreamInterface()
-            # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click for '+str(self.ClickUrl)+', Title: '+str(self.ClickTitle))
             pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click. Title: '+str(self.ClickTitle))
 
             click = cClick.cClick()
@@ -196,8 +196,6 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         iLength = int(dHeaders.get('content-length', 0))
         # read content if any
         content = self.rfile.read(iLength)
-        # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': content = '+str(content)+'.')
-        # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': GET-Header: '+str(dHeaders))
 
         # store referrer for ClickStream
         self.ClickReferer = ''
@@ -207,6 +205,9 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         # remove some unwanted headers. XXX - Why??
         self.try_del(dHeaders, 'accept-encoding')
         self.try_del(dHeaders, 'proxy-connection')
+        # XXX Cant handle HTTP 1.0 with connection keep-alive <-- FIXME!
+        self.try_del(dHeaders, 'connection')
+
 
         # build new request
         request = '%s %s HTTP/1.0\r\n%s\r\n%s' % (method, path,
@@ -263,6 +264,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         """
         if pManager.manager.GetProxyInterface().GetUseParent():
             # replace host with proxy
+            # XXX DOES NOT WORK!
             host, port = pManager.manager.GetProxyInterface().GetParent()
             pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Using parent proxy at '+str(host)+':'+str(port)+'.')
 
@@ -305,7 +307,6 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             self.ClickContent = dHeaders['content-type']
         else:
             # Assume text/plain
-            # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Warning, no content-type defined. Assuming text/plain.')
             self.ClickContent = 'text/plain'
 
         # pass response to client
@@ -315,10 +316,11 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             self.wfile.write('\r\n')
 
             bChecked = 0
-            iBufferSize = 4096
+            # iBufferSize = 4096
+            iBufferSize = 40
             # transfer actual document by chunks of iBufferSize
             while 1:
-                data = server.read(iBufferSize)
+                data = server.read()
                 if bChecked==0:
                     # need to look inside first buffer to determine if there is a <title></title> tag.
                     self.ClickTitle = self.ExtractTitle(str(data[:]))
@@ -352,13 +354,16 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         iStart = sLowData.find('<title>')
         iEnd = sLowData.find('</title>')
 
-        sTitle = ''
+        sTitle = u''
         if (iStart >= 0) and (iEnd > iStart):
             # okay, we have a complete title-tag
             sTitle = sData[iStart+len('<title>'):iEnd]
 
             # remove leading / trailing whitespaces
             sTitle = string.strip(sTitle)
+
+            # be sure to get rid of umlauts etc (implicit unicode conversion)
+            sTitle = self.FilterUmlauts(sTitle)
 
             if len(sTitle) > 55:
                 # cut off too long title
@@ -370,9 +375,17 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
 
             return sTitle
 
-        return 'Unknown Title'
+        return 'No Title'
 
 
+
+    def FilterUmlauts(self, s):
+        """a quick hack to get rid of umlauts..."""
+
+        dict={'ä':'ae', 'ö':'oe', 'ü':'ue', 'ß':'ss'}
+        for key in dict.keys():
+            s = s.replace(key, dict[key])
+        return s
 
 
 
@@ -460,8 +473,6 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
 
     def HandleCommand(self):
         """Pass command to pGui and forward answer to client"""
-
-        # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected command for iOwl.')
 
         # Get pGuiInterface
         pGuiInterface = pManager.manager.GetGuiInterface()
