@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cNetPackage.py,v $
+Revision 1.2  2001/04/15 19:10:59  i10614
+Ping<->Pong works again.
+
 Revision 1.1  2001/04/14 14:55:27  i10614
 initial release
 
@@ -215,7 +218,7 @@ class cPong(cNetPackage):
         """Constructor"""
 
         # call base-class constructor
-        cPong.__init__(self, sType)
+        cNetPackage.__init__(self, sType)
 
         # Answerer IP
         self.sAnswIP = ''

@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.6  2001/04/15 19:10:59  i10614
+Ping<->Pong works again.
+
 Revision 1.5  2001/04/14 15:01:36  i10614
 bugfixes
 
@@ -186,9 +189,6 @@ class cNetManager:
 
         """
 
-        # log incoming ping
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Ping...')
-
         try:
             # create cDOM from ascii-Ping
             domPing = cDOM.cDOM()
@@ -198,16 +198,21 @@ class cNetManager:
             cPing = cNetPackage.cNetPackage('ping')
             cPing.ParseDOM(domPing)
 
+            # log incoming ping
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Ping from %s:%s.' %(str(cPing.GetOriginator()[0]), str(cPing.GetOriginator()[1])))
+
             # pass ping to cOwlManager. If cOwlManager accepts ping, answer with pong
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Distributing Ping.')
             if self.cOwlManager.Distribute(cPing) == 'okay':
                 # generate Pong
                 try:
                     cPong = self.GeneratePong(cPing)
                 except:
                     # Could not generate Pong
-                    pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not parse info from Ping. No Pong generated.')
+                    pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not generate Pong.')
                     return
                 # pass Pong to cOlwManager
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Answering with Pong.')
                 self.cOwlManager.Answer(cPong)
             else:
                 # something was wrong with that Ping...
@@ -247,13 +252,14 @@ class cNetManager:
             domPong = cDOM.cDOM()
             domPong.ParseString(sPong)
             # create cNetPackage from DOM-Pong
-            cPong = cNetPackage.cNetPackage('pong')
+            cPong = cNetPackage.cPong()
             cPong.ParseDOM(domPong)
 
             # extract PONG-source and add to own list of owls
             self.ExtractPongSource(cPong)
 
             # pass to cOwlManager
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Passing Pong to cOwlManager.Answer()')
             self.cOwlManager.Answer(cPong)
         except:
             # unknown error. log and forget.

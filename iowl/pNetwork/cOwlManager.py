@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.6  2001/04/15 19:10:59  i10614
+Ping<->Pong works again.
+
 Revision 1.5  2001/04/14 15:01:36  i10614
 bugfixes
 
@@ -167,7 +170,7 @@ class cOwlManager:
 
         # look for owl
         for owl in lOwlList:
-            if (owl.IP == tOwl[0]) and (owl.iPort == tOwl[1]):
+            if str(owl.IP) == str(tOwl[0]) and str(owl.iPort) == str(tOwl[1]):
                 # found! Now delete it
                 lOwlList.remove(owl)
                 return
@@ -187,13 +190,13 @@ class cOwlManager:
         # check protocol version
         if cNetPackage.GetProtocolVersion() != self.cNetManager.sProtocol:
             # wrong protocol version. Log error, throw domObj away and continue operation
-            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Received NetPackage with different network version for distribution. Skipping...')
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Received NetPackage with different network version.')
             return 0
 
         # check type of domObj
         if cNetPackage.GetType() not in ('ping', 'request'):
             # unknown type. Log error, throw domObj away and continue operation
-            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Received unknown Dom type "'+cNetPackage.GetType()+'" for distribution. Skipping...')
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Received unknown Dom type "'+cNetPackage.GetType()+'".')
             return 0
 
         # check for circular structures. If id of request is already in
@@ -245,13 +248,12 @@ class cOwlManager:
 
         # Create list of request attributes
         lReqAttributes = range(4)
-        lReqAttributes[self.SourceOwl] = OrigOwl    # owl that i received this request from
+        lReqAttributes[self.SourceOwl] = OrigOwl                    # owl that i received this request from
         lReqAttributes[self.iMaxAnswers] = 2*cNetPackage.GetTTL()   # number of allowed answers. Dependant on TTL
-        lReqAttributes[self.iRecvdAnswers] = 0      # not yet received any answer
-        lReqAttributes[self.iTimeCreated] = time.time() # timestamp when request was created
+        lReqAttributes[self.iRecvdAnswers] = 0                      # not yet received any answer
+        lReqAttributes[self.iTimeCreated] = time.time()             # timestamp when request was created
         # Add request to request-dictionary.
         self.dRequests[cNetPackage.GetID()] = lReqAttributes
-
 
         # if TTL reached zero -> dont distribute request any further
         if cNetPackage.GetTTL() <= 0:
@@ -268,9 +270,6 @@ class cOwlManager:
         # Now pass dom to neighbours#
         #############################
 
-        # first replace originator of dom with myself
-        cNetPackage.SetOriginator(pManager.manager.GetOwnIP(), self.cNetManager.cNetServer.GetListenPort())
-
         # now get list of Owls to pass to.
         # XXX - pretty braindead, just take a slice of lKnownOwls with size self.iNumNeighbours. Should
         #       include more intelligence in selecting target owls.
@@ -282,16 +281,25 @@ class cOwlManager:
             # need a deep copy of list, not just reference...
             lNeighbours = self.lKnownOwls[:]
 
+        distri = []
+        for i in lNeighbours:
+            distri.append(str(i.IP) +':'+ str(i.iPort))
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Neigbours: '+str(distri)+'.')
+
         # remove originating owl from neighbours - dont want to send to creator of packet!
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Removing originator.')
         self.DeleteOwl(lNeighbours, cNetPackage.GetOriginator())
         # remove myself from neighbours - dont want to send to myself!
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Removing myself.')
         self.DeleteOwl(lNeighbours, (pManager.manager.GetOwnIP(), self.cNetManager.cNetServer.GetListenPort()))
+
+        # now replace originator of netpackage with myself
+        cNetPackage.SetOriginator(pManager.manager.GetOwnIP(), self.cNetManager.cNetServer.GetListenPort())
 
         distri = []
         for i in lNeighbours:
             distri.append(str(i.IP) +':'+ str(i.iPort))
-
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Distributing to: '+str(distri)+'.')
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Neigbours: '+str(distri)+'.')
 
         if len(lNeighbours) == 0:
             # empty list!
@@ -346,9 +354,6 @@ class cOwlManager:
 
         """
 
-        if not self.IsValidPackage(cNetPackage):
-            return
-
         # look in requests dictionary for originating owl of request
         try:
             reqAttributes = self.dRequests[cNetPackage.GetID()]
@@ -372,12 +377,12 @@ class cOwlManager:
         if (str(reqAttributes[self.SourceOwl].IP)    == str(pManager.manager.GetOwnIP())) and \
            (str(reqAttributes[self.SourceOwl].iPort) == str(self.cNetManager.cNetServer.GetListenPort())):
             # answer for myself!
-            if type == 'pong':
+            if cNetPackage.GetType() == 'pong':
                 # Pong info already extracted inside cNetManager.HandlePong().
                 # just throw away and continue
                 pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received Pong for myself.')
                 return
-            elif type == 'answer':
+            elif cNetPackage.GetType() == 'answer':
                 # Pass it to pRecommendationInterface
                 pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received Answer for myself. Passing on to pRecommendation.')
                 # Get Answer element from cNetPackage

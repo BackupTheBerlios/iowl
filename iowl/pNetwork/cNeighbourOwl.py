@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cNeighbourOwl.py,v $
+Revision 1.4  2001/04/15 19:10:59  i10614
+Ping<->Pong works again.
+
 Revision 1.3  2001/04/14 15:01:36  i10614
 bugfixes
 
@@ -100,7 +103,7 @@ class cNeighbourOwl:
             # Can't call remote function - delete owl from list
             pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Cant do RPC for '+str(self.IP)+':'+str(self.iPort)+'. Deleting owl from list of known owls.')
             # Delete owl
-            self.cOwlManager.DeleteOwl(self.cOwlManager.lKnownOwls, self.IP, self.iPort)
+            self.cOwlManager.DeleteOwl(self.cOwlManager.lKnownOwls, (self.IP, self.iPort))
 
 
 
@@ -119,7 +122,7 @@ class cNeighbourOwl:
             # Can't call remote function - delete owl from list
             pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Cant do RPC for '+str(self.IP)+':'+str(self.iPort)+'. Deleting owl from list of known owls.')
             # Delete owl
-            self.cOwlManager.DeleteOwl(self.cOwlManager.lKnownOwls, self.IP, self.iPort)
+            self.cOwlManager.DeleteOwl(self.cOwlManager.lKnownOwls, (self.IP, self.iPort))
 
 
     def Answer(self, sAnswer):
@@ -138,7 +141,7 @@ class cNeighbourOwl:
             # Can't call remote function - delete owl from list
             pManager.manager.DebugStr('cNeighbourOwl '+ __version__ +': Cant do RPC for '+str(self.IP)+':'+str(self.iPort)+'. Deleting owl from list of known owls.')
             # Delete owl
-            self.cOwlManager.DeleteOwl(self.cOwlManager.lKnownOwls, self.IP, self.iPort)
+            self.cOwlManager.DeleteOwl(self.cOwlManager.lKnownOwls, (self.IP, self.iPort))
 
 
 
