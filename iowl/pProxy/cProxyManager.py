@@ -1,9 +1,12 @@
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cProxyManager.py,v $
-Revision 1.1  2001/03/24 19:23:01  i10614
-Initial revision
+Revision 1.2  2001/03/27 14:09:11  i10614
+added functionality to specify address proxy listens at in configfile
+
+Revision 1.1.1.1  2001/03/24 19:23:01  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.5  2001/02/21 14:52:10  mbauer
 minor changes
@@ -54,6 +57,7 @@ class cProxyManager:
         parentproxyip   -- ip of parent proxy i should use
         parentproxyport -- port of parent proxy
         recording       -- status of proxy (recording/not recording clickstream)
+        listento        -- adress the proxy listens to
 
         """
 
@@ -69,9 +73,11 @@ class cProxyManager:
             self.cProxyCore.SetUseParent(int(sValue))
         elif sOption == 'recording':
             self.bRecording = int(sValue)
+        elif sOption == 'listenat':
+            self.cProxyCore.SetListenAt(str(sValue))
         else:
             # unknown option!
-            self.DebugStr('pProxyManager '+ __version__ +': Warning: Trying to set unknown parameter "'+sOption+'".')
+            pManager.manager.DebugStr('pProxyManager '+ __version__ +': Warning: Trying to set unknown parameter "'+sOption+'".')
 
 
     def GetParent(self):

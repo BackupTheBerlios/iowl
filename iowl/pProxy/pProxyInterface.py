@@ -1,9 +1,12 @@
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: pProxyInterface.py,v $
-Revision 1.1  2001/03/24 19:23:02  i10614
-Initial revision
+Revision 1.2  2001/03/27 14:09:11  i10614
+added functionality to specify address proxy listens at in configfile
+
+Revision 1.1.1.1  2001/03/24 19:23:02  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.3  2001/02/20 17:37:13  mbauer
 added SetRecording() and GetStatus()
@@ -53,6 +56,7 @@ class pProxyInterface:
     def ShutDown(self):
         """Stop proxy Operation"""
 
+        pManager.manager.DebugStr('pProxy '+ __version__ +': Shutting down.')
         self.cProxyManager.Stop()
 
 
