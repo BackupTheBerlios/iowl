@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.8 $"
+__version__ = "$Revision: 1.9 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.9  2001/07/15 14:37:55  i10614
+updated configuration GUI
+
 Revision 1.8  2001/07/15 10:15:26  i10614
 added commands "showconfig" and "showlog"
 
@@ -140,7 +143,7 @@ class cGuiRequestHandler:
         sScheme, iHostport, sPath, lParams, sQuery, fragment = urlparse.urlparse(sUrl)
 
         # detect file requests
-        if sPath.endswith('.gif'):
+        if sPath.endswith('.gif') or sPath.endswith('.jpg') or sPath.endswith('.png'):
             # pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Query for gif "'+str(sPath)+'"')
             # return gif
             return self.cBinaryDataGrabber.GetData(sPath)
@@ -194,18 +197,12 @@ class cGuiRequestHandler:
             return self.cGetRecommendationsDataGrabber.GetHtml(dParams)
         elif sCommand == 'activate':
             # activate clickstream recording
-            pManager.manager.SaveParam('pProxy','recording','1')
-            pManager.manager.GetProxyInterface().SetParam('recording','1')
-            # update trayicon, if any
-            pManager.manager.SetIcon(1)
+            pManager.manager.UpdateConfig('pProxy','recording','1')
             # return mainpage
             return self.cDefaultDataGrabber.GetHtml(dParams)
         elif sCommand == 'deactivate':
             # deactivate clickstream recording
-            pManager.manager.SaveParam('pProxy','recording','0')
-            pManager.manager.GetProxyInterface().SetParam('recording', '0')
-            # update trayicon, if any
-            pManager.manager.SetIcon(0)
+            pManager.manager.UpdateConfig('pProxy','recording','0')
             # return mainpage
             return self.cDefaultDataGrabber.GetHtml(dParams)
         elif sCommand == 'remove':
@@ -215,6 +212,11 @@ class cGuiRequestHandler:
             # remove url from clickstream
             cs.RemoveUrl(dParams['sUrl'])
             return self.cDefaultDataGrabber.GetHtml(dParams)
+        elif sCommand == 'updateconfig':
+            # update configuration
+            pManager.manager.UpdateConfig(dParams['section'], dParams['option'], dParams['value'])
+            # return updated config dialog
+            return self.cConfigureGrabber.GetHtml(dParams)
         elif sCommand == 'error':
             # return error page
             return self.cErrorDataGrabber.GetHtml(dParams)

@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cCommandValidator.py,v $
+Revision 1.3  2001/07/15 14:37:55  i10614
+updated configuration GUI
+
 Revision 1.2  2001/07/15 10:15:26  i10614
 added commands "showconfig" and "showlog"
 
@@ -122,6 +125,14 @@ class cCommandValidator:
             dParams['sUrl'] = dQuery['url']
             return 'remove', dParams
 
+        if dQuery['action'][0] == 'updateconfig':
+            if len(dQuery.keys()) != 4:
+                dParams['message'] = 'command updateconfig needs 3 parameter! (section, option, value)'
+                return 'error', dParams
+            dParams['section'] = dQuery['section'][0]
+            dParams['option'] = dQuery['option'][0]
+            dParams['value'] = dQuery['value'][0]
+            return 'updateconfig', dParams
 
         # default
         dParams['message']='unknown command "'+str(dQuery['action'])+'".'
