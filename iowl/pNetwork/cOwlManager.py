@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.10 $"
+__version__ = "$Revision: 1.11 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.11  2001/04/22 18:55:40  i10614
+bugfix for validating neighbourowls
+
 Revision 1.10  2001/04/22 13:27:51  i10614
 extended owl-caching -> now verifying old owls
 
@@ -487,7 +490,7 @@ class cOwlManager:
 
         for owl in self.lKnownOwls:
             try:
-                s.connect(owl.GetIP(), owl.GetPort())
+                s.connect((owl.GetIP(), int(owl.GetPort())))
                 s.close()
             except:
                 pManager.manager.DebugStr('cOwlManager '+ __version__ +': Removing unreachable owl %s:%s.' %(str(owl.GetIP()), str(owl.GetPort())))
