@@ -1,9 +1,12 @@
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cGetRecommendationsDataGrabber.py,v $
-Revision 1.1  2001/03/24 19:22:58  i10614
-Initial revision
+Revision 1.2  2001/04/23 13:03:26  i10614
+added target _new
+
+Revision 1.1.1.1  2001/03/24 19:22:58  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.6  2001/02/22 23:13:05  mbauer
 cosmetic changes
@@ -75,7 +78,7 @@ class cGetRecommendationsDataGrabber:
         else:
             sContent = sContent + '<h4>Success :-)<br>I would recommend you have a look at the following ressource(s):</h4>'
             for click in lClicks:
-                sContent = sContent +'<p><a href="%s">%s</a></p>' % (str(urlparse.urlunparse(click.GetUrl())), str(click.GetTitle()))
+                sContent = sContent +'<p><a href="%s" target="_new">%s</a></p>' % (str(urlparse.urlunparse(click.GetUrl())), str(click.GetTitle()))
         # Get second part of page
         sPart2 = self.cGuiRequestHandler.GetEndPage()
 
