@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cStatsDataGrabber.py,v $
+Revision 1.4  2002/02/21 13:56:39  Saruman
+clarified routing table
+
 Revision 1.3  2002/02/21 12:46:18  Saruman
 Added routingtable to statistics page
 
@@ -87,7 +90,7 @@ class cStatsDataGrabber:
         sTable = "<table border=\"1\">\n"
         sTable = sTable + """<tr>
   <th>ID</th>
-  <th>Sourceowl</th>
+  <th>Routing to</th>
   <th>MaxAnswers</th>
   <th>ReceivedAnswers</th>
   <th>Time Created</th>
