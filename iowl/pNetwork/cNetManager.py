@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.12 $"
+__version__ = "$Revision: 1.13 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.13  2001/05/20 16:15:45  i10614
+small changes for .exe-building
+
 Revision 1.12  2001/05/07 07:40:17  i10614
 added iow.net/entry.pl functionality
 
@@ -107,7 +110,7 @@ class cNetManager:
         self.sProtocol = "0.2"
 
         # name for owlfile
-        self.sOwlFilename = "owls.txt"
+        self.sOwlFilename = "data/cache.txt"
 
         # url for owls
         self.sOwlUrl = "http://www.iowl.net/entry.pl"
@@ -449,7 +452,7 @@ class cNetManager:
         cRequest = self.GenerateRequest(elRequest)
 
         # Pass Request to cOwlManager
-        pManager.manager.DebugStr('pNetwork '+ __version__ +': Passing request to cOwlManager.Distribute().')
+        pManager.manager.DebugStr('pNetwork '+ __version__ +': Passing request to network.')
         if self.cOwlManager.Distribute(cRequest) == 'okay':
             pManager.manager.DebugStr('pNetwork '+ __version__ +': Passed Request -> Okay.')
         else:
@@ -477,7 +480,7 @@ class cNetManager:
         cAnswer = self.GenerateAnswer(elAnswer, id)
 
         # pass Answer to cOwlManager
-        pManager.manager.DebugStr('pNetwork '+ __version__ +': Passing answer to cOwlManager.Answer().')
+        pManager.manager.DebugStr('pNetwork '+ __version__ +': Passing answer to network.')
         self.cOwlManager.Answer(cAnswer)
 
 
@@ -654,10 +657,10 @@ class cNetManager:
                     s.connect((owl, int(self.cNetServer.GetListenPort())))
                     s.close()
                 except:
-                    pManager.manager.DebugStr('cNetManager '+ __version__ +': Discarding IP %s' %(owl, ))
+                    #pManager.manager.DebugStr('cNetManager '+ __version__ +': Discarding IP %s' %(owl, ))
                     continue
 
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': Adding IP %s' %(owl, ))
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Added owl.')
                 self.cOwlManager.AddOwl((owl, self.cNetServer.GetListenPort()))
 
         except:

@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.8 $"
+__version__ = "$Revision: 1.9 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.9  2001/05/20 16:16:22  i10614
+small changes for .exe-building
+
 Revision 1.8  2001/04/22 13:26:10  i10614
 modified starting to enable codefork depending on platform
 
@@ -125,7 +128,7 @@ class cManager:
         self.sBuild = '25.03.2001 23:02'
 
         # default logfile
-        self.sLogFileName = "iowl.log"
+        self.sLogFileName = "data/iowl.log"
 
         # open logfile in append mode
         try:

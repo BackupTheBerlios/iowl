@@ -1,9 +1,12 @@
 #!/usr/local/bin/python
 
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: iowl.py,v $
+Revision 1.6  2001/05/20 16:16:10  i10614
+small changes for .exe-building
+
 Revision 1.5  2001/04/22 17:51:45  i10614
 added win32 trayicon support
 
@@ -108,7 +111,7 @@ if sys.platform[:3] == 'win':
             UpdateWindow(self.hwnd)
 
             # set icon
-            iconPathName = "iowl2.ico"
+            iconPathName = "data/iowl2.ico"
             if not os.path.isfile(iconPathName):
                 # Look in the source tree.
                 iconPathName = os.path.abspath(os.path.join( os.path.split(sys.executable)[0], "..\\PC\\pyc.ico" ))
