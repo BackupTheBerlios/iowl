@@ -2,16 +2,17 @@
 # iOwl.net - iowl.start
 
 # the executable
-PYTHON="python"
+# PYTHON="python"
+
 # debian needs this:
-# PYTHON="python2.2"
+PYTHON="python2.2"
 
 # set Pythonpath so python can find all our modules and append original $PYTHONPATH.
 PYTHONPATH=./pAssoRules:./pClickstream:./pGui:./pManagement:./pMisc:./pNetwork:./pProxy:./pRecommendation:./pStatistics:$PYTHONPATH
 export PYTHONPATH
 
 # start iOwl
-$PYTHON pManagement/iowl.py
+$PYTHON pManagement/iowl.py &
 
 # thats it
 exit 0
