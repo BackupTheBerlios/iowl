@@ -93,8 +93,8 @@ fi
 ###############################################################################
 
 network () {
-	proxy=`netstat -n | grep -e 3228 | tail -1 | cut -b -10`
-	iowl=`netstat -n | grep -e 2828 | tail -1 | cut -b -10`
+	proxy=`netstat -n | sed -n -e '/\<3228/ p'`
+	iowl=`netstat -n | sed -n -e '/\<2828/ p'`
 	# are there open ports?
 	if [ -n "$proxy"  ]; then
 			echo "There are open ports for iOwl.net-Proxy! Wait a short time and to start again."
@@ -118,7 +118,8 @@ iowl_start () {
 	if [ -n "$PIDLIST" ];
         	then
         	# iOwl.net already running
-        	echo "iOwl.net already running!  (PID's: "$PIDLIST")";
+        	echo "iOwl.net already running!"
+		echo "(PID's: "$PIDLIST")";
 
 		else
 			network
@@ -135,10 +136,13 @@ iowl_stop () {
    	if [ -n "$PIDLIST" ];
         	then 
         	# iOwl.net is already running
-        	echo "iOwl.net is already running!  (PID's: "$PIDLIST")"
+        	# echo "iOwl.net is already running!  (PID's: "$PIDLIST")"
         	kill -SIGUSR1 $PIDLIST
-        	echo "iOwl.net processes stopped!"
+		# wait till iOwl stopped
+        	# wait "$PIDLIST"
+		echo "iOwl.net processes stopped!"
 		sleep 1
+		# check network status
 		network
 
 		else
@@ -154,11 +158,13 @@ iowl_status () {
 	if [ -n "$PIDLIST" ];
         	then 
         	# iOwl.net is already running
-        	echo "iOwl.net is already running!  (PID's: "$PIDLIST")";
+        	echo "iOwl.net is already running!"
+		echo " (PID's: "$PIDLIST")";
 
 		else
 		# iOwl.net is not running
 		echo "iOwl.net is not running!"
+		# check network status
 		network
 	fi
 }
@@ -170,7 +176,7 @@ iowl_kill () {
 	if [ -n "$PIDLIST" ];
         	then 
         	# iOwl.net is already running
-        	echo "iOwl.net is already running!  (PID's: "$PIDLIST")"
+        	# echo "iOwl.net is already running!  (PID's: "$PIDLIST")"
         	kill -9 $PIDLIST
         	echo "iOwl.net processes killed!";
 
