@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cGuiRequestHandler.py,v $
+Revision 1.4  2001/04/22 13:24:03  i10614
+changed html meta-tags to disable caching of iOwl-pages
+
 Revision 1.3  2001/03/28 19:53:07  i10614
 replaced http://iowl with http://my.iowl.net
 
