@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: pRecommendationInterface.py,v $
+Revision 1.4  2001/03/27 18:27:04  i10614
+added shutdown notification
+
 Revision 1.3  2001/03/24 23:40:35  i10614
 various bugfixes
 
@@ -99,7 +102,7 @@ class pRecommendationInterface:
 
     def Shutdown(self):
         """Kind of destructor."""
-        print "shutdown"
+        pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Shutting down.')
 
 
     def GenerateSingleRequest(self, sUrl):

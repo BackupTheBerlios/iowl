@@ -1,10 +1,13 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: pNetworkInterface.py,v $
-Revision 1.1  2001/03/24 19:22:39  i10614
-Initial revision
+Revision 1.2  2001/03/27 18:25:17  i10614
+added shutdown notification
+
+Revision 1.1.1.1  2001/03/24 19:22:39  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.5  2001/02/19 17:42:21  mbauer
 added SendAnswer, SendRequest for pRecommendation
@@ -18,8 +21,8 @@ initial version
 
 """
 
-#import other network modules
 import cNetManager
+import pManager
 
 class pNetworkInterface:
     """Interface class for package pNetwork
@@ -85,6 +88,8 @@ class pNetworkInterface:
     def Shutdown(self):
         """Initiate shutdown of Network"""
 
+
+        pManager.manager.DebugStr('pNetwork '+ __version__ +': Shutting down.')
         self.cNetManager.Stop()
 
 
