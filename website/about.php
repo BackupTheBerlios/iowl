@@ -3,18 +3,13 @@ include '/home/groups/iowl/htdocs/header.html';
 ?>
 <h1>About iOwl.net</h1>
 <p>iOwl.net is a cooporation of people with the same vision - an
- internet where information can easily be found without searching.
- <br />The idea of iOwl.net was born in the middle of 2000. Now, first
- results are available. </p>
-<h2>Team members and what they do:</h2>
-<p><a href="mailto:mbauer@iowl.net">Michael Bauer</a> - technical
- architecture, software design</p>
-<p><a href="mailto:cfreitag@iowl.net">Christoph Freitag</a> - business
- visions and goals, public relations</p>
-<p><a href="mailto:aharth@iowl.net">Andreas Harth</a> - software
- design, founder of iOwl.net</p>
-<p><a href="mailto:mpopp@iowl.net">Marcus Popp</a> - corporate organization,
- marketing, web maintenance</p>
+ internet where information can easily be found without searching.</p>
+<p>The idea of iOwl.net was born in the middle of 2000.</p>
+<h2>Core Team members currently are:</h2>
+<p><a href="mailto:mike_ba@web.de">Michael Bauer</a></p>
+<p><a href="mailto:andreas@biessmann.de">Andreas Bieﬂmann</a></p>
+<p><a href="mailto:a@harth.org">Andreas Harth</a></p>
+<p><a href="mailto:mp@24-7-networks.com">Marcus Popp</a></p>
 <h2>Contact:</h2>
 <table border="0">
   <tr>
@@ -27,7 +22,7 @@ include '/home/groups/iowl/htdocs/header.html';
   </tr>
   <tr>
     <td>e-mail:</td>
-    <td><a href="mailto:info@iowl.net?subject=Contact - iOwl.net">info@iOwl.net</a></td>
+    <td><a href="mailto:iowl-users@lists.berlios.de">iowl-users@lists.berlios.de</a></td>
   </tr>
   <tr>
     <td>web:</td>
