@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.5  2001/04/09 12:24:23  i10614
+changed buffersize for answering requests to 4096bytes
+
 Revision 1.4  2001/03/28 15:40:02  i10614
 finally got rid of (most) thread exceptions (socket.error) under win32
 
@@ -312,7 +315,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             self.wfile.write('\r\n')
 
             bChecked = 0
-            iBufferSize = 1024
+            iBufferSize = 4096
             # transfer actual document by chunks of iBufferSize
             while 1:
                 data = server.read(iBufferSize)
