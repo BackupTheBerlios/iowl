@@ -22,5 +22,7 @@
 #
 # For example:
 #DEFAULT (echo ""; id; echo %s; date; cat) >> $CVSROOT/CVSROOT/commitlog
-# or
-#DEFAULT (echo ""; id; echo %{sVv}; date; cat) >> $CVSROOT/CVSROOT/commitlog
+
+# send mail to iowl-devel for each commit
+ALL /usr/local/bin/log.pl %s -f /cvsroot/iowl/CVSROOT/commitlog -m iowl-devel@lists.berlios.de
+
