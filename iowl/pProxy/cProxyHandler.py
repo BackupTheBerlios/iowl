@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.26 $"
+__version__ = "$Revision: 1.27 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.27  2002/02/07 15:22:12  aharth
+fixed address already in use exception
+
 Revision 1.26  2002/01/30 10:41:11  Saruman
 Again improved explicit click detection. Tried to improve title extraction from html-files.
 
@@ -329,6 +332,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         try:
             addr = socket.gethostbyname(host)
             server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             server.connect((addr, port))
         except socket.error, err:
             self.error(200, 'Error connecting to "%s" (%s)' % (host, err))

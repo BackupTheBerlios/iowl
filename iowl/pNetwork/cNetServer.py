@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cNetServer.py,v $
+Revision 1.4  2002/02/07 15:21:51  aharth
+fixed address already in use exception
+
 Revision 1.3  2001/08/10 18:41:46  i10614
 changed debug output.
 
@@ -32,6 +35,11 @@ import thread
 import pManager
 import socket
 
+class MyTCPServer(SocketServer.ThreadingTCPServer):
+    def server_bind(self):
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.socket.bind(self.server_address)
+
 class cNetServer:
     """Listen for incoming connections from other owls"""
 
@@ -50,7 +58,7 @@ class cNetServer:
         """Start TCPserver"""
 
         pManager.manager.DebugStr('cNetServer '+ __version__ +': Starting thread for NetServer', 2)
-        self.server = SocketServer.TCPServer(('', self.iListenPort), cRPCRequestHandler.cRPCRequestHandler)
+        self.server = MyTCPServer(('', self.iListenPort), cRPCRequestHandler.cRPCRequestHandler)
 
         # for testing only - start listen without new thread:
         # self.server.serve_forever()
