@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.17 $"
+__version__ = "$Revision: 1.18 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.18  2001/05/30 20:27:04  i10614
+Now connect to www.iowl.net instead of random owl to get own ip. Removed some debug output.
+
 Revision 1.17  2001/05/26 14:01:19  i10614
 changed default params
 
@@ -162,7 +165,7 @@ class cNetManager:
                 self.EntryIP = socket.gethostbyname(str(sValue))
             except socket.error:
                 # cant resolve hostname
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': Warning: Can\'t resolve %s.' %(sValue, ))
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Warning: Can\'t resolve entryowl %s.' %(sValue, ))
                 self.EntryIP = ''
         elif sOption == 'entryport':
             self.iEntryPort = int(sValue)
@@ -216,8 +219,8 @@ class cNetManager:
             thread.start_new_thread(self.GetWebOwls, ())
 
         # determine own IP adress
-        tOwl = self.cOwlManager.GetSingleOwl()
-        pManager.manager.SetOwnIP(self.GetOwnIP(tOwl[0], tOwl[1]))
+        # tOwl = self.cOwlManager.GetSingleOwl()
+        pManager.manager.SetOwnIP(self.GetOwnIP())
 
         # generate PING
         cPing = self.GeneratePing()
@@ -618,10 +621,10 @@ class cNetManager:
         self.cOwlManager.AddOwl(cPong.GetAnswerer())
 
 
-    def GetOwnIP(self, sIP, iPort):
+    def GetOwnIP(self):
         """Determine own IP
 
-        Try to connect a socket to entryowl and call socket.getsockname() to
+        Try to connect a socket to www.iowl.net and call socket.getsockname() to
         get ip for the correct interface. Important if i have more than one network interfaces.
 
         If socket-connect fails, try fallback with 'gethostbyname(gethostname())'
@@ -637,9 +640,9 @@ class cNetManager:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             # connect to entryOwl
-            s.connect((sIP, iPort))
+            s.connect(('www.iowl.net', 80))
             # get hostname and port
-            sOwnIP, iOwnPort = s.getsockname()
+            sOwnIP, iPort = s.getsockname()
             # close socket
             s.close()
         except:
@@ -669,7 +672,7 @@ class cNetManager:
             pManager.manager.DebugStr('cNetManager '+ __version__ +': Not enough owls in cache. Getting some more owls from website.')
             sList = urllib.urlopen(self.sOwlUrl).read()
             lOwls = sList.split(",")
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': Got '+str(len(lOwls))+' owls from website.')
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Got '+str(len(lOwls))+' IPs from website. Now validating...')
             # create socket
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             for owl in lOwls:
@@ -677,10 +680,10 @@ class cNetManager:
                     s.connect((owl, int(self.cNetServer.GetListenPort())))
                     s.close()
                 except:
-                    #pManager.manager.DebugStr('cNetManager '+ __version__ +': Discarding IP %s' %(owl, ))
+                    pManager.manager.DebugStr('cNetManager '+ __version__ +': Detected stale owl. Discarding...')
                     continue
 
-                # pManager.manager.DebugStr('cNetManager '+ __version__ +': Added owl.')
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Added owl.')
                 self.cOwlManager.AddOwl((owl, self.cNetServer.GetListenPort()))
 
         except:
