@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.28 $"
+__version__ = "$Revision: 1.29 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.29  2002/02/20 11:41:00  Saruman
+Dont report unresolvable domains with "200 OK" :)
+
 Revision 1.28  2002/02/11 10:58:15  Saruman
 Fixed Bug #119 -> remove explicit port from url, if it is default port 80.
 
@@ -343,7 +346,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             server.connect((addr, port))
         except socket.error, err:
-            self.error(200, 'Error connecting to "%s" (%s)' % (host, err))
+            self.error(400, 'Error connecting to "%s" (%s)' % (host, err))
         return server.makefile('rb'), server.makefile('wb')
 
 
