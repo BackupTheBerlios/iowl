@@ -8,8 +8,8 @@ IOWLPID=`echo "$AUSGABE" | cut -c-5`
 
 case "$PROG" in
 
-	*"$BEFEHL"* )	kill -INT $IOWLPID
-			echo "iOwl.net processes killed" ;;
+	*"$BEFEHL"* )	kill -2 $IOWLPID
+			echo "iOwl.net processes stopped" ;;
 
 	* )		echo "No iOwl.net running" ;;
 
