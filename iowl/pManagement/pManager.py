@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.3  2001/03/28 15:29:37  i10614
+renamed timer to watchdog to prevent collisions with win32 extensions
+
 Revision 1.2  2001/03/26 12:09:21  i10614
 added version and build
 
@@ -67,7 +70,7 @@ import mutex
 import ConfigParser
 import string
 import time
-import timer
+import watchdog
 import whrandom
 import socket
 
@@ -107,7 +110,7 @@ class cManager:
         self.sBuild = '25.03.2001 23:02'
 
         # create timer
-        self.timer = timer.timer()
+        self.timer = watchdog.timer()
 
         # init parser for configfile
         self.Config = ConfigParser.ConfigParser()

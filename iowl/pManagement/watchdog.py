@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.1 $"
 
 """
-$Log: timer.py,v $
+$Log: watchdog.py,v $
+Revision 1.1  2001/03/28 15:30:13  i10614
+renamed timer to watchdog to prevent collisions with win32 extensions
+
 Revision 1.2  2001/03/27 18:24:30  i10614
 fixed some bugs
 
