@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cData.py,v $
+Revision 1.4  2001/08/07 18:46:18  i10614
+bugfixes by Andi
+
 Revision 1.3  2001/03/27 18:22:12  i10614
 Changed Session handling. A new session is created inside AddClick(). Whith
 each new Session a new watchdog is registered.
@@ -93,6 +96,8 @@ class cData:
         # don't create empty files
         if len(self.lData) != 0:
             self.file.Save()
+        else:
+            self.file.DeleteFile()
 
 
     def Print(self):

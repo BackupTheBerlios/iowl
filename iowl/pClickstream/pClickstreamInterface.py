@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.13 $"
+__version__ = "$Revision: 1.14 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.14  2001/08/07 18:46:18  i10614
+bugfixes by Andi
+
 Revision 1.13  2001/07/19 19:44:15  i10614
 removed warning at initial setting of options
 
@@ -197,6 +200,13 @@ class pClickstreamInterface:
 
         for session in lSessions:
             session.RemoveUrl(tUrl)
+
+# XXX - Check this, we are deleting list items while iterating the list!
+#
+#    if (session.GetClicksCount() == 0):
+#        session.CloseFile()
+#        iIndex = self.lSessions.index(session)
+#        del self.lSessions[iIndex]
 
 
     def GetSessions(self):
