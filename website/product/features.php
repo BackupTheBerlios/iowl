@@ -3,8 +3,8 @@ include '/home/groups/iowl/htdocs/header.html';
 ?>
 <h1>Product</h1>
 <h2>Features
-  - <a href="screen.html">Screenshots</a>
-  - <a href="privacy.html">Privacy issues</a></h2>
+  - <a href="screen.php">Screenshots</a>
+  - <a href="privacy.php">Privacy issues</a></h2>
 <p>iOwl.net provides the following features to get the best of the web. </p>
 <ul>
   <li>Finds websites and documents </li>
