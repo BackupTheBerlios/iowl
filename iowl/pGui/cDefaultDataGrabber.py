@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cDefaultDataGrabber.py,v $
+Revision 1.3  2001/03/27 18:23:10  i10614
+added session creation date to history
+
 Revision 1.2  2001/03/26 12:08:23  i10614
 added version and build date
 
@@ -96,12 +99,15 @@ class cDefaultDataGrabber:
             iSessionIndex = 0
             iClickIndex = 0
             for cSession in lSessions:
-                iSessionIndex = iSessionIndex + 1
-                if iSessionIndex == 1:
+                # iSessionIndex = iSessionIndex + 1
+                #if iSessionIndex == 1:
                     # first session
-                    sContent = sContent + '<h4>Current Session:</h4>'
-                else:
-                    sContent = sContent + '<h4>Session No. '+ str(iSessionIndex)+'</h4>'
+                #     sContent = sContent + '<h4>Current Session:</h4>'
+                # else:
+                #     sContent = sContent + '<h4>Session No. '+ str(iSessionIndex)+'</h4>'
+
+                # session creation date
+                sContent = sContent + '<h4>%s</h4>' % time.ctime(cSession.GetCreationTime())
                 # get copy of all clicks from session
                 lClicks = cSession.GetClicks()[:]
                 # reverse order of clicks

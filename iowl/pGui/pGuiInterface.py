@@ -1,9 +1,12 @@
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: pGuiInterface.py,v $
-Revision 1.1  2001/03/24 19:22:54  i10614
-Initial revision
+Revision 1.2  2001/03/27 18:23:11  i10614
+added session creation date to history
+
+Revision 1.1.1.1  2001/03/24 19:22:54  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.2  2001/02/22 14:47:44  mbauer
 new Gui-look implemented
@@ -16,6 +19,7 @@ initital release
 """
 
 import cGuiRequestHandler
+import pManager
 
 class pGuiInterface:
     """Interface for package pGui"""
@@ -54,6 +58,8 @@ class pGuiInterface:
         pGui does not need any shutdown activity...
 
         """
+
+        pManager.manager.DebugStr('pGui '+ __version__ +': Shutting down.')
         return
 
 
