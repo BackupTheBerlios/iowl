@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.21 $"
+__version__ = "$Revision: 1.22 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.22  2002/03/16 11:03:25  aharth
+added title extraction to pclickstream
+
 Revision 1.21  2002/01/25 13:19:07  aharth
 added = to exlusion for recording bug#103
 
@@ -130,6 +133,7 @@ initial release of pClickstream
 """
 
 import cSession
+import cContent
 import urlparse
 import re
 import os
@@ -169,17 +173,6 @@ class pClickstreamInterface:
 
         # read old sessions
         self.OpenSessions()
-
-        # Mike - changed session management, watchdog registering now happens in StartNewSession(),
-        #        StartNewSession() is called from within AddClick()
-
-        # start current session
-        # self.StartNewSession()
-
-        # register watchdog
-        # if self.iWatchdogID == 0:
-        #     self.iWatchdogID = pManager.manager.RegisterWatchdog(\
-        #         self.StartNewSession, self.iRestart)
 
 
     def SetParam(self, sParameter, sValue):
@@ -233,12 +226,6 @@ class pClickstreamInterface:
                     self.Session = None
                 else:
                     del self.lSessions[iIndex]
-                #lRemoveSessions.append(iIndex)
-            #    except:
-             #       self.Sesssion
-
-#        for iIndex in lRemoveSessions:
- #           del self.lSessions[iIndex]
 
 
     def GetSessions(self):
@@ -379,22 +366,30 @@ class pClickstreamInterface:
 
 
 
-    def AddClick(self, click):
+    def AddClick(self, click, contentstr):
         """Add click to internal list.
 
         if there is no session active, start a new one.
+        also extract title from contentstr
 
         """
 
         # acquire lock
         self.ClickLock.acquire()
 
-        if self.Session == None:
-            # First start a session
-            self.StartNewSession()
+        # extract title
+        content = cContent.cContent(contentstr)
 
-        if self.ClickIsValid(click) > 0:
+        if content.ClickIsValid(click) > 0:
             # Okay, click is valid. Append to session.
+            
+            if self.Session == None:
+                # First start a session
+                self.StartNewSession()
+
+            # extract title
+            click.SetTitle(content.GetTitle())
+
             self.Session.AddClick(click)
             self.WasAdded = 1
         else:
@@ -406,63 +401,6 @@ class pClickstreamInterface:
 
         # release lock
         self.ClickLock.release()
-
-
-    def ClickIsValid(self, click):
-        """Verify given click
-
-        examines the click to prevent logging database-driven
-        sites, passwords, cgi-bins etc.
-
-        throw away:
-            - wrong type of file (there are lots of .jpgs passed
-              as text/html...)
-            - username:password in uri
-            - cgi-bins in uri
-
-        If referrer contains a invalid uri, referrer gets deleted.
-
-
-        XXX - modify invalid clicks (remove "user:password@", strip cgi-bins down
-              to plain host/path/...) or just throw them away?
-
-        return true if click should be recorded, false otherwise.
-
-        """
-
-        # tuple of strings that are not allowed in clicks:
-        # ? -> cgi-bins
-        # @ -> user/password
-        # = -> doubleclick stuff
-        tKillUrls = '?', '@', '='
-
-        # tuple of endings that are not allowed:
-        tKillTypes = '.jpg', '.gif', '.css'
-
-        # get click data - lowercase
-        sUrl = string.lower(urlparse.urlunparse(click.GetUrl()))
-        sReferer = string.lower(urlparse.urlunparse(click.GetRefererUrl()))
-
-        # check filetype
-        for sType in tKillTypes:
-            if sUrl.endswith(sType):
-                # ignore click
-                return 0
-
-        # check url
-        for sKiller in tKillUrls:
-            if sKiller in sUrl:
-                # ignore click
-                return 0
-
-        # url is okay. Now check referrer
-        for sKiller in tKillUrls:
-            if sKiller in sReferer:
-                # just delete the referrer
-                click.DeleteReferer()
-
-        # this click is okay
-        return 1
 
 
     def HasItemset(self, itemset):

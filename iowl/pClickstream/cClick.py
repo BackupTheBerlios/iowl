@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cClick.py,v $
+Revision 1.5  2002/03/16 11:03:25  aharth
+added title extraction to pclickstream
+
 Revision 1.4  2001/04/14 14:59:45  i10614
 changed session-handling
 
@@ -90,6 +93,12 @@ class cClick:
         self.iTimestamp = iTimestamp
         self.sTitle = sTitle
         self.tReferer = tReferer
+
+    def SetTitle(self, sTitle):
+        """Set title string
+
+        """
+        self.sTitle = sTitle
 
 
     def GetTitle(self):
