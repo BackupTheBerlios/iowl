@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: cProxyCore.py,v $
+Revision 1.6  2002/01/20 16:07:29  Saruman
+removed workaround for bugs regarding ThreadingTCPServer in Python 2.1
+
 Revision 1.5  2001/08/10 18:37:38  i10614
 added debuglevel to all messages.
 
@@ -31,13 +34,6 @@ changed shutdown-handling. Now accepts Ctrl-c for a clean shutdown.
 import cProxyHandler
 import SocketServer
 import pManager
-
-
-# XXX Use own ThreadingTCPServer - Serious bug in Python 2.1,
-# --> http://sourceforge.net/tracker/index.php?func=detail&aid=417845&group_id=5470&atid=105470
-class MyThreadingTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
-    def close_request(self, request):
-        pass
 
 
 class cProxyCore:
@@ -113,12 +109,9 @@ class cProxyCore:
         """
 
         # create Server, pass cProxyHandler
-        # self.Server = SocketServer.ThreadingTCPServer((self.sListenAt, self.iProxyPort), cProxyHandler.cProxyHandler)
-
-        # XXX Use own ThreadingTCPServer - Serious bug in Python 2.1,
-        # --> http://sourceforge.net/tracker/index.php?func=detail&aid=417845&group_id=5470&atid=105470
-        self.Server = MyThreadingTCPServer((self.sListenAt, self.iProxyPort), cProxyHandler.cProxyHandler)
+        self.Server = SocketServer.ThreadingTCPServer((self.sListenAt, self.iProxyPort), cProxyHandler.cProxyHandler)
         pManager.manager.DebugStr('pProxyCore '+ __version__ +': Listening at '+self.sListenAt+'.', 3)
+
         # start Server
         self.Server.serve_forever()
 
