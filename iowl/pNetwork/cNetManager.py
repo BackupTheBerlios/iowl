@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.23 $"
+__version__ = "$Revision: 1.24 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.24  2001/08/07 20:13:27  i10614
+introduced debuglevels for debug messages.
+
 Revision 1.23  2001/07/19 19:46:11  i10614
 fixed bug for closing sockets
 
@@ -190,7 +193,7 @@ class cNetManager:
                 self.EntryIP = socket.gethostbyname(str(sValue))
             except socket.error:
                 # cant resolve hostname
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': Warning: Can\'t resolve entryowl %s.' %(sValue, ))
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Warning: Can\'t resolve entryowl %s.' %(sValue, ), 0)
                 self.EntryIP = ''
         elif sOption == 'entryport':
             self.iEntryPort = int(sValue)
@@ -202,7 +205,7 @@ class cNetManager:
             # XXX Need to restart listener for changes to take effect!
             self.cNetServer.SetListenPort(int(sValue))
             if pManager.manager.IsRunning():
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': Warnig: change of listenport currently only takes effect after restart of iOwl.')
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Warnig: change of listenport currently only takes effect after restart of iOwl.', 0)
         elif sOption == 'ttl':
             self.iTTL = int(sValue)
         elif sOption == 'interval':
@@ -214,7 +217,7 @@ class cNetManager:
         elif sOption == 'smartipdetection':
             self.bGetWebOwls = int(sValue)
         else:
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': Warning: unknown option %s' %(sOption, ))
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Warning: unknown option %s' %(sOption, ), 0)
 
 
     def GetProtocolVersion(self):
@@ -231,7 +234,7 @@ class cNetManager:
 
         """
 
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': Starting connection.')
+        pManager.manager.DebugStr('cNetManager '+ __version__ +': Starting connection.', 0)
 
         # start watchdog
         self.WatchDogID = pManager.manager.RegisterWatchdog(self.TimerTick, self.iInterval)
@@ -294,10 +297,10 @@ class cNetManager:
             owlfile = open(self.sOwlFilename, "r")
         except:
             # cant open file.
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': Can\'t open owlfile.')
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Can\'t open owlfile.', 1)
             return
 
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': Reading cached neighbourowls.')
+        pManager.manager.DebugStr('cNetManager '+ __version__ +': Reading cached neighbourowls.', 0)
         iOwls=0
         # read line by line
         line = owlfile.readline()
@@ -309,7 +312,7 @@ class cNetManager:
             line = owlfile.readline()
 
         owlfile.close()
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': Read %s neigbourowls from cache.' % str(iOwls))
+        pManager.manager.DebugStr('cNetManager '+ __version__ +': Read %s neigbourowls from cache.' % str(iOwls), 1)
 
 
     def WriteCache(self):
@@ -318,16 +321,16 @@ class cNetManager:
         try:
             owlfile = open(self.sOwlFilename, "w");
         except:
-            pManager.manager.DebugStr('cNetManager '+ __version__ +': Cant open owlfile for writing.')
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Cant open owlfile for caching owls.', 0)
             return
 
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': Caching neighbourowls.')
+        pManager.manager.DebugStr('cNetManager '+ __version__ +': Caching neighbourowls.', 0)
         iOwls=0
         for owl in self.cOwlManager.lKnownOwls:
             iOwls += 1
             owlfile.write("%s:%s\n" % (owl.GetIP(), owl.GetPort()))
         owlfile.close()
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': Saved %s neighbourowls in cache.' % str(iOwls))
+        pManager.manager.DebugStr('cNetManager '+ __version__ +': Saved %s neighbourowls in cache.' % str(iOwls), 1)
 
 
     def HandlePing(self, sPing):
@@ -351,24 +354,24 @@ class cNetManager:
             cPing.ParseDOM(domPing)
 
             # log incoming ping
-            # pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Ping from %s:%s.' %(str(cPing.GetOriginator()[0]), str(cPing.GetOriginator()[1])))
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Incoming Ping from %s:%s.' %(str(cPing.GetOriginator()[0]), str(cPing.GetOriginator()[1])), 2)
 
             # pass ping to cOwlManager. If cOwlManager accepts ping, answer with pong
-            # pManager.manager.DebugStr('cNetManager '+ __version__ +': Distributing Ping.')
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Distributing Ping.', 3)
             if self.cOwlManager.Distribute(cPing) == 'okay':
                 # generate Pong
                 try:
                     cPong = self.GeneratePong(cPing)
                 except:
                     # Could not generate Pong
-                    pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not generate Pong.')
+                    pManager.manager.DebugStr('cNetManager '+ __version__ +': Could not generate Pong.', 2)
                     return
                 # pass Pong to cOlwManager
-                # pManager.manager.DebugStr('cNetManager '+ __version__ +': Answering with Pong.')
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Answering with Pong.', 3)
                 self.cOwlManager.Answer(cPong)
             else:
                 # something was wrong with that Ping...
-                # pManager.manager.DebugStr('cNetManager '+ __version__ +': cOwlManager did not accept ping. Probably a vicious circle or corrupt cDOM')
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': cOwlManager did not accept ping. Probably a vicious circle or corrupt cDOM', 2)
                 pass
         except:
             # unknown error. log and forget.
@@ -380,8 +383,8 @@ class cNetManager:
             for line in traceback.format_tb(eTraceback, 15):
                 tb = tb + line
 
-            pManager.manager.DebugStr('pNetwork '+ __version__ +': Unhandled error in thread HandlePing(): Type: '+str(eType)+', value: '+str(eValue))
-            pManager.manager.DebugStr('pNetwork '+ __version__ +': Traceback:\n'+str(tb))
+            pManager.manager.DebugStr('pNetwork '+ __version__ +': Unhandled error in thread HandlePing(): Type: '+str(eType)+', value: '+str(eValue), 2)
+            pManager.manager.DebugStr('pNetwork '+ __version__ +': Traceback:\n'+str(tb), 2)
 
 
 
