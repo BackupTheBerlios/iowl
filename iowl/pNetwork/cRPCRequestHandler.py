@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: cRPCRequestHandler.py,v $
+Revision 1.5  2002/03/10 10:12:55  Saruman
+changed some debug output
+
 Revision 1.4  2002/02/21 12:46:18  Saruman
 Added routingtable to statistics page
 
@@ -49,7 +52,7 @@ class cRPCRequestHandler(xmlrpcserver.RequestHandler):
 
         """
 
-        pManager.manager.DebugStr('cRPCReqHandler '+ __version__ +': Dispatching: ' + str(method) + str(params), 4)
+        pManager.manager.DebugStr('cRPCReqHandler '+ __version__ +': Dispatching: ' + str(method) + ', Parameter: ' +str(params), 4)
         try:
                 # Look if requested method exists
                 server_method = getattr(self, method)

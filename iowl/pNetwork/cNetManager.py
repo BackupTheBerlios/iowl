@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.32 $"
+__version__ = "$Revision: 1.33 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.33  2002/03/10 10:12:55  Saruman
+changed some debug output
+
 Revision 1.32  2002/02/21 12:46:18  Saruman
 Added routingtable to statistics page
 
@@ -416,7 +419,6 @@ class cNetManager:
                 self.cOwlManager.Answer(cPong)
             else:
                 # something was wrong with that Ping...
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': cOwlManager did not accept ping. Probably a vicious circle or corrupt cDOM', 2)
                 pass
         except:
             # unknown error. log and forget.
@@ -658,7 +660,7 @@ class cNetManager:
         cPong.SetOwlVersion(pManager.manager.GetVersion())
         # set network protocol version
         cPong.SetProtocolVersion(self.sProtocol)
-        # set answerer
+        # set answererPort
         cPong.SetAnswererPort(self.cNetServer.GetListenPort())
 
         return cPong
