@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.27 $"
+__version__ = "$Revision: 1.28 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.28  2002/01/28 18:50:54  Saruman
+changed default port 2323 for entryowl
+
 Revision 1.27  2001/08/10 18:44:36  i10614
 changed debug output.
 
@@ -168,7 +171,7 @@ class cNetManager:
 
         # entryowl
         self.EntryIP = ''
-        self.EntryPort = 0
+        self.EntryPort = 2323
 
         # timetolive
         self.iTTL = 5
