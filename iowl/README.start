@@ -1,5 +1,9 @@
 # Iowl.net - README.start
 
+Diese README befasst sich mit iowl.start .. dieses Script ist sehr einfach
+und enthaelt nur die wichtigsten Angaben .. ausserdem wird auf der Konsole,
+auf der das Script gestartet wurde, geloggt 
+
 1. Benoetigt wird
 
 python2.2
@@ -22,7 +26,7 @@ Probieren ob der Link funktioniert
 
 http://my.iowl.net/ 
 
-diese Seite ist local und enthaelt die daten der gesurften Seiten
+Diese Seite ist local und enthaelt die Daten der gesurften Seiten
 
 
 Mehr kommt noch 
