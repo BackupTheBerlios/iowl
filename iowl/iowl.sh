@@ -25,7 +25,7 @@ PIDOF=`which pidof`
 
 PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
 
-IOWL_DIR=$HOME/source/iowl
+IOWL_DIR=$HOME/source/iowl.private
 
 # a little test if $IOWL_DIR is true
 
