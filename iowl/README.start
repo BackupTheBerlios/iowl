@@ -1,0 +1,29 @@
+# Iowl.net - README.start
+
+1. Benoetigt wird
+
+python2.2
+
+2. ToDo
+
+-Kopieren des Stammverzeichnisses iowl/ nach /usr/local/ ... oder die
+ Variable PYTHONPATH im Startscript iowl.start auf den richtigen Pfad
+ anpassen 
+
+-/usr/local/iowl/iowl.start ausfuehren
+
+-den Proxy im Browser anpassen: localhost:3228
+
+-SURFEN!!
+
+3. Test
+
+Probieren ob der Link funktioniert
+
+http://my.iowl.net/ 
+
+diese Seite ist local und enthaelt die daten der gesurften Seiten
+
+
+Mehr kommt noch 
+Andreas Biessmann
