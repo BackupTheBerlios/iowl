@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.13 $"
+__version__ = "$Revision: 1.14 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.14  2001/05/26 11:42:12  i10614
+removed page title from debug output
+
 Revision 1.13  2001/05/25 19:16:53  i10614
 removed debug output. CHanged Chunksize to 512byte.
 
@@ -154,7 +157,8 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         if bIsExplicit:
             # Add Click to Clickstream
             ClickstreamInterface = pManager.manager.GetClickstreamInterface()
-            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click. Title: '+str(self.ClickTitle)+' Status: '+str(self.ClickStatus))
+            # pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click. Title: '+str(self.ClickTitle)+' Status: '+str(self.ClickStatus))
+            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click. Status: '+str(self.ClickStatus))
 
             click = cClick.cClick()
 
