@@ -23,7 +23,9 @@ include '/home/groups/iowl/htdocs/header.html';
 <h2><a name="win"></a>Windows 2000, 9x, ME, NT 4.0</h2>
 
 <p><b>iOwl.net - alpha 4 (build 015 2001-06-10 - 1,2 MB)</b><br>
-<a href="/files/iowl.exe">iowl.exe</a></p>
+<a href="/files/iowl.exe">iowl.exe</a>
+<br>This is a old build and does not contain new features!</p>
+ 
 
 <h2><a name="linux"></a>Linux</h2>
 <p><b><a href="http://cvs.berlios.de/cgi-bin/cvsweb.cgi/iowl/?cvsroot=iowl">CVS</a> <a href="/files/daily/">Daily</a> Snapshot</b><br>
