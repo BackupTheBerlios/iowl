@@ -1,10 +1,13 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: pManager.py,v $
-Revision 1.1  2001/03/24 19:22:36  i10614
-Initial revision
+Revision 1.2  2001/03/26 12:09:21  i10614
+added version and build
+
+Revision 1.1.1.1  2001/03/24 19:22:36  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.23  2001/02/21 16:27:44  mbauer
 added flush() to logfile-writing
@@ -98,7 +101,10 @@ class cManager:
         """Constructor."""
 
         # version
-        self.iOwlVersion = 0.2
+        self.iOwlVersion = 0.4
+
+        # build date
+        self.sBuild = '25.03.2001 23:02'
 
         # create timer
         self.timer = timer.timer()
@@ -184,10 +190,6 @@ class cManager:
 
         # Start all Packages
         self.StartPackages()
-
-        # XXX - Manual shutdown since pGui is not finished yet!
-        time.sleep(3)
-        self.ShutDown()
 
         # iOwl is shut down. Return to main().
         return
@@ -391,6 +393,11 @@ class cManager:
     def GetVersion(self):
         """return version of iOwl"""
         return str(self.iOwlVersion)
+
+
+    def GetBuild(self):
+        """return date of build"""
+        return str(self.sBuild)
 
 
     def GetOwnIP(self):
