@@ -3,17 +3,35 @@
 
 # the executable
 # PYTHON="python"
-
-# debian needs this:
 PYTHON="python2.2"
 
-# set Pythonpath so python can find all our modules and append original $PYTHONPATH.
-PYTHONPATH=./pAssoRules:./pClickstream:./pGui:./pManagement:./pMisc:./pNetwork:./pProxy:./pRecommendation:./pStatistics:$PYTHONPATH
-export PYTHONPATH
+# arguments:
+ARGUMENTS="pManagement/iowl.py"
 
-# start iOwl
-$PYTHON pManagement/iowl.py &
+# check if iOwl is already running
+PIDLIST=$(/bin/pidof $PYTHON $ARGUMENTS)
 
-# thats it
-exit 0
+if [ ! -n "$PIDLIST" ]
+then
+  # no pids found. start iOwl.
+
+  # set Pythonpath so python can find all our modules and keep original $PYTHONPATH.
+  PYTHONPATH=./pAssoRules:./pClickstream:./pGui:./pManagement:./pMisc:./pNetwork:./pProxy:./pRecommendation:./pStatistics:$PYTHONPATH
+  export PYTHONPATH
+
+  # start iOwl
+  $PYTHON $ARGUMENTS &
+  
+  # TODO: Check return value from iOwl
+  exit 0
+
+else
+
+  # iOwl already running
+  echo "iOwl.net already running!"
+  echo "(PIDs: "$PIDLIST")"
+  exit 0 
+
+fi
+
 
