@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.9 $"
+__version__ = "$Revision: 1.10 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.10  2001/05/26 14:11:16  i10614
+changed default path to "sessions"
+
 Revision 1.9  2001/05/07 07:37:52  i10614
 added mutex for addClick(). Should solve problem with two sessions in one .xml-file.
 
@@ -112,7 +115,7 @@ class pClickstreamInterface:
     def __init__(self):
         """Constructor."""
         # clickstream is stored in clickstream2001-93-435.xml
-        self.sClickstreamPathName = 'data/'
+        self.sClickstreamPathName = 'sessions/'
         self.iWatchdogID = 0
         self.iRestart = 1200
         self.lSessions = []
