@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.9 $"
+__version__ = "$Revision: 1.10 $"
 
 """
 $Log: cOwlManager.py,v $
+Revision 1.10  2001/04/22 13:27:51  i10614
+extended owl-caching -> now verifying old owls
+
 Revision 1.9  2001/04/15 21:28:58  i10614
 Test: Not deleting owls involved in vicious circles
 
@@ -77,6 +80,7 @@ import cDOM
 import thread
 import time
 import sys
+import socket
 
 class cOwlManager:
     """Coordinator class for neighbour owls
@@ -108,9 +112,6 @@ class cOwlManager:
 
         # init list of owls
         self.lKnownOwls = []
-
-        # name for owlfile
-        self.sOwlFilename="owls.txt"
 
         # init dictionary of requests
         self.dRequests = {}
@@ -212,7 +213,7 @@ class cOwlManager:
         # request-list -> Throw away!
         if cNetPackage.GetID() in self.dRequests.keys():
             # Log error, throw domObj away and continue operation
-            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Detected vicious circle.')
+            # pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Detected vicious circle.')
             # To prevent sending more requests to the owl causing the circle, delete originating owl from
             # KnownOwls (if it is there)
             #try:
@@ -444,47 +445,11 @@ class cOwlManager:
 
         pManager.manager.RegisterWatchdog(self.CleanOldRequests, 600)
 
-        try:
-            # open file
-            owlfile = open(self.sOwlFilename, "r")
-        except:
-            # cant open file.
-            return
-
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Reading cached neighbourowls.')
-        iOwls=0
-        # read line by line
-        line = owlfile.readline()
-        while line:
-            iOwls += 1
-            line = line.strip()
-            ip, port = line.split(':');
-            owl = self.AddOwl((ip, port));
-            line = owlfile.readline()
-
-        owlfile.close()
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Read %s neigbourowls from cache.' % str(iOwls))
 
 
     def Shutdown(self):
-        """Stop working.
-
-        Save all known neighbourowls to file.
-        """
-
-        try:
-            owlfile = open(self.sOwlFilename, "w");
-        except:
-            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Cant open owlfile for writing.')
-            return
-
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Caching neighbourowls.')
-        iOwls=0
-        for owl in self.lKnownOwls:
-            iOwls += 1
-            owlfile.write("%s:%s\n" % (owl.GetIP(), owl.GetPort()))
-        owlfile.close()
-        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Saved %s neighbourowls in cache.' % str(iOwls))
+        """Stop working."""
+        pass
 
 
     def CleanOldRequests(self):
@@ -510,27 +475,33 @@ class cOwlManager:
         return
 
 
+    def ValidateOwls(self):
+        """Validate list of neighbour owls
+
+        Called after start to validate cached owls.
+
+        """
+
+        # create socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        for owl in self.lKnownOwls:
+            try:
+                s.connect(owl.GetIP(), owl.GetPort())
+                s.close()
+            except:
+                pManager.manager.DebugStr('cOwlManager '+ __version__ +': Removing unreachable owl %s:%s.' %(str(owl.GetIP()), str(owl.GetPort())))
+                self.DeleteOwl(self.lKnownOwls, (owl.GetIP(), owl.GetPort()))
 
 
+    def GetSingleOwl(self):
+        """return tuple containing IP and Port of one owl"""
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        if len(self.lKnownOwls) > 0:
+            owl = self.lKnownOwls[0]
+            return (owl.GetIP(), owl.GetPort())
+        else:
+            return ('0.0.0.0', '0')
 
 
 

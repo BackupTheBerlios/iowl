@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.9 $"
+__version__ = "$Revision: 1.10 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.10  2001/04/22 13:27:51  i10614
+extended owl-caching -> now verifying old owls
+
 Revision 1.9  2001/04/15 21:16:21  i10614
 fixed for recommendations and answers
 
@@ -95,6 +98,9 @@ class cNetManager:
         # protocol version
         self.sProtocol = "0.2"
 
+        # name for owlfile
+        self.sOwlFilename="owls.txt"
+
 
     def SetParam(self, sOption, sValue):
         """Accept Config
@@ -115,7 +121,12 @@ class cNetManager:
 
         if sOption == 'entryip':
             # convert name to ip
-            self.EntryIP = socket.gethostbyname(str(sValue))
+            try:
+                self.EntryIP = socket.gethostbyname(str(sValue))
+            except socket.error:
+                # cant resolve hostname
+                pManager.manager.DebugStr('cNetManager '+ __version__ +': Warning: Can\'t resolve %s.' %(sValue, ))
+                self.EntryIP = ''
         elif sOption == 'entryport':
             self.iEntryPort = int(sValue)
         elif sOption == 'numneighbours':
@@ -150,14 +161,22 @@ class cNetManager:
         # start watchdog
         self.WatchDogID = pManager.manager.RegisterWatchdog(self.TimerTick, self.iInterval)
 
-        # determine own IP adress
-        pManager.manager.SetOwnIP(self.GetOwnIP())
-
         # Start OwlManager
         self.cOwlManager.Start()
 
+        # Read cached owls
+        self.ReadCache()
+
         # add entrypoint to cOwlManager
-        self.cOwlManager.AddOwl((self.EntryIP, self.iEntryPort))
+        if self.EntryIP != '':
+            self.cOwlManager.AddOwl((self.EntryIP, self.iEntryPort))
+
+        # validate list of owls
+        self.cOwlManager.ValidateOwls()
+
+        # determine own IP adress
+        tOwl = self.cOwlManager.GetSingleOwl()
+        pManager.manager.SetOwnIP(self.GetOwnIP(tOwl[0], tOwl[1]))
 
         # generate PING
         cPing = self.GeneratePing()
@@ -178,7 +197,52 @@ class cNetManager:
         """
 
         self.cNetServer.StopListen()
+        self.WriteCache()
         self.cOwlManager.Shutdown()
+
+
+    def ReadCache(self):
+        """Read cached neighbourowls from file"""
+
+        try:
+            # open file
+            owlfile = open(self.sOwlFilename, "r")
+        except:
+            # cant open file.
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Can\'t open owlfile.')
+            return
+
+        pManager.manager.DebugStr('cNetManager '+ __version__ +': Reading cached neighbourowls.')
+        iOwls=0
+        # read line by line
+        line = owlfile.readline()
+        while line:
+            iOwls += 1
+            line = line.strip()
+            ip, port = line.split(':');
+            owl = self.cOwlManager.AddOwl((ip, port));
+            line = owlfile.readline()
+
+        owlfile.close()
+        pManager.manager.DebugStr('cNetManager '+ __version__ +': Read %s neigbourowls from cache.' % str(iOwls))
+
+
+    def WriteCache(self):
+        """Write neighbourowls to file"""
+
+        try:
+            owlfile = open(self.sOwlFilename, "w");
+        except:
+            pManager.manager.DebugStr('cNetManager '+ __version__ +': Cant open owlfile for writing.')
+            return
+
+        pManager.manager.DebugStr('cNetManager '+ __version__ +': Caching neighbourowls.')
+        iOwls=0
+        for owl in self.cOwlManager.lKnownOwls:
+            iOwls += 1
+            owlfile.write("%s:%s\n" % (owl.GetIP(), owl.GetPort()))
+        owlfile.close()
+        pManager.manager.DebugStr('cNetManager '+ __version__ +': Saved %s neighbourowls in cache.' % str(iOwls))
 
 
     def HandlePing(self, sPing):
@@ -407,9 +471,6 @@ class cNetManager:
         # log tick
         pManager.manager.DebugStr('cNetManager '+ __version__ +': No PONG received for '+str(self.iInterval)+' seconds. Generating PING.')
 
-        # Re-Add Entrypoint, just in case it got deleted because temporarily not available...
-        self.cOwlManager.AddOwl((self.EntryIP, self.iEntryPort))
-
         # Generate Ping
         ping = self.GeneratePing()
         self.cOwlManager.Distribute(ping)
@@ -516,7 +577,7 @@ class cNetManager:
         self.cOwlManager.AddOwl(cPong.GetAnswerer())
 
 
-    def GetOwnIP(self):
+    def GetOwnIP(self, sIP, iPort):
         """Determine own IP
 
         Try to connect a socket to entryowl and call socket.getsockname() to
@@ -535,7 +596,7 @@ class cNetManager:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             # connect to entryOwl
-            s.connect((self.EntryIP, self.iEntryPort))
+            s.connect((sIP, iPort))
             # get hostname and port
             sOwnIP, iOwnPort = s.getsockname()
             # close socket
