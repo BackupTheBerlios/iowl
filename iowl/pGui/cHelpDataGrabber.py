@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cHelpDataGrabber.py,v $
+Revision 1.3  2001/05/26 13:00:49  i10614
+changed iowl version and formated it
+
 Revision 1.2  2001/03/28 21:26:11  i10614
 modified GUI
 
@@ -54,10 +57,10 @@ class cHelpDataGrabber:
 
         # Get recording Status of proxy
         bState = pManager.manager.GetProxyInterface().GetStatus()
-        
+
         # Get Header
         sHeader = self.cGui.GetHeader('iOwl.net - help')
-        
+
         # Get first part of page
         sPart1 = ''
         if bState == 0:
@@ -70,7 +73,7 @@ class cHelpDataGrabber:
             sPart1 = self.cGui.GetActivePage()
 
         # add version and build
-        sContent = sContent + '<p align="right"><small>Version: %s, build %s</small></p>' % (pManager.manager.GetVersion(), pManager.manager.GetBuild())
+        sContent = sContent + '<p align="center"><font face="Arial, Helvetica, sans-serif" color="#666666"><b>Version: %s alpha 3, build %s</b></font></p>' % (pManager.manager.GetVersion(), pManager.manager.GetBuild())
 
        # Get second part of page
         sPart2 = self.cGui.GetEndPage()

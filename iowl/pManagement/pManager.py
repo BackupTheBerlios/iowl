@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.10 $"
+__version__ = "$Revision: 1.11 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.11  2001/05/26 13:00:49  i10614
+changed iowl version and formated it
+
 Revision 1.10  2001/05/26 11:40:34  i10614
 added changing trayicon
 
@@ -125,10 +128,10 @@ class cManager:
         """Constructor."""
 
         # version
-        self.iOwlVersion = 0.4
+        self.iOwlVersion = 1.0
 
         # build date
-        self.sBuild = '25.03.2001 23:02'
+        self.sBuild = '14 2001-05-26'
 
         # default logfile
         self.sLogFileName = "data/iowl.log"
