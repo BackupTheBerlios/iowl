@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.19 $"
+__version__ = "$Revision: 1.20 $"
 
 """
 $Log: cNetManager.py,v $
+Revision 1.20  2001/06/10 15:56:51  i10614
+added own thread for initialization
+
 Revision 1.19  2001/06/05 18:21:39  i10614
 added own thread for validateOwl(). Should solve startup-problems.
 
@@ -192,9 +195,10 @@ class cNetManager:
 
 
     def StartConnection(self):
-        """Start connection with the iOwl network
+        """Start network package
 
-        Called by cNetworkInterface. Call cNetServer.StartListen(), add EntryPoint to cOlwmanager,
+        Called by cNetworkInterface.
+        Start new thread to call cNetServer.StartListen(), add EntryPoint to cOlwmanager,
         generate an initial PING and pass it to cOwlManager.Distribute()
 
         """
@@ -207,6 +211,13 @@ class cNetManager:
         # Start OwlManager
         self.cOwlManager.Start()
 
+        # start thread for network initialization
+        thread.start_new_thread(self.StartNetworking, ())
+
+
+    def StartNetworking(self):
+        """Start connection to iOwl-Network"""
+
         # Read cached owls
         self.ReadCache()
 
@@ -215,7 +226,7 @@ class cNetManager:
             self.cOwlManager.AddOwl((self.EntryIP, self.iEntryPort))
 
         # validate list of owls
-        thread.start_new_thread(self.cOwlManager.ValidateOwls, ())
+        self.cOwlManager.ValidateOwls()
 
         # do i need to look up more owls at website?
         if self.cOwlManager.GetNumNeighbours() < self.iMinOwls:
@@ -224,14 +235,14 @@ class cNetManager:
         # determine own IP adress
         pManager.manager.SetOwnIP(self.GetOwnIP())
 
+        # start server
+        self.cNetServer.StartListen()
+
         # generate PING
         cPing = self.GeneratePing()
 
         # pass PING to cOwlManager
         self.cOwlManager.Distribute(cPing)
-
-        # start server
-        self.cNetServer.StartListen()
 
 
     def Stop(self):
