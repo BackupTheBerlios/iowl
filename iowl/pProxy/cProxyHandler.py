@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.21 $"
+__version__ = "$Revision: 1.22 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.22  2001/08/12 21:23:59  i10614
+Catching "list index out of range"-exception in Handleresponse.
+
 Revision 1.21  2001/08/10 18:37:38  i10614
 added debuglevel to all messages.
 
@@ -164,6 +167,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             # Handle response
             try:
                 self.HandleResponse(server)
+            # except IOError:
             except IOError:
                 self.connection.close()
                 return
