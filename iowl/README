@@ -1,0 +1,41 @@
+#README iOwl.net
+
+Introduction
+
+iOwl.net is a recommendation service for the web. The iOwl web browsing
+agent provides hints on interesting web sites, depending on your personal
+preferences and interests. The completely distributed peer-to-peer network
+architecture of iOwl.net guarantees personalized search results, ease of use
+and a maximum of privacy.
+
+Installation
+
+On a Debian system, you need the packages
+
+    * python2.2
+    * python2.2-xmlbase
+
+And of course a cvs-snapshot of the iOwl.net software.
+
+This README is for iowl.start, iowl.stop and install
+
+    * iowl.start is a very simple script to start iOwl.net service
+    * iowl.stop is a test to have an easy kill of iOwl.net
+    * install adds iowl.start to your ~/.bashrc and ~/.bash_profile for automaticly starting iOwl.net
+    * iowl.sh the same as iowl.start and iowl.stop, understand kill and restart too
+
+Using your agent
+
+    * ./iowl.start or ./iowl.sh start to start iOwl.net
+    * change the proxy in your browser to localhost:3228
+    * checkout the link http://my.iowl.net
+
+this link is local on your pc and gives the database of your visited sites
+also you can get recommendation
+
+Stopping the agent
+
+    * ./iowl.stop or ./iowl.sh stop to stop iOwl.net
+    * ./install to improve automatic start of iOwl.net
+
+more follows Andreas Biessmann
