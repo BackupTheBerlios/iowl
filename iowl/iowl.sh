@@ -23,9 +23,7 @@ ARGUMENTS="pManagement/iowl.py"
 PIDOF=`which pidof`
 # PIDOF=path_to_your_pidof
 
-PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
-
-IOWL_DIR=$HOME/source/iowl.private
+IOWL_DIR=`pwd`
 
 # a little test if $IOWL_DIR is true
 
@@ -33,6 +31,8 @@ if [ ! -d $IOWL_DIR ];
 then echo $IOWL_DIR "does not exist .. please change iowl.sh"
 exit 1;
 fi
+
+PYTHONPATH=$IOWL_DIR/pAssoRules:$IOWL_DIR/pClickstream:$IOWL_DIR/pGui:$IOWL_DIR/pManagement:$IOWL_DIR/pMisc:$IOWL_DIR/pNetwork:$IOWL_DIR/pProxy:$IOWL_DIR/pRecommendation:$IOWL_DIR/pStatistics:$PYTHONPATH
 
 ###############################################################################
 # how start|stop|status|kill does work
