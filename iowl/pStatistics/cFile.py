@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cFile.py,v $
+Revision 1.4  2001/07/15 10:22:32  i10614
+added bugfix for removing of urls (andi)
+
 Revision 1.3  2001/04/14 15:04:45  i10614
 minor fixes
 
@@ -157,7 +160,7 @@ class cFile(cDOM.cDOM):
         if (self.Document.documentElement):
             self.Document.removeChild(self.Document.documentElement)
             # bug in python 2.0
-            self.Document.documentElement = None
+            # self.Document.documentElement = None
 
         self.SetRootElement(el)
 
