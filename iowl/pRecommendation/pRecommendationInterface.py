@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: pRecommendationInterface.py,v $
+Revision 1.5  2001/04/07 17:06:24  i10614
+many, many bugfixes for working network communication
+
 Revision 1.4  2001/03/27 18:27:04  i10614
 added shutdown notification
 
@@ -235,7 +238,7 @@ class pRecommendationInterface:
 
             # send answer
             pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Now sending answer to network. Id: '+str(sId))
-            ni.SendAnswer(answerEl, sId)
+            pNetIntf.SendAnswer(answerEl, sId)
             pManager.manager.DebugStr('pRecommendationInterface '+ __version__ +': Finished sending answer to network. Id: '+str(sId))
 
             # old stuff

@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cSingleRecommendationDataGrabber.py,v $
+Revision 1.3  2001/04/07 17:06:23  i10614
+many, many bugfixes for working network communication
+
 Revision 1.2  2001/03/28 19:53:07  i10614
 replaced http://iowl with http://my.iowl.net
 
@@ -57,7 +60,7 @@ class cSingleRecommendationDataGrabber:
 
 
         # time to wait till reload
-        iSeconds = 4
+        iSeconds = 20
 
         # get pRecommendationInterface
         cRecommendationInterface = pManager.manager.GetRecommendationInterface()

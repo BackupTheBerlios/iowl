@@ -1,10 +1,13 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cItemsets.py,v $
-Revision 1.1  2001/03/24 19:23:05  i10614
-Initial revision
+Revision 1.2  2001/04/07 17:06:25  i10614
+many, many bugfixes for working network communication
+
+Revision 1.1.1.1  2001/03/24 19:23:05  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.13  2001/02/22 12:30:32  a
 minor changes
@@ -141,7 +144,7 @@ class cItemsets(cData.cData):
         iThreshold -- if # of urls < threshold the remove it from dict
 
         """
-        print '*******Before pruning: ' + str(len(self.lData))
+        # print '*******Before pruning: ' + str(len(self.lData))
         foo = self.lData[:]
         for itemset in foo:
             if itemset.GetCount() < iThreshold:
@@ -152,7 +155,7 @@ class cItemsets(cData.cData):
             if itemset.GetCount() == 0:
                 print "SCHEIIIIIIIIIIIISSSSSSSSSEEEEEE" + str(iThreshold)
 
-        print '*******After pruning: ' + str(len(self.lData))
+        # print '*******After pruning: ' + str(len(self.lData))
 
         self.isCandidate = 1
 
@@ -164,7 +167,7 @@ class cItemsets(cData.cData):
 
         """
         lEls = []
-        
+
         for itemset in self.lData:
             el = itemset.GetElement()
             lEls.append(el)

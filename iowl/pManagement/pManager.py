@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 
 """
 $Log: pManager.py,v $
+Revision 1.5  2001/04/07 17:06:24  i10614
+many, many bugfixes for working network communication
+
 Revision 1.4  2001/03/29 23:31:41  i10614
 now takes care of path (data/pix/pixc.gif)
 
@@ -76,7 +79,7 @@ import time
 import watchdog
 import whrandom
 import socket
-
+import sys
 
 import pProxyInterface
 import pClickstreamInterface
@@ -397,6 +400,9 @@ class cManager:
 
         # close logfile
         self.LogFileHandle.close()
+
+        # exit
+        sys.exit()
 
     def GetVersion(self):
         """return version of iOwl"""

@@ -1,10 +1,13 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cNetManager.py,v $
-Revision 1.1  2001/03/24 19:22:50  i10614
-Initial revision
+Revision 1.2  2001/04/07 17:06:24  i10614
+many, many bugfixes for working network communication
+
+Revision 1.1.1.1  2001/03/24 19:22:50  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.28  2001/03/18 22:26:52  mbauer
 added try-except for all threads
@@ -52,6 +55,8 @@ import pManager
 import cNetServer
 import cOwlManager
 import socket
+import sys
+import traceback
 
 class cNetManager:
     """Coordinator for iowl.net. Responsible for accepting incoming
@@ -133,8 +138,6 @@ class cNetManager:
         # generate PING
         domPing = self.GeneratePing()
 
-        pManager.manager.DebugStr('cNetManager '+ __version__ +': Passing initial PING to cOwlManager.')
-
         # pass PING to cOwlManager
         self.cOwlManager.Distribute(domPing)
 
@@ -184,7 +187,9 @@ class cNetManager:
                 # pass Pong to cOlwManager
                 self.cOwlManager.Answer(domPong)
             else:
-                pManager.manager.DebugStr('cNetManager '+ __version__ +': cOwlManager did not accept ping. Probably a vicious circle or corrupt cDOM')
+                # something was wrong with that Ping...
+                # pManager.manager.DebugStr('cNetManager '+ __version__ +': cOwlManager did not accept ping. Probably a vicious circle or corrupt cDOM')
+                pass
         except:
             # unknown error. log and forget.
             # get exception
@@ -255,7 +260,7 @@ class cNetManager:
             domRequest.ParseString(sRequest)
 
             # pass to cOwlManager
-            self.cOwlManager.Request(domRequest)
+            self.cOwlManager.Distribute(domRequest)
         except:
             # unknown error. log and forget.
             # get exception
@@ -496,6 +501,7 @@ class cNetManager:
 
         # create core element: originator, containing ip and port as attributes
         elOriginator = domRequest.CreateElement('originator', {'ip':str(ownip), 'port':str(iListenPort)}, '')
+        # elRequest.writexml(sys.stdout)
 
         # create list containing core elements
         els = []
@@ -513,6 +519,7 @@ class cNetManager:
         domRequest.SetRootElement(elCont)
 
         # finished!
+        print domRequest.ToXML()
         return domRequest, id
 
 
@@ -557,6 +564,7 @@ class cNetManager:
         domAnswer.SetRootElement(elCont)
 
         # finished!
+        # print domAnswer.ToXML()
         return domAnswer
 
 

@@ -1,10 +1,13 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cRequestBuilder.py,v $
-Revision 1.1  2001/03/24 19:22:51  i10614
-Initial revision
+Revision 1.2  2001/04/07 17:06:24  i10614
+many, many bugfixes for working network communication
+
+Revision 1.1.1.1  2001/03/24 19:22:51  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.2  2001/02/22 21:53:18  a
 bug fixes for supporting history list
@@ -34,7 +37,6 @@ class cRequestBuilder:
         return -- el, element for request in network
         
         """
-        print "Getting Recommendation for last session" #+ lUrls
 
         ni = pManager.manager.GetNetworkInterface()
 
@@ -56,7 +58,7 @@ class cRequestBuilder:
 
         request.SetUrls(lUrls)
 
-        request.Print()
+        # request.Print()
 
         return request
 

@@ -1,10 +1,13 @@
 
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 
 """
 $Log: cAssociationRules.py,v $
-Revision 1.1  2001/03/24 19:22:52  i10614
-Initial revision
+Revision 1.2  2001/04/07 17:06:23  i10614
+many, many bugfixes for working network communication
+
+Revision 1.1.1.1  2001/03/24 19:22:52  i10614
+Initial import to stio1 from my cvs-tree
 
 Revision 1.9  2001/03/17 15:19:35  mbauer
 removed lots of debug output
@@ -126,7 +129,7 @@ class cAssociationRules:
             candidate.Prune(supportThreshold)
 
             # Mike - removed debug output
-            print '**********Computed Candidate ' + str(k)
+            pManager.manager.DebugStr('pAssociationRules '+ __version__ +': Computed Candidate '+str(k)+'.')
             # candidate.Print()
             # print '**************'
 
@@ -215,7 +218,7 @@ class cAssociationRules:
 
         itemsets -- Lk-1 large k-1 itemsets
         return -- Ck candidate k itemsets
-        
+
         """
         k = itemsets.GetSize() + 1
         candidates = cItemsets.cItemsets(k)

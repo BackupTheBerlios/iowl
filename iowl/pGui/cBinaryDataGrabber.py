@@ -1,9 +1,9 @@
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cBinaryDataGrabber.py,v $
-Revision 1.2  2001/03/29 23:31:41  i10614
-now takes care of path (data/pix/pixc.gif)
+Revision 1.3  2001/04/07 17:06:23  i10614
+many, many bugfixes for working network communication
 
 Revision 1.1.1.1  2001/03/24 19:22:59  i10614
 Initial import to stio1 from my cvs-tree
@@ -47,15 +47,12 @@ class cBinaryDataGrabber:
 
         data = ''
         try:
-            # open file -> look in current directory
             # open in binary mode!
-            # file = open(lPath[len(lPath)-1], 'rb')
             file = open(sFullPath, 'rb')
             # read data
             data = file.read()
             file.close()
         except:
-            # pManager.manager.DebugStr('cBinaryDataGrabber '+ __version__ +': Could not find "'+str(lPath[len(lPath)-1])+'"')
             pManager.manager.DebugStr('cBinaryDataGrabber '+ __version__ +': Could not find "'+sFullPath+'"')
 
         if sPath.endswith('.gif'):

@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: pAssocRulesInterface.py,v $
+Revision 1.3  2001/04/07 17:06:23  i10614
+many, many bugfixes for working network communication
+
 Revision 1.2  2001/03/27 18:19:34  i10614
 added notification when shutting down
 
@@ -47,7 +50,7 @@ class pAssocRulesInterface:
         lSessions = csi.GetSessions()
         iCount = csi.GetItemCount()
 
-        print 'Now Computing Rules...may take a few minutes.'
+        pManager.manager.DebugStr('pAssocRulesInterface '+ __version__ +': Starting new thread to compute rules.')
         thread.start_new(self.ComputeRules, (lSessions, iCount))
 
 
@@ -64,7 +67,7 @@ class pAssocRulesInterface:
     def Shutdown(self):
         """Kind of destructor."""
 
-        pManager.manager.DebugStr('pAssocRules '+ __version__ +': Shutting down.')
+        pManager.manager.DebugStr('pAssocRulesInterface '+ __version__ +': Shutting down.')
         pass
 
 
@@ -91,6 +94,9 @@ class pAssocRulesInterface:
             pManager.manager.DebugStr('pAssocRules '+ __version__ +': Traceback:\n'+str(tb))
             pManager.manager.DebugStr('pAssocRules '+ __version__ +': Trying to continue...')
 
+        pManager.manager.DebugStr('pAssocRulesInterface '+ __version__ +': Finished Computing Rules.')
+
+
 
 ####################################################################
 ## TEST FUNCTIONS ##################################################
@@ -100,4 +106,4 @@ def test():
 
 if __name__ == '__main__':
     test()
-        
+
