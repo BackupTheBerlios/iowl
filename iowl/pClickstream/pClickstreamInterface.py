@@ -1,8 +1,11 @@
 
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 
 """
 $Log: pClickstreamInterface.py,v $
+Revision 1.6  2001/03/29 22:45:42  i10614
+Catch self.Session == None in GetHistory()
+
 Revision 1.5  2001/03/27 18:22:12  i10614
 Changed Session handling. A new session is created inside AddClick(). Whith
 each new Session a new watchdog is registered.
@@ -395,7 +398,12 @@ class pClickstreamInterface:
         return -- list of clicks
 
         """
-        return self.Session.GetClicks()
+
+        if self.Session != None:
+            return self.Session.GetClicks()
+        else:
+            # return empty list
+            return []
 
 
 ####################################################################
