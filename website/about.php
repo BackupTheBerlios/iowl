@@ -1,5 +1,5 @@
 <?php
-include '/home/groups/iowl/htdocs/header.php';
+include '/home/groups/iowl/htdocs/header.html';
 ?>
 <h1>About iOwl.net</h1>
 <p>iOwl.net is a cooporation of people with the same vision - an
@@ -35,5 +35,5 @@ include '/home/groups/iowl/htdocs/header.php';
   </tr>
 </table>
 <?php
-include '/home/groups/iowl/htdocs/footer.php';
+include '/home/groups/iowl/htdocs/footer.html';
 ?>
