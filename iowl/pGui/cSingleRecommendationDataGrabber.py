@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 
 """
 $Log: cSingleRecommendationDataGrabber.py,v $
+Revision 1.4  2001/05/26 14:44:03  i10614
+only display a maximum of 15 recommendations
+
 Revision 1.3  2001/04/07 17:06:23  i10614
 many, many bugfixes for working network communication
 
@@ -60,7 +63,7 @@ class cSingleRecommendationDataGrabber:
 
 
         # time to wait till reload
-        iSeconds = 20
+        iSeconds = 23
 
         # get pRecommendationInterface
         cRecommendationInterface = pManager.manager.GetRecommendationInterface()

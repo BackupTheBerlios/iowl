@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 
 """
 $Log: cGetRecommendationsDataGrabber.py,v $
+Revision 1.3  2001/05/26 14:44:03  i10614
+only display a maximum of 15 recommendations
+
 Revision 1.2  2001/04/23 13:03:26  i10614
 added target _new
 
@@ -77,8 +80,13 @@ class cGetRecommendationsDataGrabber:
             sContent = sContent + '<h4>Sorry, i did not find any ressources i could recommend. :-(</h4>'
         else:
             sContent = sContent + '<h4>Success :-)<br>I would recommend you have a look at the following ressource(s):</h4>'
+            iCounter = 0
             for click in lClicks:
+                iCounter+=1
                 sContent = sContent +'<p><a href="%s" target="_new">%s</a></p>' % (str(urlparse.urlunparse(click.GetUrl())), str(click.GetTitle()))
+                if (iCounter > 15):
+                    break
+
         # Get second part of page
         sPart2 = self.cGuiRequestHandler.GetEndPage()
 
