@@ -12,7 +12,7 @@ include '/home/groups/iowl/htdocs/header.html';
 <p>Recommendations look like this:</p>
 <p><img src="/pix/iowl-recommendation.jpg" align="middle"></p>
 <p>&nbsp;</p>
-<p>Rules site is a list of your "surf-profile"</p>
+<p>Rules site is a list of your "surf-profile", it is shown below:</p>
 <p><img src="/pix/iowl-rules.jpg" align="middle"></p>
 <?php
 include '/home/groups/iowl/htdocs/footer.html';
