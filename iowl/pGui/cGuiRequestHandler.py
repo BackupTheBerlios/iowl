@@ -1,0 +1,312 @@
+__version__ = "$Revision: 1.1 $"
+
+"""
+$Log: cGuiRequestHandler.py,v $
+Revision 1.1  2001/03/24 19:22:56  i10614
+Initial revision
+
+Revision 1.10  2001/03/18 23:12:42  mbauer
+removed obsolete usage of cHistoryDataGrabber
+
+Revision 1.9  2001/03/18 22:22:55  mbauer
+removed debug output
+
+Revision 1.8  2001/02/22 20:41:49  mbauer
+revamped gui :-)
+
+Revision 1.6  2001/02/21 18:46:03  mbauer
+added about page configuration
+
+Revision 1.5  2001/02/21 14:51:08  mbauer
+added more user-functions
+
+Revision 1.3  2001/02/20 21:22:34  mbauer
+bugfix concerning helpfile-location
+
+
+
+"""
+
+import pManager
+import cgi
+import urlparse
+import cDefaultDataGrabber
+import cErrorDataGrabber
+import cHelpDataGrabber
+import cAboutDataGrabber
+import cSessionRecommendationDataGrabber
+import cLongtermRecommendationDataGrabber
+import cSingleRecommendationDataGrabber
+import cGetRecommendationsDataGrabber
+import cBinaryDataGrabber
+import cCommandValidator
+
+
+class cGuiRequestHandler:
+    """The main class of pGui.
+
+    Accepts commands and collects necessary answers, formats them to html
+    and returns documents
+
+    """
+
+    def __init__(self):
+        """Constructor"""
+
+        # create grabber classes for request types
+        self.cDefaultDataGrabber = cDefaultDataGrabber.cDefaultDataGrabber(self)
+        self.cErrorDataGrabber = cErrorDataGrabber.cErrorDataGrabber(self)
+        self.cHelpDataGrabber = cHelpDataGrabber.cHelpDataGrabber(self)
+        # self.cHistoryDataGrabber = cHistoryDataGrabber.cHistoryDataGrabber(self)
+        self.cAboutDataGrabber = cAboutDataGrabber.cAboutDataGrabber(self)
+        self.cSessionRecommendationDataGrabber = cSessionRecommendationDataGrabber.cSessionRecommendationDataGrabber(self)
+        self.cLongtermRecommendationDataGrabber = cLongtermRecommendationDataGrabber.cLongtermRecommendationDataGrabber(self)
+        self.cSingleRecommendationDataGrabber = cSingleRecommendationDataGrabber.cSingleRecommendationDataGrabber(self)
+        self.cGetRecommendationsDataGrabber = cGetRecommendationsDataGrabber.cGetRecommendationsDataGrabber(self)
+        self.cBinaryDataGrabber = cBinaryDataGrabber.cBinaryDataGrabber(self)
+        # create cCommandValidator
+        self.cCommandValidator = cCommandValidator.cCommandValidator()
+
+        # set default filenames
+        self.cHelpDataGrabber.SetHelpFileName('../pGui/help.ht')
+        self.cAboutDataGrabber.SetAboutFileName('../pGui/about.ht')
+        self.sActiveFilename = '../pGui/interfaceact.ht'
+        self.sInactiveFilename = '../pGui/interfaceinact.ht'
+        self.sEndFilename = '../pGui/interfacefooter.ht'
+
+
+    def SetParam(self, sOption, sValue):
+        """Accept settings
+
+        Set parameter
+
+        available options:
+        mainpage     - location of main.html
+        helppage     - location of help.html
+
+        """
+
+        if sOption == 'helppage':
+            self.cHelpDataGrabber.SetHelpFileName(str(sValue))
+        elif sOption == 'aboutpage':
+            self.cAboutDataGrabber.SetAboutFileName(str(sValue))
+        elif sOption == 'activepage':
+            self.sActiveFilename = str(sValue)
+        elif sOption == 'inactivepage':
+            self.sInactiveFilename = str(sValue)
+        elif sOption == 'endpage':
+            self.sEndFilename = str(sValue)
+
+
+
+    def AcceptCommand(self, sUrl):
+        """accept command from pProxy
+
+        Parse url and generate html-answer.
+
+
+        sUrl    -- complete url containing command
+
+        return  -- html code with answer
+
+        """
+
+        # parse url -> only need to know sQuery
+        sScheme, iHostport, sPath, lParams, sQuery, fragment = urlparse.urlparse(sUrl)
+
+        # detect file requests
+        if sPath.endswith('.gif'):
+            # pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Query for gif "'+str(sPath)+'"')
+            # return gif
+            return self.cBinaryDataGrabber.GetData(sPath)
+        if sPath.endswith('.html'):
+            # pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Query for html "'+str(sPath)+'"')
+            # return html
+            return self.cBinaryDataGrabber.GetData(sPath)
+
+        # log query
+        pManager.manager.DebugStr('cGuiRequestHandler '+ __version__ +': Got Query: '+str(sQuery))
+
+        # Get dictionary containing all options / values for request
+        dQuery = cgi.parse_qs(sQuery)
+
+        dParams ={}
+        if len(dQuery.keys()) == 0:
+            # No request. Display default iOwl page
+            return self.cDefaultDataGrabber.GetHtml(dParams)
+
+        # parse query
+        sCommand, dParams = self.cCommandValidator.ValidateQuery(dQuery)
+
+        # execute command
+        if sCommand == 'showhelp':
+            # return help page
+            return self.cHelpDataGrabber.GetHtml(dParams)
+        elif sCommand == 'showabout':
+            # return about page
+            return self.cAboutDataGrabber.GetHtml(dParams)
+        elif sCommand == 'showhistory':
+            # return history page
+            # --> return default page
+            return self.cDefaultDataGrabber.GetHtml(dParams)
+        elif sCommand == 'singlerecommendation':
+            # return single recommendation for url stored in dParams
+            return self.cSingleRecommendationDataGrabber.GetHtml(dParams)
+        elif sCommand == 'sessionrecommendation':
+            # return recommendations for current session
+            return self.cSessionRecommendationDataGrabber.GetHtml(dParams)
+        elif sCommand == 'longtermrecommendation':
+            # return all-time recommendations
+            return self.cLongtermRecommendationDataGrabber.GetHtml(dParams)
+        elif sCommand == 'getrecommendations':
+            # return single recommendation for url stored in dParams
+            return self.cGetRecommendationsDataGrabber.GetHtml(dParams)
+        elif sCommand == 'activate':
+            # activate clickstream recording
+            pManager.manager.SaveParam('pProxy','recording','1')
+            pManager.manager.GetProxyInterface().SetParam('recording','1')
+            # return mainpage
+            return self.cDefaultDataGrabber.GetHtml(dParams)
+        elif sCommand == 'deactivate':
+            # deactivate clickstream recording
+            pManager.manager.SaveParam('pProxy','recording','0')
+            pManager.manager.GetProxyInterface().SetParam('recording', '0')
+            # return mainpage
+            return self.cDefaultDataGrabber.GetHtml(dParams)
+        elif sCommand == 'remove':
+            # remove url from clickstream
+            # get clickstreaminterface
+            cs = pManager.manager.GetClickstreamInterface()
+            # remove url from clickstream
+            cs.RemoveUrl(dParams['sUrl'])
+            return self.cDefaultDataGrabber.GetHtml(dParams)
+        elif sCommand == 'error':
+            # return error page
+            return self.cErrorDataGrabber.GetHtml(dParams)
+
+
+
+
+
+    def GetHeader(self, sTitle, sScript='', sFunction=''):
+        """return header part for iOwl-pages
+
+        sTitle - title of page
+        sScript - script to include in header
+        sFunction - function to start in body-tag
+
+        returns -- string containg <html>....<body>
+
+        """
+
+        sData = ''
+        if sScript =='':
+            # no scripts needed
+            sData = """<html>
+                    <head>
+                    <title>%s</title>
+                    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+                    <base href="http://iowl/">
+                    </head>
+                    <body bgcolor="#BBBBBB" text="#000000" link="#AA0000" vlink="#880000" alink="#AA0000" background="data/pix/back.gif">
+                    """ %sTitle
+        else:
+            # need script in header and attribute onload="..."
+            sData = """<html>
+                    <head>
+                    <title>%s</title>
+                    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+                    <base href="http://iowl/">
+                    %s
+                    </head>
+                    <body bgcolor="#BBBBBB" text="#000000" link="#AA0000" vlink="#880000" alink="#AA0000" background="data/pix/back.gif" onload ="%s">
+                    """ % (sTitle, sScript, sFunction)
+
+        return sData
+
+
+    def GetActivePage(self):
+        """Return first part of guipage with state = active """
+
+        # load from disc
+        file = open(self.sActiveFilename, 'r')
+
+        # read aboutfile to string
+        sContent = file.read()
+
+        return sContent
+
+
+    def GetInactivePage(self):
+        """Return first part of guipage with state = active """
+
+        # load from disc
+        file = open(self.sInactiveFilename, 'r')
+
+        # read aboutfile to string
+        sContent = file.read()
+
+        return sContent
+
+
+    def GetEndPage(self):
+        """Return end part of guipage"""
+        # load from disc
+        file = open(self.sEndFilename, 'r')
+
+        # read aboutfile to string
+        sContent = file.read()
+
+        return sContent
+
+
+
+    ####### obsolete ##########
+    def GetFooter(self):
+        """return footer part for iOwl-pages"""
+        sData = """<hr>
+                   <p>copyright 2001 intelligent iOwl Network
+                   </p>
+                   </body>
+                   </html>
+                """
+        return sData
+
+
+
+##########################################################################################
+### TEST FUNCTIONS #######################################################################
+
+def test():
+    # url to test
+    sUrl = 'http://iowl/command?action=saveconfig&proxyip=1.2.3.4&proxyport=4096'
+    sEmpty = 'http://iowl'
+    sEmpty2 = 'http://iowl/'
+    sEmpty3 = 'http://iowl/index.html'
+
+
+    """
+    handler = cGuiRequestHandler()
+
+    handler.AcceptCommand(sUrl)
+    handler.AcceptCommand(sEmpty)
+    handler.AcceptCommand(sEmpty2)
+    handler.AcceptCommand(sEmpty3)
+    """
+
+if __name__=='__main__':
+    test()
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,30 @@
+<div align="center">
+<table width="760" cellspacing="0" cellpadding="0" border="0" background="data/pix/back_nav.gif">
+  <tr>
+    <td width="216"><img src="data/pix/iowl.gif" width="216" height="120"></td>
+    <td width="544" valign="bottom">
+      <table width="100%" cellspacing="5" cellpadding="0" border="0" background="../data/pix/back_nav.gif">
+        <tr>
+          <td width="90%" valign="bottom">&nbsp; </td>
+          <td width="10%" valign="top">
+            <div align="center"><img src="../data/pix/inactive.gif" width="104" height="16" alt="inactive"><br>
+              <img src="../data/pix/back_nav.gif" width="8" height="8" alt=""><br>
+              <a href="http://iowl/command?action=activate"><img src="../data/pix/activate.gif" width="80" height="16" alt="activate" border="0"></a><br>
+                <img src="../data/pix/back_nav.gif" width="20" height="20" alt=""> </div>
+          </td>
+        </tr>
+        <tr>
+            <td valign="bottom" colspan="2"><img src="../data/pix/back_nav.gif" width="2" height="2" alt="">
+                <a href="http://iowl/command?action=showhistory"><img src="../data/pix/his.gif" width="129" height="22" alt="history" border="0"></a>
+                <a href="http://iowl/command?action=sessionrecommendation"><img src="../data/pix/rec.gif" width="129" height="22" alt="recommendation" border="0"></a>
+                <a href="http://iowl/command?action=showhelp"><img src="../data/pix/hel.gif" width="129" height="22" alt="help" border="0"></a>
+            </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+    <table cellspacing="10" cellpadding="5" border="0">
+       <tr>
+          <td width="730" valign="top" bgcolor="#BBBBBB" background="../data/pix/back.gif">

@@ -1,0 +1,647 @@
+
+__version__ = "$Revision: 1.1 $"
+
+"""
+$Log: cOwlManager.py,v $
+Revision 1.1  2001/03/24 19:22:47  i10614
+Initial revision
+
+Revision 1.29  2001/03/18 15:49:51  mbauer
+added try-except in cOwlManager.Answer()
+
+Revision 1.28  2001/03/17 14:59:24  mbauer
+added user-defined exceptions for parsing network packets
+
+Revision 1.27  2001/02/25 14:12:59  mpopp
+fixed spelling
+
+Revision 1.26  2001/02/22 12:48:30  mbauer
+fixed bug for sending requests
+
+Revision 1.25  2001/02/22 12:32:40  mbauer
+fixed bugs in SendRequest/SendAnswer
+
+Revision 1.24  2001/02/21 18:14:36  mbauer
+added Garbage collector for old entries in request-table
+
+Revision 1.23  2001/02/19 19:19:52  mbauer
+Added algorithm to detect the correct IP adress when having more than one interface
+
+Revision 1.21  2001/02/18 20:23:26  mbauer
+added new XXX... :-/
+
+Revision 1.20  2001/02/17 16:57:41  mbauer
+cosmetic changes
+
+Revision 1.6  2001/02/17 01:24:42  mbauer
+bugfixes...
+
+Revision 1.3  2001/02/16 12:02:49  mbauer
+added DeleteOwl()
+
+Revision 1.1  2001/02/15 23:02:46  mbauer
+inital check-in
+
+
+"""
+
+import pManager
+import cNetManager
+import cNetException
+import cNeighbourOwl
+import cDOM
+import thread
+import time
+
+class cOwlManager:
+    """Coordinator class for neighbour owls
+
+    Responsible for routing of all network packages
+
+    Organisiation of requests dictionary:
+    key = global unique identifier of request
+    value = list containing:    - origination Owl (cNeighbourOwl Object)
+                                - List of Olws request is sent to (cNeighbourOwl objects)
+                                - Number of allowed Answers
+                                - Number of received Answers
+
+    XXX Need some mechanism to clean old entrys in request table!!
+
+    """
+
+    def __init__(self, cNetManager):
+        """Constructor"""
+
+        # some magic numbers for request dictionary values for easy list index access
+        self.SourceOwl = 0
+        self.iMaxAnswers = 1
+        self.iRecvdAnswers = 2
+        self.iTimeCreated = 3
+
+        # store my cNetManager
+        self.cNetManager = cNetManager
+
+        # init list of owls
+        self.lKnownOwls = []
+
+        # init dictionary of requests
+        self.dRequests = {}
+
+        # maximum number of known owls
+        self.iMaxOwlsToKeep = 50
+
+        # number of neighbour owls (number of owls requests are sent to)
+        self.iNumNeighbours = 5
+
+        # time requests are valid - default 5 minutes
+        self.iRequestLifeTime = 300
+
+
+    def SetNumNeighbours(self, neighbours):
+        """Set number of neighbour owls"""
+        self.iNumNeighbourOwls = neighbours
+
+
+    def SetMaxOwlsToKeep(self, maxOwls):
+        """Set max number of owls in list of known owls"""
+        self.iMaxOwlsToKeep = maxOwls
+
+    def SetRequestLifeTime(self, iTime):
+        """Set lifetime for requests
+
+        XXX - This needs to be dependant on TTL of request!
+
+        """
+        self.iRequestLifeTime = iTime
+
+
+    def AddOwl(self, ip, port):
+        """Add new owl to list of known owls and return it
+
+        If owl is already in list, just return that owl.
+
+        XXX -- Todo: take care of MaxOwlsToKeep! Cause if list gets
+               too large, operations may take too long since its
+               a dumb "look-in-every-single-object-and-compare" - operation...
+
+        ip     -- ip adress of owl
+        port   -- port of owl
+
+        return -- cNeighbourOwl Object with new or already existing owl
+
+        """
+
+        # look if owl is kown already
+        for owl in self.lKnownOwls:
+            if (str(owl.IP) == str(ip)) and (str(owl.iPort) == str(port)):
+                # already there!
+                # pManager.manager.DebugStr('cOwlManager '+ __version__ +': AddOwl: '+str(ip)+':'+str(port)+' already in list.')
+                # return old owl
+                return owl
+
+        # okay, this is a new owl.
+        # generate owl-object
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': AddOwl: New Owl at '+str(ip)+':'+str(port)+'.')
+        newOwl = cNeighbourOwl.cNeighbourOwl(ip, port, self)
+
+        # Add to list and return new owl
+        self.lKnownOwls.append(newOwl)
+        return newOwl
+
+
+    def DeleteOwl(self, lOwlList, ip, port):
+        """Delete an owl from lOwlList"""
+
+        # look for owl
+        for owl in lOwlList:
+            if (owl.IP == ip) and (owl.iPort == port):
+                # found! Now delete it
+                lOwlList.remove(owl)
+                return
+
+        # Uh-oh. Trying to delete non-existing owl?
+        # pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Trying to delete non-existing owl.')
+        return
+
+
+
+    def Distribute(self, domObj):
+        """Send out a ping/request
+
+        Pass domObj to all Neighbourowls. domObj is either a PING
+        or a REQUEST. Called by cNetManager.HandlePing(), cNetManager.HandleRequest() or cNetManager.SendRequest().
+        Pass Request to pRecommendationInterface (except it is from own owl).
+        Decrement TTL of domObj.
+        Pass domObj on through the network
+
+        domObj -- Document to pass around (PING or REQUEST)
+
+        returns:    'okay' if domObj is accepted
+                    'error' else
+
+        """
+        try:
+            # get from domObj: id, type, and originating owl's adress
+            version, id, type, iTTL, orgIP, orgPort = self.GetDomInfo(domObj)
+        except:
+            # Could not extract info from domObject. Probably corrupted.
+            # Throw away, log error and continue operation
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Skipping corrupt request.')
+            return 'error'
+
+        # check type of domObj
+        if type not in ('Ping', 'Request'):
+            # unknown type. Log error, throw domObj away and continue operation
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Received unknown Dom type "'+str(type)+'" for distribution. Skipping...')
+            return 'error'
+
+        # check for circular structures. If id of request is already in
+        # request-list -> Throw away!
+        if id in self.dRequests.keys():
+            # Log error, throw domObj away and continue operation
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Detected vicious circle.')
+            # To prevent sending more requests to the owl causing the circle, delete originating owl from
+            # KnownOwls (if it is there)
+            try:
+                # i need to get reference to neighbourowl object representing the originating owl.
+                # get value list from request dictionary (== get attributes of request)
+                reqAttributes = self.dRequests[id]
+                # try to delete first element of list (should be a reference to a neighbourOwl) from KnownOwls.
+                # might not exist in list if i dont know that owl
+                self.lKnownOwls.remove(reqAttributes[self.SourceOwl])
+            except:
+                # pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Could not delete owl '+str(self.dRequests[id][self.SourceOwl])+'.')
+                pass
+
+            return 'error'
+
+
+        # ok, request is valid and can be sent out.
+
+        # Get cNeighbourOwl Object that sent me this request
+        OrigOwl = self.AddOwl(orgIP, orgPort)
+
+        # Create list of request attributes
+        lReqAttributes = range(4)
+        lReqAttributes[self.SourceOwl] = OrigOwl    # owl that i received this request from
+        lReqAttributes[self.iMaxAnswers] = 2*iTTL   # number of allowed answers. Dependant on TTL
+        lReqAttributes[self.iRecvdAnswers] = 0      # not yet received any answer
+        lReqAttributes[self.iTimeCreated] = time.time() # timestamp when request was created
+        # Add request to request-dictionary.
+        self.dRequests[id] = lReqAttributes
+
+
+        # if TTL reached zero -> dont distribute request any further
+        if iTTL <= 0:
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Request "'+str(id)+'" reached TTL 0. No more distributing.')
+            # return okay cause domObj is accepted regardless of ttl.
+            # it just does not get distributed further.
+            return 'okay'
+
+        # decrement TTL
+        domObj = self.DecrementDomTTL(domObj)
+
+        #############################
+        # Now pass dom to neighbours#
+        #############################
+
+        # first replace originator of dom with myself
+        # pManager.manager.DebugStr('cOwlManager '+ __version__ +': Replacing Originator of Request "'+str(id)+'".')
+        domObj = self.ReplaceOrigin(domObj)
+
+        # now get list of Owls to pass to.
+        # XXX - pretty braindead, just take a slice of lKnownOwls with size self.iNumNeighbours. Should
+        #       include more intelligence in selecting target owls.
+        if len(self.lKnownOwls) > self.iNumNeighbours:
+            # i know more owls than i need -> just take a slice with desired size, beginning with first owl.
+            lNeighbours = self.lKnownOwls[:self.iNumNeighbours]
+        else:
+            # i dont know enough owls -> Use whole list for distribution!
+            # need a deep copy of list, not just reference...
+            lNeighbours = self.lKnownOwls[:]
+
+        # remove originating owl from neighbours - dont want to send to creator of packet!
+        self.DeleteOwl(lNeighbours, OrigOwl.IP, OrigOwl.iPort)
+        # remove myself from neighbours - dont want to send to myself!
+        self.DeleteOwl(lNeighbours, pManager.manager.GetOwnIP(), self.cNetManager.cNetServer.GetListenPort())
+
+        distri = []
+        for i in lNeighbours:
+            distri.append(str(i.IP) +':'+ str(i.iPort))
+
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Distributing to: '+str(distri)+'.')
+
+        if len(lNeighbours) == 0:
+            # empty list!
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Cant Distribute. NeighbourList is empty.')
+
+        # convert dom to ascii-string for network transport
+        sObj = str(domObj.ToXML())
+
+        # Finally start sending
+        if type == 'Ping':
+            # call ping()
+            for owl in lNeighbours:
+                # pManager.manager.DebugStr('cOwlManager '+ __version__ +': Sending Ping to '+str(owl.IP)+':'+str(owl.iPort)+'.')
+                # start new thread for each RPC
+                thread.start_new_thread(owl.Ping, (sObj,))
+
+        elif type == 'Request':
+            # call remote owl's Request()
+            for owl in lNeighbours:
+                # start new thread for each RPC
+                thread.start_new_thread(owl.Request, (sObj,))
+
+            # Pass request to own pRecommendation Interface except if it was generated by own owl
+            if str(OrigOwl.IP) != str(pManager.manager.GetOwnIP()) and str(OrigOwl.iPort) != str(self.cNetManager.cNetServer.GetListenPort()):
+                # ok, request was not generated by myself.
+                pManager.manager.DebugStr('cOwlManager '+ __version__ +': Passing new request to own pRecommendation.')
+                # Get Request element from domObj
+                elRequest = self.GetElementFromDOM(domObj, 'request')
+                # get pRecommandationInterface from manager
+                pRecIntf = pManager.manager.GetRecommendationInterface()
+                # pass request and it's id to pRecommendation
+                pRecIntf.SetRequest(elRequest, id)
+
+        return 'okay'
+
+
+    def Answer(self, domObj):
+        """Send an Answer to it's destination owl
+
+        Answer is either a PONG or an ANSWER. Called by cNetManager.HandleAnswer().
+
+        domObj -- Document to send back
+
+        """
+
+        # get from domObj: id, type, and originating owl's adress
+        try:
+            version, id, type, iTTL, orgIP, orgPort  = self.GetDomInfo(domObj)
+        except:
+            # Could not extract info from domObject. Probably corrupted.
+            # Throw away, log error and continue operation
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Skipping corrupt answer.')
+            return
+
+
+        # pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received '+str(type)+' from '+str(orgIP)+':'+str(orgPort)+' with id '+id+'.')
+
+        # look in requests dictionary for originating owl of request
+        try:
+            reqAttributes = self.dRequests[id]
+            origOwl = reqAttributes[self.SourceOwl]
+            # validate origOwl
+            test = origOwl.iPort
+        except:
+            # id no longer exists in requests table. Probably request expired or max
+            # number of answers reached.
+            # Throw away answer and continue operation
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received answer for non-existant request. Throwing away..')
+            return
+
+        # check type of domObj
+        if type not in ('Pong', 'Answer'):
+            # unknown type. Log error, throw domObj away and continue operation
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': Warning: Received unknown Dom type "'+str(type)+'" as Answer. Skipping...')
+            return
+
+        # look if request was created by myself
+        if (str(reqAttributes[self.SourceOwl].IP)    == str(pManager.manager.GetOwnIP())) and \
+           (str(reqAttributes[self.SourceOwl].iPort) == str(self.cNetManager.cNetServer.GetListenPort())):
+            # answer for myself!
+            if type == 'Pong':
+                # not much to do. Pong info already extracted inside cNetManager.HandlePong().
+                # just throw away and continue
+                pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received PONG for myself.')
+                return
+            elif type == 'Answer':
+                # Pass it to pRecommendationInterface
+                pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received ANSWER for myself. Passing on to pRecommendation.')
+                # Get Answer element from domObj
+                elAnswer = self.GetElementFromDOM(domObj, 'answer')
+                # Get recommendation interface from pManager.
+                pRecIntf = pManager.manager.GetRecommendationInterface()
+                pRecIntf.SetAnswer(elAnswer, id)
+                return
+
+            else:
+                pManager.manager.DebugStr('cOwlManager '+ __version__ +': domType Error! Should never get here!')
+                return
+
+
+        # must be answer for another owl
+
+        # convert dom to ascii-string for network-transport
+        sObj = str(domObj.ToXML())
+        # pManager.manager.DebugStr('cOwlManager '+ __version__ +': sObj: '+sObj)
+
+        if type == 'Pong':
+            # not much to do. Pong info already extracted inside cNetManager.HandlePong().
+            # just pass Pong on to originating Owl and continue
+            # pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received PONG and passing it on to '+str(origOwl.IP)+':'+str(origOwl.iPort)+'.')
+            # start new thread for RPC
+            thread.start_new_thread(origOwl.Pong, (sObj,))
+            return
+        elif type == 'Answer':
+            # Pass it to originating Owl and continue
+            # pManager.manager.DebugStr('cOwlManager '+ __version__ +': Received ANSWER and passing it on to '+str(origOwl.IP)+':'+str(origOwl.iPort)+'.')
+            # start new thread for RPC
+            thread.start_new_thread(origOwl.Answer, (sObj,))
+            return
+        else:
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': domType Error! Should never get here!')
+            return
+
+
+        # increment answer counter for request
+        tmp = reqAttributes[self.iRecvdAnswers]
+        reqAttributes[self.iRecvdAnswers] = tmp+1
+
+        # if answercounter > maxanswers -> delete request from requests dictionary!
+        if reqAttributes[self.iRecvdAnswers] > reqAttributes[self.iMaxAnswers]:
+            # request reached max answer count.
+            # delete it from request dictionary.
+            pManager.manager.DebugStr('cOwlManager '+ __version__ +': MaxAnswers reached for request "'+id+'". Deleting it from dictionary.')
+            del self.dRequests[id]
+
+
+
+    def GetDomInfo(self, domObj):
+        """Extract information from dom
+
+        if name of root-object does not match raise exception "DOM-Error".
+        if version of dom does not match raise exception "Version-Error".
+
+        domObj -- dom to examine
+
+        returns list containing:
+
+            version -- version of originating owl
+            id      -- dom id
+            type    -- dom type (Ping, Pong, Request, Answer)
+            ttl     -- TimeToLive for dom
+            orgIP   -- originating owl's IP
+            orgPort -- originating owl's port
+
+        """
+
+        # Get Root Element
+        root = domObj.GetRootElement()
+        # Get Name of RootElement
+        rootname = domObj.GetName(root)
+        # check name
+        if rootname != 'iowl.net':
+            # This is not a valid iOwl.net Network package!
+            raise cNetException.domError('invalid DOM')
+
+        # get Attributes of root elem
+        # list of attributes
+        lAttrs = ['version', 'id', 'type', 'ttl']
+        dAttrs = domObj.GetAttrs(root, lAttrs)
+        version = dAttrs['version']
+        id = dAttrs['id']
+        type = dAttrs['type']
+        ttl = dAttrs['ttl']
+
+        # check for same version
+        if version != pManager.manager.GetVersion():
+            # dom was generated by an owl with another Version.
+            raise cNetException.versionError('DOM has wrong version '+str(version))
+
+        # get childelements
+        childs = []
+        dAttrs, childs = domObj.GetElementContainerContent(root, rootname, lAttrs)
+
+        # search for element named 'originator' in childs
+        originator = None
+        for child in childs:
+            childname = domObj.GetName(child)
+            if childname == 'originator':
+                originator = child
+
+        if originator == None:
+            # could not parse!
+            raise cNetException.domError('invalid DOM - no originator found.')
+
+
+        # get attributes of originator
+        lOriginAttrs = ['ip','port']
+        dOriginAttrs = domObj.GetAttrs(originator, lOriginAttrs)
+        ip = dOriginAttrs['ip']
+        port = dOriginAttrs['port']
+
+        return version, id, type, ttl, ip, port
+
+
+    def ReplaceOrigin(self, domObj):
+        """Replace origin of DOM with myself
+
+        returns new DOM
+
+        """
+
+        # Get RootElement
+        root = domObj.GetRootElement()
+
+        # Get Name of RootElement
+        rootname = domObj.GetName(root)
+
+        # get childelements
+        childs = []
+        lAttrs = ['version', 'id', 'type', 'ttl']
+        dAttrs, childs = domObj.GetElementContainerContent(root, rootname, lAttrs)
+
+        # search for element named 'originator' in childs
+        for child in childs:
+            childname = domObj.GetName(child)
+            if childname == 'originator':
+                originator = child
+
+        # get attributes of originator
+        lOriginAttrs = ['ip','port']
+        dOriginAttrs = domObj.GetAttrs(originator, lOriginAttrs)
+        ip = dOriginAttrs['ip']
+        port = dOriginAttrs['port']
+
+        # get own IP from manager
+        ownip = pManager.manager.GetOwnIP()
+        # ownip = '1.2.3.4'
+
+        # get ListenPort from cNetServer
+        iListenPort = self.cNetManager.cNetServer.GetListenPort()
+
+        # create new originator element
+        newOrig = domObj.CreateElement('originator', {'ip':str(ownip), 'port':str(iListenPort)}, '')
+
+        # store all childs of rootnode
+        dAttr, lChilds = domObj.GetElementContainerContent(root, 'iowl.net', lAttrs)
+
+        # search and delete originator in lChilds
+        for child in lChilds:
+            if domObj.GetName(child) == 'originator':
+                lChilds.remove(child)
+
+        # add new originator to list
+        lChilds.append(newOrig)
+
+        # generate new dom
+        newDomObj = cDOM.cDOM()
+
+        # generate new rootelement (==Elementcontainer)
+        newroot = newDomObj.CreateElementContainer('iowl.net',
+                                                   {'version':dAttrs['version'],
+                                                    'id':dAttrs['id'],
+                                                    'type':dAttrs['type'],
+                                                    'ttl':dAttrs['ttl']
+                                                   },
+                                                   lChilds)
+
+        # set as rootnode
+        newDomObj.SetRootElement(newroot)
+
+        # return new dom
+        return newDomObj
+
+
+    def DecrementDomTTL(self, domObj):
+        """Decrement TTL of given domObj
+
+        XXX This is really ugly, there is no function available to change an
+            attribute of a DOM 'on-the-fly', i have to build a new DOM just to
+            decrement a counter.
+            oh well...
+
+        """
+
+        # get element containing attribute 'ttl' -> root element
+        root = domObj.GetRootElement()
+
+        # get attributes of root element
+        lAttrs = ['version', 'id', 'type', 'ttl']
+        dAttrs = domObj.GetAttrs(root, lAttrs)
+
+        # get current ttl
+        iCurTTL = int(dAttrs['ttl'])
+
+        if iCurTTL <= 0:
+            # PANIC!
+            raise 'TTL zero or below zero prior to decrementing!'
+
+        # store all childs of rootnode
+        dAttr, lChilds = domObj.GetElementContainerContent(root, 'iowl.net', lAttrs)
+
+        # generate new dom
+        newDomObj = cDOM.cDOM()
+
+        # generate new rootelement (==Elementcontainer)
+        newroot = newDomObj.CreateElementContainer('iowl.net',
+                                                   {'version':dAttrs['version'],
+                                                    'id':dAttrs['id'],
+                                                    'type':dAttrs['type'],
+                                                    'ttl':str(iCurTTL -1)
+                                                   },
+                                                   lChilds)
+
+        # set as rootnode
+        newDomObj.SetRootElement(newroot)
+
+        # return new dom
+        return newDomObj
+
+
+    def GetElementFromDOM(self, domObj, sElementName):
+        """Extract element from domObj
+
+        domObj is a network package. I need to return the element named sElementName.
+
+        return  -- cDOM.element
+
+        """
+
+        # Get list of child-elements
+        lElements = domObj.GetElements()
+
+        # Get element named "answer"
+        element = None
+        for el in lElements:
+            if domObj.GetName(el) == sElementName:
+                element = el
+                break
+
+        if element == None:
+            raise 'Could not extract element from DOM!'
+
+        # okay, return element
+        return element
+
+
+    def Start(self):
+        """Start operation of cOwlManager.
+
+        Sole purpose: register CleanOldRequest-Function with pManager.
+        """
+        pManager.manager.RegisterWatchdog(self.CleanOldRequests, 600)
+
+
+    def CleanOldRequests(self):
+        """Clean requests from expired entrys
+
+        Get called by external timer-thread.
+
+        XXX - Check for possible multithread-problems -> do i need mutex?
+
+        """
+
+        # get current time
+        fTime = time.time()
+
+        iNumDeleted = 0
+        for id in self.dRequests.keys():
+            if (fTime - self.dRequests[id][self.iTimeCreated]) > self.iRequestLifeTime:
+                # this request is expired! Delete it
+                del self.dRequests[id]
+                iNumDeleted = iNumDeleted + 1
+
+        pManager.manager.DebugStr('cOwlManager '+ __version__ +': Cleaned Requeststable from expired entries. Deleted: '+str(iNumDeleted)+', remaining: '+str(len(self.dRequests.keys())))
+        return
