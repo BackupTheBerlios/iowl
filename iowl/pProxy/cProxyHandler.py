@@ -1,7 +1,10 @@
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 
 """
 $Log: cProxyHandler.py,v $
+Revision 1.7  2001/04/15 19:12:51  i10614
+now filtering clicks depending on status. Only 2xx is accepted, 302, 404 etc is skipped.
+
 Revision 1.6  2001/04/14 15:04:07  i10614
 fix for title-umlauts, workaround for keep-alive connections
 
@@ -135,7 +138,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         if bIsExplicit:
             # Add Click to Clickstream
             ClickstreamInterface = pManager.manager.GetClickstreamInterface()
-            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click. Title: '+str(self.ClickTitle))
+            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Detected explicit click. Title: '+str(self.ClickTitle)+' Status: '+str(self.ClickStatus))
 
             click = cClick.cClick()
 
@@ -205,7 +208,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         # remove some unwanted headers. XXX - Why??
         self.try_del(dHeaders, 'accept-encoding')
         self.try_del(dHeaders, 'proxy-connection')
-        # XXX Cant handle HTTP 1.0 with connection keep-alive <-- FIXME!
+        # XXX Cant handle keep-alive <-- FIXME!
         self.try_del(dHeaders, 'connection')
 
 
@@ -266,7 +269,6 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             # replace host with proxy
             # XXX DOES NOT WORK!
             host, port = pManager.manager.GetProxyInterface().GetParent()
-            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Using parent proxy at '+str(host)+':'+str(port)+'.')
 
         try:
             addr = socket.gethostbyname(host)
@@ -298,7 +300,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         comment = string.join(fields[2:])
 
         #store status for ClickStream
-        self.ClickStatus = status
+        self.ClickStatus = string.strip(status)
 
         dHeaders = self.ParseHeaders(server)
         # store content-type for Clickstream:
@@ -339,9 +341,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
         """look if there's a title tag inside data
 
         data    -- data as read from server
-        return  -- string containing title of data
-
-        XXX - replace html entities with their characters
+        return  -- string containing title
 
         """
 
@@ -362,7 +362,7 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             # remove leading / trailing whitespaces
             sTitle = string.strip(sTitle)
 
-            # be sure to get rid of umlauts etc (implicit unicode conversion)
+            # be sure to get rid of umlauts etc
             sTitle = self.FilterUmlauts(sTitle)
 
             if len(sTitle) > 55:
@@ -441,6 +441,10 @@ class cProxyHandler(SocketServer.StreamRequestHandler):
             # only type text/html is allowed!
             return 0
 
+        # dont record invalid or temporary urls
+        if self.ClickStatus.startswith('3') or self.ClickStatus.startswith('4') or self.ClickStatus.startswith('5'):
+            pManager.manager.DebugStr('cProxyHandler '+ __version__ +': Skipping Click (Status: '+str(self.ClickStatus)+')')
+            return 0
 
         # Get cProxyInterface
         cProxyInterface = pManager.manager.GetProxyInterface()
